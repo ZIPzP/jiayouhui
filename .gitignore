@@ -8,3 +8,5 @@ config.local.json
 # 系统文件
 .DS_Store
 Thumbs.db
+# 构建产物
+家游汇-发布版.zip
