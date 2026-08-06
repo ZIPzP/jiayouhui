@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>家游汇 · 家庭旅游推荐与攻略</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>  <header class="nav" id="topnav">
+    <div class="nav-inner">
+      <a class="brand" href="/">🏡 <span>家游汇</span></a>
+      <nav class="nav-links" id="navLinks">
+        <a href="/" data-nav="home">首页</a>
+        <a href="/destinations.html" data-nav="destinations">目的地</a>
+        <a href="/plan.html" data-nav="plan">行程规划</a>
+        <a href="/packing.html" data-nav="packing">出行清单</a>
+        <a href="/hot.html" data-nav="hot">平台热度</a>
+        <a href="/about.html" data-nav="about">关于</a>
+      </nav>
+      <div class="nav-actions">
+        <button id="elderlyToggle" class="btn btn-elderly" type="button" title="切换老年人模式">
+          <span class="elderly-on">👴 长辈模式已开启</span>
+          <span class="elderly-off">👴 长辈模式</span>
+        </button>
+        <button id="aiSettingsBtn" class="btn btn-ghost" type="button" title="AI 设置">⚙️ AI 设置</button>
+      </div>
+    </div>
+  </header>  <section id="packing" class="section section-alt">
+    <div class="section-head">
+      <h2>🎒 出行打包清单</h2>
+      <p>选择目的地与出行时段，AI 为你和家人量身推荐该带的旅行用品</p>
+    </div>
+    <div class="packing-layout">
+      <div class="card form-card">
+        <div class="form-group">
+          <label class="form-label" for="pf-dest">目的地</label>
+          <select id="pf-dest" class="input"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pf-month">出行月份（AI 据此判断季节与天气）</label>
+          <select id="pf-month" class="input"></select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="pf-duration">出行天数</label>
+            <select id="pf-duration" class="input">
+              <option value="2">2 天</option><option value="3" selected>3 天</option>
+              <option value="4">4 天</option><option value="5">5 天</option><option value="7">7 天</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">同行人数</label>
+            <div class="num-group">
+              <span>👴<input id="pf-elderly" type="number" min="0" max="9" value="2" class="input num" /></span>
+              <span>🧑<input id="pf-adults" type="number" min="0" max="9" value="2" class="input num" /></span>
+              <span>🧒<input id="pf-children" type="number" min="0" max="9" value="1" class="input num" /></span>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">兴趣偏好（可多选）</label>
+          <div class="chip-group" id="interestChips">
+            <label><input type="checkbox" value="自然风光" /> 自然风光</label>
+            <label><input type="checkbox" value="美食" /> 美食</label>
+            <label><input type="checkbox" value="博物馆" /> 博物馆</label>
+            <label><input type="checkbox" value="海滨玩水" /> 海滨玩水</label>
+            <label><input type="checkbox" value="古城老街" /> 古城老街</label>
+          </div>
+        </div>
+        <button id="pf-submit" class="btn btn-primary btn-lg btn-block" type="button">🤖 生成打包清单</button>
+        <p class="form-hint" id="aiModeHint"></p>
+      </div>
+      <div class="card result-card">
+        <div class="result-empty" id="resultEmpty">
+          <div class="result-empty-icon">🎒</div>
+          <p>填写左侧信息后，点击「生成打包清单」<br />AI 会根据出行时段、目的地和同行人给出建议</p>
+        </div>
+        <div id="resultBody" hidden></div>
+      </div>
+    </div>
+  </section>  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习与演示使用，请以官方信息为准</p></footer>  <script src="/js/common.js"></script>
+  <script src="/js/packing.js"></script>
+</body>
+</html>

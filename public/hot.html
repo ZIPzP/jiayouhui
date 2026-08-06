@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>家游汇 · 家庭旅游推荐与攻略</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>  <header class="nav" id="topnav">
+    <div class="nav-inner">
+      <a class="brand" href="/">🏡 <span>家游汇</span></a>
+      <nav class="nav-links" id="navLinks">
+        <a href="/" data-nav="home">首页</a>
+        <a href="/destinations.html" data-nav="destinations">目的地</a>
+        <a href="/plan.html" data-nav="plan">行程规划</a>
+        <a href="/packing.html" data-nav="packing">出行清单</a>
+        <a href="/hot.html" data-nav="hot">平台热度</a>
+        <a href="/about.html" data-nav="about">关于</a>
+      </nav>
+      <div class="nav-actions">
+        <button id="elderlyToggle" class="btn btn-elderly" type="button" title="切换老年人模式">
+          <span class="elderly-on">👴 长辈模式已开启</span>
+          <span class="elderly-off">👴 长辈模式</span>
+        </button>
+        <button id="aiSettingsBtn" class="btn btn-ghost" type="button" title="AI 设置">⚙️ AI 设置</button>
+      </div>
+    </div>
+  </header>  <section id="hot" class="section">
+    <div class="section-head">
+      <h2>🔥 平台热门目的地</h2>
+      <p id="hotMeta">正在聚合各平台热门数据…</p>
+    </div>
+    <div class="hot-list" id="hotList"></div>
+    <div style="text-align:center;margin-top:26px">
+      <a class="btn btn-primary" href="/plan.html">🤖 去规划行程</a>
+    </div>
+  </section>  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习与演示使用，请以官方信息为准</p></footer>  <script src="/js/common.js"></script>
+  <script src="/js/hot.js"></script>
+</body>
+</html>

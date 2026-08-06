@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>家游汇 · 家庭旅游推荐与攻略</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>  <header class="nav" id="topnav">
+    <div class="nav-inner">
+      <a class="brand" href="/">🏡 <span>家游汇</span></a>
+      <nav class="nav-links" id="navLinks">
+        <a href="/" data-nav="home">首页</a>
+        <a href="/destinations.html" data-nav="destinations">目的地</a>
+        <a href="/plan.html" data-nav="plan">行程规划</a>
+        <a href="/packing.html" data-nav="packing">出行清单</a>
+        <a href="/hot.html" data-nav="hot">平台热度</a>
+        <a href="/about.html" data-nav="about">关于</a>
+      </nav>
+      <div class="nav-actions">
+        <button id="elderlyToggle" class="btn btn-elderly" type="button" title="切换老年人模式">
+          <span class="elderly-on">👴 长辈模式已开启</span>
+          <span class="elderly-off">👴 长辈模式</span>
+        </button>
+        <button id="aiSettingsBtn" class="btn btn-ghost" type="button" title="AI 设置">⚙️ AI 设置</button>
+      </div>
+    </div>
+  </header>  <section id="destinations" class="section">
+    <div class="section-head">
+      <h2>🏞️ 热门家庭目的地</h2>
+      <p>真实地点照片 · 精选适合全家出行的目的地（想去的城市不在列表？在「行程规划」里选「✍️ 自定义目的地」即可）</p>
+    </div>
+    <div class="filter-chips" id="tagFilters"></div>
+    <div class="dest-grid" id="destGrid"></div>
+  </section>
+
+  <div class="modal-backdrop" id="detailModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-label="目的地详情">
+      <button class="modal-close" id="modalClose" type="button" aria-label="关闭">✕</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习与演示使用，请以官方信息为准</p></footer>  <script src="/js/common.js"></script>
+  <script src="/js/destinations.js"></script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>家游汇 · 家庭旅游推荐与攻略</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>  <header class="nav" id="topnav">
+    <div class="nav-inner">
+      <a class="brand" href="/">🏡 <span>家游汇</span></a>
+      <nav class="nav-links" id="navLinks">
+        <a href="/" data-nav="home">首页</a>
+        <a href="/destinations.html" data-nav="destinations">目的地</a>
+        <a href="/plan.html" data-nav="plan">行程规划</a>
+        <a href="/packing.html" data-nav="packing">出行清单</a>
+        <a href="/hot.html" data-nav="hot">平台热度</a>
+        <a href="/about.html" data-nav="about">关于</a>
+      </nav>
+      <div class="nav-actions">
+        <button id="elderlyToggle" class="btn btn-elderly" type="button" title="切换老年人模式">
+          <span class="elderly-on">👴 长辈模式已开启</span>
+          <span class="elderly-off">👴 长辈模式</span>
+        </button>
+        <button id="aiSettingsBtn" class="btn btn-ghost" type="button" title="AI 设置">⚙️ AI 设置</button>
+      </div>
+    </div>
+  </header>  <section id="plan" class="section section-alt">
+    <div class="section-head">
+      <h2>🤖 AI 主理人 · 行程规划</h2>
+      <p>点选需求即可（不想打字也没关系），AI 自动生成含价格估算、交通安排、忌食提醒的逐日详细行程；页面下方还能直接向 AI 主理人提问</p>
+    </div>
+    <div class="plan-layout">
+      <div class="card form-card" id="planForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="pl-dest">目的地</label>
+            <select id="pl-dest" class="input"></select>
+            <div id="pl-custom-wrap" hidden style="margin-top:8px">
+              <input id="pl-custom" class="input" placeholder="✍️ 输入城市名，如：拉萨、厦门、哈尔滨…" />
+              <input id="pl-custom-note" class="input" style="margin-top:6px" placeholder="补充想玩的（可选），如：想看布达拉宫 / 想吃海鲜" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pl-origin">出发城市</label>
+            <input id="pl-origin" class="input" placeholder="如：北京 / 上海" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="pl-start">去程日期</label>
+            <input id="pl-start" type="date" class="input" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pl-end">返程日期</label>
+            <input id="pl-end" type="date" class="input" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pl-days">行程天数</label>
+            <select id="pl-days" class="input">
+              <option value="2">2 天</option><option value="3" selected>3 天</option>
+              <option value="4">4 天</option><option value="5">5 天</option>
+              <option value="6">6 天</option><option value="7">7 天</option>
+              <option value="8">8 天</option><option value="10">10 天</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">交通方式</label>
+          <div class="chip-group chip-single" data-single="pl-transport">
+            <button class="chip" data-value="飞机" type="button">✈️ 飞机</button>
+            <button class="chip active" data-value="高铁" type="button">🚄 高铁</button>
+            <button class="chip" data-value="自驾" type="button">🚗 自驾</button>
+            <button class="chip" data-value="大巴" type="button">🚌 大巴</button>
+            <button class="chip" data-value="未定" type="button">❓ 未定</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">同行人数</label>
+          <div class="num-group">
+            <span>👴<input id="pl-elderly" type="number" min="0" max="9" value="2" class="input num" /></span>
+            <span>🧑<input id="pl-adults" type="number" min="0" max="9" value="2" class="input num" /></span>
+            <span>🧒<input id="pl-children" type="number" min="0" max="9" value="1" class="input num" /></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">忌食 / 饮食（可多选）</label>
+          <div class="chip-group" data-multi="pl-dietary">
+            <button class="chip" data-value="不吃辣" type="button">🌶️ 不吃辣</button>
+            <button class="chip" data-value="素食" type="button">🥬 素食</button>
+            <button class="chip" data-value="清真" type="button">🕌 清真</button>
+            <button class="chip" data-value="海鲜过敏" type="button">🦐 海鲜过敏</button>
+            <button class="chip" data-value="花生坚果过敏" type="button">🥜 坚果过敏</button>
+            <button class="chip" data-value="乳糖不耐" type="button">🥛 乳糖不耐</button>
+            <button class="chip active" data-value="无特别忌口" type="button">✅ 无特别忌口</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">预算档位</label>
+            <div class="chip-group chip-single" data-single="pl-budget">
+              <button class="chip" data-value="经济型" type="button">💰 经济型</button>
+              <button class="chip active" data-value="舒适型" type="button">💳 舒适型</button>
+              <button class="chip" data-value="豪华型" type="button">💎 豪华型</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">游玩节奏</label>
+            <div class="chip-group chip-single" data-single="pl-pace">
+              <button class="chip active" data-value="轻松慢游" type="button">🐢 轻松慢游</button>
+              <button class="chip" data-value="标准" type="button">🚶 标准</button>
+              <button class="chip" data-value="紧凑" type="button">⚡ 紧凑</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">住宿偏好</label>
+          <div class="chip-group chip-single" data-single="pl-stay">
+            <button class="chip" data-value="连锁酒店" type="button">🏨 连锁酒店</button>
+            <button class="chip" data-value="民宿" type="button">🏡 民宿</button>
+            <button class="chip" data-value="高档酒店" type="button">🏰 高档酒店</button>
+            <button class="chip active" data-value="无要求" type="button">🤷 无要求</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">兴趣偏好（可多选）</label>
+          <div class="chip-group" data-multi="pl-interests">
+            <button class="chip" data-value="自然风光" type="button">🏞️ 自然风光</button>
+            <button class="chip" data-value="历史人文" type="button">🏯 历史人文</button>
+            <button class="chip" data-value="美食" type="button">🍜 美食</button>
+            <button class="chip" data-value="博物馆" type="button">🏛️ 博物馆</button>
+            <button class="chip" data-value="海滨玩水" type="button">🌊 海滨玩水</button>
+            <button class="chip" data-value="古城老街" type="button">🏘️ 古城老街</button>
+            <button class="chip" data-value="夜景" type="button">🌃 夜景</button>
+            <button class="chip" data-value="亲子乐园" type="button">🎡 亲子乐园</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pl-notes">其他需求（自由填写，可选）</label>
+          <textarea id="pl-notes" class="input" rows="3" placeholder="如：想坐竹筏看日出、老人腿脚不便需要少走路、预算不含购物……"></textarea>
+        </div>
+        <button id="pl-submit" class="btn btn-primary btn-lg btn-block" type="button">🤖 生成完整行程规划</button>
+        <p class="form-hint" id="planAiHint"></p>
+      </div>
+      <div class="card result-card" id="planResult">
+        <div class="result-empty" id="planEmpty">
+          <div class="result-empty-icon">🗺️</div>
+          <p>点选左侧需求（或自由填写），点击「生成完整行程规划」<br />AI 主理人会为你安排逐日行程、交通、餐厅与费用估算</p>
+        </div>
+        <div id="planBody" hidden></div>
+      </div>
+    </div>
+
+    <div class="card chat-card" id="assistant">
+      <div class="chat-head">💬 AI 主理人问答 <span class="provider-tag" id="chatModeTag">演示模式</span></div>
+      <div class="chat-body" id="chatBody">
+        <div class="chat-msg ai">你好呀，我是「家游汇」的 AI 主理人 🏡 可以问我任何家庭旅行问题，比如「带老人孩子去西安怎么安排 5 天？」</div>
+      </div>
+      <div class="chat-input-row">
+        <input id="chatInput" class="input" placeholder="输入你的问题，回车发送…" />
+        <button id="chatSend" class="btn btn-primary" type="button">发送</button>
+      </div>
+    </div>
+  </section>  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习与演示使用，请以官方信息为准</p></footer>  <script src="/js/common.js"></script>
+  <script src="/js/plan.js"></script>
+</body>
+</html>

@@ -392,3 +392,25 @@ html.elderly .auth-card { padding: 40px 32px; }
   .meal-pill { font-size: .75rem; }
   .btn-elderly { padding: 8px 10px; }
 }
+
+/* ---------- 多页面布局补充 ---------- */
+/* 导航吸顶（所有页面），避免内容被遮挡 */
+.nav { position: sticky !important; top: 0; }
+html { scroll-padding-top: calc(var(--nav-h) + 12px); }
+
+/* 导航当前页高亮 */
+.nav-links a.active { background: var(--primary-light); color: var(--primary-dark); }
+
+/* 目的地卡片作为链接 */
+a.dest-card { display: block; text-decoration: none; color: inherit; }
+
+/* 首页入口卡片 */
+.entry-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; max-width: 1000px; margin: 0 auto; }
+.entry-card { padding: 26px 22px; text-align: center; text-decoration: none; color: inherit; transition: transform .15s ease, box-shadow .15s ease; }
+.entry-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.entry-icon { font-size: 2.4rem; margin-bottom: 10px; }
+.entry-card h3 { color: var(--primary-dark); margin-bottom: 8px; }
+.entry-card p { color: var(--ink-soft); font-size: .92rem; }
+
+/* 内容底部留白 */
+.footer { margin-top: 0; }
