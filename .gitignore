@@ -10,3 +10,9 @@ config.local.json
 Thumbs.db
 # 构建产物
 家游汇-发布版.zip
+
+# 本地工具与构建产物（不入 git）
+旧电脑部署包/
+tools/cloudflared.exe
+tools/tunnel.log
+查看公网地址.bat

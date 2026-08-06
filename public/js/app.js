@@ -80,7 +80,7 @@
     const opts = state.destinations.map((d) => `<option value="${esc(d.id)}">${esc(d.name)}（${esc(d.province)}）</option>`).join('');
     $('#hf-dest').innerHTML = opts;
     $('#pf-dest').innerHTML = opts;
-    if ($('#pl-dest')) $('#pl-dest').innerHTML = opts;
+    if ($('#pl-dest')) $('#pl-dest').innerHTML = opts + '<option value="__custom__">✍️ 自定义目的地（自己输入城市）</option>';
   }
   function renderFilters() {
     const list = ['全部', '亲子', '老人友好', '海滨', '自然', '美食', '历史', '古城', '都市', '休闲'];
@@ -536,8 +536,7 @@
     return $$(`#planForm [${groupSel}] .chip.active`).map((c) => c.dataset.value);
   }
   function planFormValues() {
-    return {
-      destinationId: $('#pl-dest').value,
+    const base = {
       origin: $('#pl-origin').value.trim(),
       startDate: $('#pl-start').value,
       endDate: $('#pl-end').value,
@@ -553,8 +552,26 @@
       interests: chipValues('data-multi="pl-interests"'),
       notes: $('#pl-notes').value.trim()
     };
+    const destVal = $('#pl-dest').value;
+    if (destVal === '__custom__') {
+      return Object.assign({}, base, {
+        destinationId: 'custom',
+        customDest: {
+          name: $('#pl-custom').value.trim(),
+          note: $('#pl-custom-note').value.trim()
+        }
+      });
+    }
+    return Object.assign({}, base, { destinationId: destVal });
   }
   function bindPlanEvents() {
+    // 自定义目的地：选择后显示输入框
+    $('#pl-dest').addEventListener('change', () => {
+      const show = $('#pl-dest').value === '__custom__';
+      $('#pl-custom-wrap').hidden = !show;
+      if (show) $('#pl-custom').focus();
+    });
+
     // 选项 chips
     $('#planForm').addEventListener('click', (e) => {
       const chip = e.target.closest('.chip');

@@ -101,8 +101,11 @@ async function handleApi(req, res, pathname) {
   if (pathname === '/api/recommend' && req.method === 'POST') {
     let body;
     try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
-    const dest = destinations.find((d) => d.id === body.destinationId);
-    if (!dest) return sendJson(res, 400, { error: '请选择目的地 destinationId' });
+    const dest = destinations.find((d) => d.id === body.destinationId)
+      || (body.destinationId === 'custom' && String((body.customDest || {}).name || '').trim()
+          ? planner.customDestination(String((body.customDest || {}).name || '').trim(), String((body.customDest || {}).note || '').trim())
+          : null);
+    if (!dest) return sendJson(res, 400, { error: '请选择目的地，或选择「自定义目的地」并填写城市名' });
     const params = {
       destination: dest,
       month: Number(body.month) || new Date().getMonth() + 1,
@@ -132,8 +135,11 @@ async function handleApi(req, res, pathname) {
   if (pathname === '/api/plan' && req.method === 'POST') {
     let body;
     try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
-    const dest = destinations.find((d) => d.id === body.destinationId);
-    if (!dest) return sendJson(res, 400, { error: '请选择目的地 destinationId' });
+    const dest = destinations.find((d) => d.id === body.destinationId)
+      || (body.destinationId === 'custom' && String((body.customDest || {}).name || '').trim()
+          ? planner.customDestination(String((body.customDest || {}).name || '').trim(), String((body.customDest || {}).note || '').trim())
+          : null);
+    if (!dest) return sendJson(res, 400, { error: '请选择目的地，或选择「自定义目的地」并填写城市名' });
     const params = {
       destination: dest,
       origin: String(body.origin || '').trim(),

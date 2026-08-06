@@ -81,7 +81,7 @@
   <section id="destinations" class="section">
     <div class="section-head">
       <h2>🏞️ 热门家庭目的地</h2>
-      <p>真实地点照片 · 精选适合全家出行的目的地，数据来自平台热度与编辑推荐</p>
+      <p>真实地点照片 · 精选适合全家出行的目的地（想去的城市不在列表？在下方「🤖 行程规划」里选「✍️ 自定义目的地」即可）</p>
     </div>
     <div class="filter-chips" id="tagFilters"></div>
     <div class="dest-grid" id="destGrid"></div>
@@ -99,6 +99,10 @@
           <div class="form-group">
             <label class="form-label" for="pl-dest">目的地</label>
             <select id="pl-dest" class="input"></select>
+            <div id="pl-custom-wrap" hidden style="margin-top:8px">
+              <input id="pl-custom" class="input" placeholder="✍️ 输入城市名，如：拉萨、厦门、哈尔滨…" />
+              <input id="pl-custom-note" class="input" style="margin-top:6px" placeholder="补充想玩的（可选），如：想看布达拉宫 / 想吃海鲜" />
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label" for="pl-origin">出发城市</label>
