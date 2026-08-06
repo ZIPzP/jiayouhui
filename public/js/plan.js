@@ -4,6 +4,7 @@
   window.pageInit = async function () {
     fillDest();
     bindEvents();
+    restorePlan();
   };
 
   function fillDest() {
@@ -92,18 +93,47 @@
     document.getElementById('chatInput').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); } });
   }
 
+  function savePlan(vals, result) {
+    localStorage.setItem('jyh_last_plan', JSON.stringify({ vals, result, ts: Date.now() }));
+  }
   async function generatePlan() {
     const vals = planFormValues();
     const empty = document.getElementById('planEmpty');
     const bodyEl = document.getElementById('planBody');
     empty.hidden = true; bodyEl.hidden = false;
-    bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)">🤖 AI 主理人正在为你规划行程，请稍候…</p>';
+    bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)">⏳ AI 主理人正在后台生成行程…<br/>你可以放心切到别的页面/标签页，回来会自动恢复显示结果</p>';
     try {
-      const data = await app.api('/api/plan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({}, vals, app.state.ai)) });
-      renderPlan(bodyEl, data, vals);
+      const st = await app.api('/api/plan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({}, vals, app.state.ai)) });
+      localStorage.setItem('jyh_last_plan', JSON.stringify({ jobId: st.jobId, vals, result: null, ts: Date.now() }));
+      app.pollJob(st.jobId, {
+        onDone: (result) => { renderPlan(bodyEl, result, vals); savePlan(vals, result); },
+        onError: (msg) => { bodyEl.innerHTML = `<p style="padding:40px;text-align:center;color:var(--danger)">生成失败：${app.esc(msg)}</p>`; }
+      });
     } catch (e) {
       bodyEl.innerHTML = `<p style="padding:40px;text-align:center;color:var(--danger)">生成失败：${app.esc(e.message)}</p>`;
     }
+  }
+  function restorePlan() {
+    const bodyEl = document.getElementById('planBody');
+    const empty = document.getElementById('planEmpty');
+    if (!bodyEl) return;
+    try {
+      const p = JSON.parse(localStorage.getItem('jyh_last_plan') || 'null');
+      if (!p) return;
+      if (p.result) {
+        empty.hidden = true; bodyEl.hidden = false;
+        renderPlan(bodyEl, p.result, p.vals);
+        return;
+      }
+      if (p.jobId) {
+        empty.hidden = true; bodyEl.hidden = false;
+        bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)">⏳ 上次的生成任务还在后台跑，正在恢复…</p>';
+        app.pollJob(p.jobId, {
+          onDone: (result) => { renderPlan(bodyEl, result, p.vals); savePlan(p.vals, result); },
+          onError: () => { bodyEl.innerHTML = '<p style="padding:40px;text-align:center;color:var(--ink-soft)">上次任务已结束或过期，请重新生成。</p>'; }
+        });
+      }
+    } catch (e) { /* 忽略 */ }
   }
   function renderPlan(el, data, vals) {
     const dest = app.state.destinations.find((d) => d.id === vals.destinationId) || {};

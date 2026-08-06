@@ -19,6 +19,8 @@
         if (v.children !== undefined) document.getElementById('pf-children').value = v.children;
         generatePacking(formValues());
       } catch (e) { /* 忽略 */ }
+    } else {
+      restorePack();
     }
   };
 
@@ -49,22 +51,51 @@
     });
   }
 
+  function savePack(vals, result) {
+    localStorage.setItem('jyh_last_pack', JSON.stringify({ vals, result, ts: Date.now() }));
+  }
   async function generatePacking(vals) {
     const empty = document.getElementById('resultEmpty');
     const bodyEl = document.getElementById('resultBody');
     empty.hidden = true;
     bodyEl.hidden = false;
-    bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)">🤖 正在生成打包清单，请稍候…</p>';
+    bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)">⏳ 正在后台生成打包清单…<br/>你可以放心切到别的页面，回来会自动恢复</p>';
     try {
-      const data = await app.api('/api/recommend', {
+      const st = await app.api('/api/recommend', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(Object.assign({}, vals, app.state.ai))
       });
-      renderResult(bodyEl, data, vals);
+      localStorage.setItem('jyh_last_pack', JSON.stringify({ jobId: st.jobId, vals, result: null, ts: Date.now() }));
+      app.pollJob(st.jobId, {
+        onDone: (result) => { renderResult(bodyEl, result, vals); savePack(vals, result); },
+        onError: (msg) => { bodyEl.innerHTML = `<p style="padding:40px;text-align:center;color:var(--danger)">生成失败：${app.esc(msg)}</p>`; }
+      });
     } catch (e) {
       bodyEl.innerHTML = `<p style="padding:40px;text-align:center;color:var(--danger)">生成失败：${app.esc(e.message)}</p>`;
     }
+  }
+  function restorePack() {
+    const bodyEl = document.getElementById('resultBody');
+    const empty = document.getElementById('resultEmpty');
+    if (!bodyEl) return;
+    try {
+      const p = JSON.parse(localStorage.getItem('jyh_last_pack') || 'null');
+      if (!p) return;
+      if (p.result) {
+        empty.hidden = true; bodyEl.hidden = false;
+        renderResult(bodyEl, p.result, p.vals);
+        return;
+      }
+      if (p.jobId) {
+        empty.hidden = true; bodyEl.hidden = false;
+        bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)">⏳ 上次的生成任务还在后台跑，正在恢复…</p>';
+        app.pollJob(p.jobId, {
+          onDone: (result) => { renderResult(bodyEl, result, p.vals); savePack(p.vals, result); },
+          onError: () => { bodyEl.innerHTML = '<p style="padding:40px;text-align:center;color:var(--ink-soft)">上次任务已结束或过期，请重新生成。</p>'; }
+        });
+      }
+    } catch (e) { /* 忽略 */ }
   }
   function checkedKey(vals) { return `jyh_ck_${vals.destinationId}_${vals.month}`; }
   function isChecked(vals, name) {

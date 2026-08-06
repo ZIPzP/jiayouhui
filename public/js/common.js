@@ -53,6 +53,20 @@
     window.speechSynthesis.speak(u);
   }
 
+  /** 轮询后台任务，直到完成（AI 生成期间可放心离开页面） */
+  async function pollJob(jobId, { interval = 2000, timeout = 240000, onDone, onError } = {}) {
+    const started = Date.now();
+    while (Date.now() - started < timeout) {
+      try {
+        const j = await api('/api/job?id=' + encodeURIComponent(jobId));
+        if (j.status === 'done') { onDone(j.result); return; }
+        if (j.status === 'error') { onError(j.error || '生成失败'); return; }
+      } catch (e) { /* 继续轮询 */ }
+      await new Promise((r) => setTimeout(r, interval));
+    }
+    onError('生成超时，请重试');
+  }
+
   /* ---------------- 长辈模式 ---------------- */
   function applyElderly() {
     document.documentElement.classList.toggle('elderly', state.elderly);
@@ -372,7 +386,7 @@
   }
 
   window.__jyhImgFallback = imgFallback;
-  window.app = { state, api, esc, toast, speak, $, $$, imgFallback, setBg, updateAiHints };
+  window.app = { state, api, esc, toast, speak, $, $$, imgFallback, setBg, updateAiHints, pollJob };
   if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = () => {};
 
   document.addEventListener('DOMContentLoaded', init);

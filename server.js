@@ -41,6 +41,17 @@ function sendJson(res, status, obj) {
   res.end(body);
 }
 
+/** 后台任务：AI 生成在服务器后台继续，客户端可随时轮询结果 */
+const jobs = new Map();
+function runJob(fn) {
+  const id = 'j' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  jobs.set(id, { status: 'running', createdAt: Date.now() });
+  Promise.resolve()
+    .then(fn)
+    .then((result) => { const j = jobs.get(id); if (j) { j.status = 'done'; j.result = result; } })
+    .catch((e) => { const j = jobs.get(id); if (j) { j.status = 'error'; j.error = String((e && e.message) || e); } });
+  return id;
+}
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let data = '';
@@ -116,8 +127,8 @@ async function handleApi(req, res, pathname) {
       interests: Array.isArray(body.interests) ? body.interests : []
     };
     const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model };
-    const result = await rec.recommend(params, overrides);
-    return sendJson(res, 200, result);
+    const jobId = runJob(() => rec.recommend(params, overrides));
+    return sendJson(res, 200, { jobId, status: 'running' });
   }
 
   // POST /api/ai-guide —— AI 生成目的地攻略
@@ -158,8 +169,8 @@ async function handleApi(req, res, pathname) {
       notes: String(body.notes || '').trim()
     };
     const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model };
-    const result = await planner.buildPlan(params, overrides);
-    return sendJson(res, 200, result);
+    const jobId = runJob(() => planner.buildPlan(params, overrides));
+    return sendJson(res, 200, { jobId, status: 'running' });
   }
 
   // POST /api/chat —— AI 主理人问答
@@ -171,6 +182,14 @@ async function handleApi(req, res, pathname) {
     const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model };
     const result = await planner.chatReply(message, Array.isArray(body.history) ? body.history : [], overrides);
     return sendJson(res, 200, result);
+  }
+
+  // GET /api/job?id=xxx —— 轮询后台任务结果
+  if (pathname === '/api/job' && req.method === 'GET') {
+    const q = url.parse(req.url, true).query;
+    const job = jobs.get(String(q.id || ''));
+    if (!job) return sendJson(res, 404, { error: '任务不存在或已过期' });
+    return sendJson(res, 200, { jobId: String(q.id || ''), status: job.status, result: job.result || null, error: job.error || null });
   }
 
   // GET /api/health —— 含 AI Key 来源状态（不返回 Key 本身）
