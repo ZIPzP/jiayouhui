@@ -167,6 +167,15 @@ node server.js
 - [ ] 用户登录与家庭档案（慢性病、过敏等健康档案）
 - [ ] 部署到服务器 / 小程序
 
+## 邀请码（让邀请的用户使用你的 API）
+
+在「⚙️ 设置」里可以：
+- **🔑 设置邀请码**：把码发给邀请的朋友，只有输对邀请码的人才能进入网站，并使用你的 DeepSeek API（配额只被邀请的人消耗）
+- **⬆️ 把本机 Key 内置到服务器**：一键把浏览器里已保存的 Key 搬进服务器（`config.local.json`，不入 git），所有用户（含手机端）共用，无需各自填 Key
+- 邀请码/Key 的设置接口**仅限本机**访问，外部无法篡改
+
+命令行方式同样可用：`node tools/set-passcode.js 你的邀请码` / `node tools/set-key.js sk-xxx`
+
 ## 访问口令（部署到公网时强烈建议启用）
 
 - 启用：`node tools/set-passcode.js 你的口令`（口令写入 `config.local.json`，不入 git）

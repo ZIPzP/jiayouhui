@@ -8,7 +8,8 @@
     destinations: [],
     elderly: localStorage.getItem('jyh_elderly') === '1',
     ai: JSON.parse(localStorage.getItem('jyh_ai') || '{}'),
-    serverKey: false
+    serverKey: false,
+    accessEnabled: false
   };
 
   /* ---------------- 工具 ---------------- */
@@ -133,6 +134,17 @@
       if (storeBtn) storeBtn.hidden = false;
       if (clearBtn) clearBtn.hidden = true;
     }
+    const accStatus = $('#accStatus');
+    if (accStatus) {
+      accStatus.hidden = false;
+      accStatus.textContent = state.accessEnabled ? '🔒 已启用：只有输入邀请码的人才能进入使用' : '🔓 未启用：任何人可直接访问（推荐启用）';
+      const accClear = $('#accClear');
+      if (accClear) accClear.hidden = !state.accessEnabled;
+      const accInput = $('#accInputGroup');
+      if (accInput) accInput.hidden = state.accessEnabled;
+    }
+    const keyBtn = $('#keyToServer');
+    if (keyBtn) keyBtn.hidden = state.serverKey || !state.ai.apiKey;
   }
 
   function updateAiHints() {
@@ -152,6 +164,8 @@
     try {
       const h = await api('/api/health');
       state.serverKey = !!h.hasServerKey;
+      const st = await api('/api/auth/status');
+      state.accessEnabled = !!st.enabled;
     } catch (e) { /* 忽略 */ }
     updateAiHints();
     updateAiModal();
@@ -212,6 +226,40 @@
         toast('已清除服务端 Key');
       } catch (e) { toast('清除失败：' + e.message); }
     });
+    const accSave = $('#accSave');
+    if (accSave) accSave.addEventListener('click', async () => {
+      const code = $('#accCode').value.trim();
+      if (!code) { toast('请输入邀请码'); return; }
+      try {
+        await api('/api/access', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ passcode: code }) });
+        state.accessEnabled = true;
+        $('#accCode').value = '';
+        updateAiModal();
+        toast('🔑 邀请码已启用：' + code);
+      } catch (e) { toast('设置失败：' + e.message); }
+    });
+    const accClear = $('#accClear');
+    if (accClear) accClear.addEventListener('click', async () => {
+      try {
+        await api('/api/access', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ passcode: '' }) });
+        state.accessEnabled = false;
+        updateAiModal();
+        toast('已关闭邀请码（所有人可访问）');
+      } catch (e) { toast('操作失败：' + e.message); }
+    });
+    const k2s = $('#keyToServer');
+    if (k2s) k2s.addEventListener('click', async () => {
+      const k = state.ai.apiKey;
+      if (!k) { toast('本机没有已保存的 Key'); return; }
+      try {
+        await api('/api/ai-key', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ apiKey: k }) });
+        localStorage.removeItem('jyh_ai');
+        state.ai = {};
+        state.serverKey = true;
+        updateAiHints(); updateAiModal();
+        toast('⬆️ 已把本机 Key 内置到服务器，所有用户共享该 Key');
+      } catch (e) { toast('操作失败：' + e.message); }
+    });
     const presets = $('#providerPresets');
     if (presets) presets.addEventListener('click', (e) => {
       const btn = e.target.closest('.chip[data-provider]');
@@ -233,8 +281,8 @@
       html += `<div id="authGate" class="auth-gate" hidden>
         <div class="auth-card card">
           <div class="auth-logo">🏡 家游汇</div>
-          <p class="auth-sub">家庭旅行推荐与攻略 · 请输入访问口令</p>
-          <input id="authPasscode" type="password" class="input" placeholder="访问口令" autocomplete="off" />
+          <p class="auth-sub">家庭旅行推荐与攻略 · 请输入邀请码</p>
+          <input id="authPasscode" type="password" class="input" placeholder="邀请码" autocomplete="off" />
           <button id="authSubmit" class="btn btn-primary btn-lg btn-block" type="button" style="margin-top:12px">进入</button>
           <p class="form-hint" id="authError" style="color:var(--danger);text-align:center" hidden>口令错误，请重试</p>
         </div>
@@ -269,6 +317,16 @@
             <input id="ai-model" type="text" class="input" placeholder="deepseek-chat" />
           </div>
           <button id="ai-save" class="btn btn-primary btn-lg btn-block" type="button">保存设置</button>
+          <div style="border-top:1px solid var(--line);margin:18px 0 12px"></div>
+          <h4 style="margin-bottom:6px">🔑 邀请码（谁可以用你的 API）</h4>
+          <p class="form-hint">把邀请码发给邀请的朋友；他们打开网站输入邀请码后，就能使用你的 DeepSeek API。未输邀请码的人进不来。</p>
+          <div id="accStatus" class="ai-server-status" hidden></div>
+          <div class="form-group" id="accInputGroup">
+            <input id="accCode" type="text" class="input" placeholder="设置你的邀请码，如：888888" autocomplete="off" />
+          </div>
+          <button id="accSave" class="btn btn-primary btn-block" type="button">🔑 保存并启用邀请码</button>
+          <button id="accClear" class="btn btn-ghost btn-block" type="button" hidden>关闭邀请码（所有人可访问）</button>
+          <button id="keyToServer" class="btn btn-ghost btn-block" type="button" hidden>⬆️ 把本机已保存的 Key 内置到服务器（所有用户共享）</button>
         </div>
       </div>`;
     }
