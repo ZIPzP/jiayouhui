@@ -1,0 +1,16 @@
+{
+  "updatedAt": "2026-08-06",
+  "note": "本地趋势库（演示数据）：用于在未接入真实数据源时展示平台热度效果；可扩展 collector 数据源接入真实平台。",
+  "items": [
+    { "rank": 1, "name": "三亚", "heat": 98, "trend": "+12%", "source": "综合热度", "reason": "避寒/亲子海滨度假，暑期与春节双高峰" },
+    { "rank": 2, "name": "成都", "heat": 95, "trend": "+9%", "source": "综合热度", "reason": "熊猫研学+美食休闲，家庭出游持续走热" },
+    { "rank": 3, "name": "北京", "heat": 93, "trend": "+6%", "source": "综合热度", "reason": "博物馆热+暑期研学，历史文化亲子游" },
+    { "rank": 4, "name": "大理", "heat": 90, "trend": "+15%", "source": "综合热度", "reason": "环洱海旅拍与慢生活，年轻人带父母出行增多" },
+    { "rank": 5, "name": "西安", "heat": 88, "trend": "+7%", "source": "综合热度", "reason": "汉服体验+美食，古都文化深度游" },
+    { "rank": 6, "name": "张家界", "heat": 85, "trend": "+5%", "source": "综合热度", "reason": "奇峰云海，避暑与自然摄影" },
+    { "rank": 7, "name": "杭州", "heat": 83, "trend": "+4%", "source": "综合热度", "reason": "西湖+茶园，江浙沪周边亲子游主力" },
+    { "rank": 8, "name": "青岛", "heat": 80, "trend": "+8%", "source": "综合热度", "reason": "海滨避暑+啤酒节，夏季热门" },
+    { "rank": 9, "name": "丽江", "heat": 76, "trend": "+3%", "source": "综合热度", "reason": "古城+雪山，人文自然兼备" },
+    { "rank": 10, "name": "重庆", "heat": 74, "trend": "+10%", "source": "综合热度", "reason": "8D山城夜景+火锅，网红打卡热潮" }
+  ]
+}

@@ -1,0 +1,410 @@
+{
+  "beijing": {
+    "cover": {
+      "src": "https://images.unsplash.com/photo-1510332981392-36692ea3a195?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGdyZWF0JTIwd2FsbCUyMG9mJTIwY2hpbmF8ZW58MHx8MHx8fDA%3D",
+      "alt": "Great Wall of China"
+    },
+    "gallery": [
+      {
+        "src": "https://images.unsplash.com/photo-1547150492-da7ff1742941?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fGdyZWF0JTIwd2FsbCUyMG9mJTIwY2hpbmF8ZW58MHx8MHx8fDA%3D",
+        "alt": "people on Great Wall of China during daytime"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1668333140118-84e827fe42ca?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGdyZWF0JTIwd2FsbCUyMG9mJTIwY2hpbmF8ZW58MHx8MHx8fDA%3D",
+        "alt": "a stone wall on a hill"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1509265226434-5f4ddbdb2f7a?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGZvcmJpZGRlbiUyMGNpdHklMjBiZWlqaW5nfGVufDB8fDB8fHww",
+        "alt": "Forbidden City"
+      }
+    ],
+    "highlights": [
+      {
+        "src": "https://images.unsplash.com/photo-1509265226434-5f4ddbdb2f7a?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGZvcmJpZGRlbiUyMGNpdHklMjBiZWlqaW5nfGVufDB8fDB8fHww",
+        "alt": "Forbidden City"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1510332981392-36692ea3a195?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGdyZWF0JTIwd2FsbCUyMG9mJTIwY2hpbmF8ZW58MHx8MHx8fDA%3D",
+        "alt": "Great Wall of China"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1604844252839-f9c364adacdd?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGZvcmJpZGRlbiUyMGNpdHklMjBiZWlqaW5nfGVufDB8fDB8fHww",
+        "alt": "brown and black temple near body of water during daytime"
+      }
+    ]
+  },
+  "hangzhou": {
+    "cover": {
+      "src": "https://images.unsplash.com/photo-1558422719-d6982435e4e4?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8d2VzdCUyMGxha2UlMjBoYW5nemhvdXxlbnwwfHwwfHx8MA%3D%3D",
+      "alt": "gray pergula between green grass"
+    },
+    "gallery": [
+      {
+        "src": "https://images.unsplash.com/photo-1710731247622-22a95a0dc656?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHdlc3QlMjBsYWtlJTIwaGFuZ3pob3V8ZW58MHx8MHx8fDA%3D",
+        "alt": "a building sitting on top of a body of water"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1629536666798-d5b3565cd728?fm=jpg&q=80&w=1200&auto=format&fit=crop",
+        "alt": "green trees near body of water (West Lake)"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1648874856218-6e25adc4e88e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bG9uZ2ppbmclMjB0ZWF8ZW58MHx8MHx8fDA%3D",
+        "alt": "a person in a straw hat picking tea leaves"
+      }
+    ],
+    "highlights": [
+      {
+        "src": "https://images.unsplash.com/photo-1629536666798-d5b3565cd728?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHdlc3QlMjBsYWtlJTIwaGFuZ3pob3V8ZW58MHx8MHx8fDA%3D",
+        "alt": "green trees near body of water during daytime"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1648874856218-6e25adc4e88e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bG9uZ2ppbmclMjB0ZWF8ZW58MHx8MHx8fDA%3D",
+        "alt": "a person in a straw hat picking tea leaves"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1729177859947-8a707e0b0b38?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fHdlc3QlMjBsYWtlJTIwaGFuZ3pob3V8ZW58MHx8MHx8fDA%3D",
+        "alt": "A house sitting on top of a body of water"
+      }
+    ]
+  },
+  "sanya": {
+    "cover": {
+      "src": "https://images.unsplash.com/photo-1599929996667-d0b65fa85647?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHNhbnlhJTIwaGFpbmFufGVufDB8fDB8fHww",
+      "alt": "sea under white clouds during daytime"
+    },
+    "gallery": [
+      {
+        "src": "https://images.unsplash.com/photo-1601821255237-8a2424646772?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8c2FueWElMjBoYWluYW58ZW58MHx8MHx8fDA%3D",
+        "alt": "rocky shore with ocean waves during daytime"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1599975225934-a60267556759?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8c2FueWElMjBoYWluYW58ZW58MHx8MHx8fDA%3D",
+        "alt": "ocean waves crashing on shore during sunset"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1781352256010-3007cc4e0c1a?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8c2FueWElMjBiZWFjaHxlbnwwfHwwfHx8MA%3D%3D",
+        "alt": "Multiple lines of blue ocean waves."
+      }
+    ],
+    "highlights": [
+      {
+        "src": "https://images.unsplash.com/photo-1781352256010-3007cc4e0c1a?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8c2FueWElMjBiZWFjaHxlbnwwfHwwfHx8MA%3D%3D",
+        "alt": "Multiple lines of blue ocean waves."
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1601821255237-8a2424646772?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8c2FueWElMjBoYWluYW58ZW58MHx8MHx8fDA%3D",
+        "alt": "rocky shore with ocean waves during daytime"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1599975225934-a60267556759?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8c2FueWElMjBoYWluYW58ZW58MHx8MHx8fDA%3D",
+        "alt": "ocean waves crashing on shore during sunset"
+      }
+    ]
+  },
+  "chengdu": {
+    "cover": {
+      "src": "https://images.unsplash.com/photo-1625859043880-56acbcb6a6ac?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Z2lhbnQlMjBwYW5kYSUyMGNoZW5nZHV8ZW58MHx8MHx8fDA%3D",
+      "alt": "panda bear on brown tree branch during daytime"
+    },
+    "gallery": [
+      {
+        "src": "https://images.unsplash.com/photo-1526716173434-a1b560f2065d?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Z2lhbnQlMjBwYW5kYSUyMGNoZW5nZHV8ZW58MHx8MHx8fDA%3D",
+        "alt": "Panda bear sitting on bamboo sticks surrounded with trees"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1727776151618-3ad05bd3a96f?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGdpYW50JTIwcGFuZGElMjBjaGVuZ2R1fGVufDB8fDB8fHww",
+        "alt": "A panda bear sitting on top of a tree branch"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1725076021478-173130f22f06?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y2hlbmdkdSUyMGNoaW5hfGVufDB8fDB8fHww",
+        "alt": "A bridge over a body of water with buildings in the background"
+      }
+    ],
+    "highlights": [
+      {
+        "src": "https://images.unsplash.com/photo-1625859043880-56acbcb6a6ac?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Z2lhbnQlMjBwYW5kYSUyMGNoZW5nZHV8ZW58MHx8MHx8fDA%3D",
+        "alt": "panda bear on brown tree branch during daytime"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1709560331476-94206986273c?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Y2hlbmdkdSUyMGNoaW5hfGVufDB8fDB8fHww",
+        "alt": "a large sculpture of a panda bear in front of a building"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1740754588312-08365583271d?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGNoZW5nZHUlMjBjaGluYXxlbnwwfHwwfHx8MA%3D%3D",
+        "alt": "A bridge over a body of water with buildings in the background"
+      }
+    ]
+  },
+  "guilin": {
+    "cover": {
+      "src": "https://images.unsplash.com/photo-1773318901379-aac92fdf5611?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGd1aWxpbiUyMGxpJTIwcml2ZXJ8ZW58MHx8MHx8fDA%3D",
+      "alt": "Karst mountains and river near a village at sunrise"
+    },
+    "gallery": [
+      {
+        "src": "https://images.unsplash.com/photo-1588423886412-914102b72f96?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Z3VpbGluJTIwbGklMjByaXZlcnxlbnwwfHwwfHx8MA%3D%3D",
+        "alt": "green trees near mountain during daytime"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1585770610195-264c21dc2dfc?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGd1aWxpbiUyMGxpJTIwcml2ZXJ8ZW58MHx8MHx8fDA%3D",
+        "alt": "body of water near mountain during daytime"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1659233297460-55b6532562f3?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fGd1aWxpbiUyMGxpJTIwcml2ZXJ8ZW58MHx8MHx8fDA%3D",
+        "alt": "a person looking out over Li River"
+      }
+    ],
+    "highlights": [
+      {
+        "src": "https://images.unsplash.com/photo-1659233297460-55b6532562f3?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fGd1aWxpbiUyMGxpJTIwcml2ZXJ8ZW58MHx8MHx8fDA%3D",
+        "alt": "a person looking out over Li River"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1589502929089-931735c691a4?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHlhbmdzaHVvJTIwY2hpbmF8ZW58MHx8MHx8fDA%3D",
+        "alt": "yellow and orange kayak on green grass field near body of water during daytime"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1615077967405-29cd8915acbf?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8eWFuZ3NodW8lMjBjaGluYXxlbnwwfHwwfHx8MA%3D%3D",
+        "alt": "houses near body of water during daytime"
+      }
+    ]
+  },
+  "xian": {
+    "cover": {
+      "src": "https://images.unsplash.com/photo-1527922891260-918d42a4efc8?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dGVycmFjb3R0YSUyMGFybXl8ZW58MHx8MHx8fDA%3D",
+      "alt": "Terracotta soldiers"
+    },
+    "gallery": [
+      {
+        "src": "https://images.unsplash.com/photo-1602086232476-ff8c246b3438?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8dGVycmFjb3R0YSUyMGFybXl8ZW58MHx8MHx8fDA%3D",
+        "alt": "people walking on brown sand"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1737418829450-ae4884a517f4?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fHRlcnJhY290dGElMjBhcm15fGVufDB8fDB8fHww",
+        "alt": "A statue of a man holding a sword in a museum"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1598538982380-c6d6fcc1afc1?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8eGlhbiUyMGNpdHklMjB3YWxsfGVufDB8fDB8fHww",
+        "alt": "people walking on sidewalk during daytime"
+      }
+    ],
+    "highlights": [
+      {
+        "src": "https://images.unsplash.com/photo-1527922891260-918d42a4efc8?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dGVycmFjb3R0YSUyMGFybXl8ZW58MHx8MHx8fDA%3D",
+        "alt": "Terracotta soldiers"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1598538982380-c6d6fcc1afc1?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8eGlhbiUyMGNpdHklMjB3YWxsfGVufDB8fDB8fHww",
+        "alt": "people walking on sidewalk during daytime"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1585811448871-ed966b624273?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fHRlcnJhY290dGElMjBhcm15fGVufDB8fDB8fHww",
+        "alt": "people walking on brown concrete bricks"
+      }
+    ]
+  },
+  "zhangjiajie": {
+    "cover": {
+      "src": "https://images.unsplash.com/photo-1762087122192-c089f7c1c623?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHpoYW5namlhamllJTIwbmF0aW9uYWwlMjBmb3Jlc3QlMjBwYXJrfGVufDB8fDB8fHww",
+      "alt": "Misty mountains with unique rock formations and lush trees."
+    },
+    "gallery": [
+      {
+        "src": "https://images.unsplash.com/photo-1514920735211-8c697444a248?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8emhhbmdqaWFqaWV8ZW58MHx8MHx8fDA%3D",
+        "alt": "aerial view of mountains"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1659157198284-e842e55a93d4?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8emhhbmdqaWFqaWV8ZW58MHx8MHx8fDA%3D",
+        "alt": "a stone bridge over a river"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1569396364521-0fad3682a389?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8emhhbmdqaWFqaWUlMjBuYXRpb25hbCUyMGZvcmVzdCUyMHBhcmt8ZW58MHx8MHx8fDA%3D",
+        "alt": "gray mountains under white sky"
+      }
+    ],
+    "highlights": [
+      {
+        "src": "https://images.unsplash.com/photo-1762087122192-c089f7c1c623?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHpoYW5namlhamllJTIwbmF0aW9uYWwlMjBmb3Jlc3QlMjBwYXJrfGVufDB8fDB8fHww",
+        "alt": "Misty mountains with unique rock formations and lush trees."
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1569396364521-0fad3682a389?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8emhhbmdqaWFqaWUlMjBuYXRpb25hbCUyMGZvcmVzdCUyMHBhcmt8ZW58MHx8MHx8fDA%3D",
+        "alt": "gray mountains under white sky"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1659157198284-e842e55a93d4?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8emhhbmdqaWFqaWV8ZW58MHx8MHx8fDA%3D",
+        "alt": "a stone bridge over a river"
+      }
+    ]
+  },
+  "qingdao": {
+    "cover": {
+      "src": "https://images.unsplash.com/photo-1718442759033-8ea95377e6ef?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8cWluZ2RhbyUyMGNoaW5hfGVufDB8fDB8fHww",
+      "alt": "a group of people standing on a pier next to the ocean"
+    },
+    "gallery": [
+      {
+        "src": "https://images.unsplash.com/photo-1739436598532-f22747099b6f?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cWluZ2RhbyUyMGNoaW5hfGVufDB8fDB8fHww",
+        "alt": "An aerial view of a city and a body of water"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1689143626749-3c2ab3ebca45?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cWluZ2RhbyUyMGNoaW5hfGVufDB8fDB8fHww",
+        "alt": "a view of a city and a body of water"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1710172899520-1db2e7cf6e32?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8emhhbnFpYW8lMjBwaWVyJTIwcWluZ2Rhb3xlbnwwfHwwfHx8MA%3D%3D",
+        "alt": "a body of water with a city in the background"
+      }
+    ],
+    "highlights": [
+      {
+        "src": "https://images.unsplash.com/photo-1718442759033-8ea95377e6ef?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8cWluZ2RhbyUyMGNoaW5hfGVufDB8fDB8fHww",
+        "alt": "a group of people standing on a pier next to the ocean"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1689143626749-3c2ab3ebca45?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cWluZ2RhbyUyMGNoaW5hfGVufDB8fDB8fHww",
+        "alt": "a view of a city and a body of water"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1746520316748-6452bd7f4ca5?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8emhhbnFpYW8lMjBwaWVyJTIwcWluZ2Rhb3xlbnwwfHwwfHx8MA%3D%3D",
+        "alt": "A skyline of modern buildings sits by the water."
+      }
+    ]
+  },
+  "lijiang": {
+    "cover": {
+      "src": "https://images.unsplash.com/photo-1510001618818-4b4e3d86bf0f?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bGlqaWFuZyUyMG9sZCUyMHRvd258ZW58MHx8MHx8fDA%3D",
+      "alt": "brown wooden houses beside river"
+    },
+    "gallery": [
+      {
+        "src": "https://images.unsplash.com/photo-1739855877494-bc4f7a6d9204?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGxpamlhbmclMjBvbGQlMjB0b3dufGVufDB8fDB8fHww",
+        "alt": "An aerial view of a courtyard in a chinese city"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1710176183906-0cdf2dd6f194?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGxpamlhbmclMjBvbGQlMjB0b3dufGVufDB8fDB8fHww",
+        "alt": "an aerial view of a city with mountains in the background"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1739678748055-9cfc1edfd2a0?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHl1bG9uZyUyMHNub3clMjBtb3VudGFpbnxlbnwwfHwwfHx8MA%3D%3D",
+        "alt": "A mountain range with a body of water in front of it"
+      }
+    ],
+    "highlights": [
+      {
+        "src": "https://images.unsplash.com/photo-1510001618818-4b4e3d86bf0f?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bGlqaWFuZyUyMG9sZCUyMHRvd258ZW58MHx8MHx8fDA%3D",
+        "alt": "brown wooden houses beside river"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1739678748055-9cfc1edfd2a0?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHl1bG9uZyUyMHNub3clMjBtb3VudGFpbnxlbnwwfHwwfHx8MA%3D%3D",
+        "alt": "A mountain range with a body of water in front of it"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1639712816249-143cf3bf5ba7?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8eXVsb25nJTIwc25vdyUyMG1vdW50YWlufGVufDB8fDB8fHww",
+        "alt": "a group of people standing on top of a mountain"
+      }
+    ]
+  },
+  "shanghai": {
+    "cover": {
+      "src": "https://images.unsplash.com/photo-1474181487882-5abf3f0ba6c2?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8c2hhbmdoYWklMjBidW5kfGVufDB8fDB8fHww",
+      "alt": "architectural photograph of lighted city sky"
+    },
+    "gallery": [
+      {
+        "src": "https://images.unsplash.com/photo-1574504500022-de9a6309a501?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHNoYW5naGFpJTIwYnVuZHxlbnwwfHwwfHx8MA%3D%3D",
+        "alt": "Shanghai Financial District, China"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1612756336279-b9eb5b6b71d9?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHNoYW5naGFpJTIwYnVuZHxlbnwwfHwwfHx8MA%3D%3D",
+        "alt": "city skyline during night time"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1764777447121-b80eee46f829?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHNoYW5naGFpJTIweXUlMjBnYXJkZW58ZW58MHx8MHx8fDA%3D",
+        "alt": "Traditional chinese architecture with a pond and garden"
+      }
+    ],
+    "highlights": [
+      {
+        "src": "https://images.unsplash.com/photo-1474181487882-5abf3f0ba6c2?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8c2hhbmdoYWklMjBidW5kfGVufDB8fDB8fHww",
+        "alt": "architectural photograph of lighted city sky"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1574504500022-de9a6309a501?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHNoYW5naGFpJTIwYnVuZHxlbnwwfHwwfHx8MA%3D%3D",
+        "alt": "Shanghai Financial District, China"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1764777447121-b80eee46f829?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHNoYW5naGFpJTIweXUlMjBnYXJkZW58ZW58MHx8MHx8fDA%3D",
+        "alt": "Traditional chinese architecture with a pond and garden"
+      }
+    ]
+  },
+  "dali": {
+    "cover": {
+      "src": "https://images.unsplash.com/photo-1678620071844-8377e26f1944?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZXJoYWklMjBsYWtlfGVufDB8fDB8fHww",
+      "alt": "a town on a lake with mountains in the background"
+    },
+    "gallery": [
+      {
+        "src": "https://images.unsplash.com/photo-1645157668565-45afc90a3ed2?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8ZXJoYWklMjBsYWtlfGVufDB8fDB8fHww",
+        "alt": "a small island in the middle of a body of water"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1690529070388-e259c3c31900?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGVyaGFpJTIwbGFrZXxlbnwwfHwwfHx8MA%3D%3D",
+        "alt": "a body of water surrounded by land and mountains"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1745989498560-a1f1cd9fa17a?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGFsaSUyMG9sZCUyMHRvd258ZW58MHx8MHx8fDA%3D",
+        "alt": "A beautiful chinese pagoda by the water."
+      }
+    ],
+    "highlights": [
+      {
+        "src": "https://images.unsplash.com/photo-1678620071844-8377e26f1944?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZXJoYWklMjBsYWtlfGVufDB8fDB8fHww",
+        "alt": "a town on a lake with mountains in the background"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1784534922907-ba17e790010a?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8ZGFsaSUyMG9sZCUyMHRvd258ZW58MHx8MHx8fDA%3D",
+        "alt": "Red and yellow lanterns adorn traditional chinese buildings."
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1690529070388-e259c3c31900?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGVyaGFpJTIwbGFrZXxlbnwwfHwwfHx8MA%3D%3D",
+        "alt": "a body of water surrounded by land and mountains"
+      }
+    ]
+  },
+  "chongqing": {
+    "cover": {
+      "src": "https://images.unsplash.com/photo-1696610647747-8d724ad3783b?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Y2hvbmdxaW5nJTIwaG9uZ3lhJTIwY2F2ZXxlbnwwfHwwfHx8MA%3D%3D",
+      "alt": "a large bridge over a river with a city skyline in the background"
+    },
+    "gallery": [
+      {
+        "src": "https://images.unsplash.com/photo-1752106685839-45a96e4ead1b?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Y2hvbmdxaW5nJTIwbmlnaHR8ZW58MHx8MHx8fDA%3D",
+        "alt": "Nighttime skyline with a bright red bridge."
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1620321281938-2522ba59a1df?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8Y2hvbmdxaW5nJTIwbmlnaHR8ZW58MHx8MHx8fDA%3D",
+        "alt": "red bridge over body of water during night time"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1785804611612-2762cc69498e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGNob25ncWluZyUyMG5pZ2h0fGVufDB8fDB8fHww",
+        "alt": "Busy city street at night with traffic and neon signs."
+      }
+    ],
+    "highlights": [
+      {
+        "src": "https://images.unsplash.com/photo-1752106685839-45a96e4ead1b?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Y2hvbmdxaW5nJTIwbmlnaHR8ZW58MHx8MHx8fDA%3D",
+        "alt": "Nighttime skyline with a bright red bridge."
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1716146705025-dadcab92b491?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2hvbmdxaW5nJTIwaG9uZ3lhJTIwY2F2ZXxlbnwwfHwwfHx8MA%3D%3D",
+        "alt": "a very tall building with a lot of lights on it"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1785804611612-2762cc69498e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGNob25ncWluZyUyMG5pZ2h0fGVufDB8fDB8fHww",
+        "alt": "Busy city street at night with traffic and neon signs."
+      }
+    ]
+  }
+}

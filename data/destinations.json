@@ -1,0 +1,567 @@
+{
+  "destinations": [
+    {
+      "id": "beijing",
+      "name": "北京",
+      "enName": "Beijing",
+      "province": "北京",
+      "emoji": "🏯",
+      "accent": "#c0392b",
+      "tagline": "登长城、逛故宫，带爸妈孩子一起触摸千年古都",
+      "tags": [
+        "历史",
+        "文化",
+        "亲子",
+        "老人友好"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋"
+      ],
+      "suggestDays": "3-5 天",
+      "climate": "四季分明，春秋天高气爽最舒适，冬季干冷，夏季炎热",
+      "cover": "/images/beijing/cover.jpg",
+      "gallery": [
+        "/images/beijing/gallery-1.jpg",
+        "/images/beijing/gallery-2.jpg",
+        "/images/beijing/gallery-3.jpg"
+      ],
+      "highlights": [
+        {
+          "title": "故宫·紫禁城",
+          "text": "世界现存最大木结构宫殿群，红墙黄瓦适合全家拍照，可提前预约轮椅服务。",
+          "image": "/images/beijing/hl-1.jpg"
+        },
+        {
+          "title": "八达岭长城",
+          "text": "“不到长城非好汉”，缆车往返省力，老人小孩也能轻松登顶。",
+          "image": "/images/beijing/hl-2.jpg"
+        },
+        {
+          "title": "天坛公园",
+          "text": "本地老人最爱的晨练地，古柏参天、步道平缓，适合陪长辈散步。",
+          "image": "/images/beijing/hl-3.jpg"
+        }
+      ],
+      "elderlyFriendly": "故宫、天坛等核心景区步道平缓、可租轮椅，建议错峰出行并提前在线预约门票。",
+      "packingNote": "春秋带薄外套，冬季务必厚羽绒服+帽子手套；市内景点步行多，给老人准备舒适防滑鞋。",
+      "description": "北京是带孩子和父母感受中华文化的首选：故宫的威严、长城的壮阔、胡同里的烟火气，一次旅程收获满满的家族回忆。地铁覆盖广、景点设施完善，对老人非常友好。"
+    },
+    {
+      "id": "hangzhou",
+      "name": "杭州",
+      "enName": "Hangzhou",
+      "province": "浙江",
+      "emoji": "🌸",
+      "accent": "#16a085",
+      "tagline": "西湖边慢慢走，茶园里喝杯龙井，最温柔的江南时光",
+      "tags": [
+        "自然",
+        "休闲",
+        "美食",
+        "老人友好"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋"
+      ],
+      "suggestDays": "3-4 天",
+      "climate": "亚热带季风气候，春秋温润舒适，夏季湿热、梅雨较多",
+      "cover": "/images/hangzhou/cover.jpg",
+      "gallery": [
+        "/images/hangzhou/gallery-1.jpg",
+        "/images/hangzhou/gallery-2.jpg",
+        "/images/hangzhou/gallery-3.jpg"
+      ],
+      "highlights": [
+        {
+          "title": "西湖十景",
+          "text": "断桥残雪、苏堤春晓……沿湖步道平缓，可乘电瓶船环湖，最适合陪老人慢慢逛。",
+          "image": "/images/hangzhou/hl-1.jpg"
+        },
+        {
+          "title": "龙井茶园",
+          "text": "梅家坞喝一杯明前龙井，看茶农采茶，亲子互动满分。",
+          "image": "/images/hangzhou/hl-2.jpg"
+        },
+        {
+          "title": "灵隐寺",
+          "text": "古刹清幽，香火旺盛，长辈祈福的好去处，注意台阶较多。",
+          "image": "/images/hangzhou/hl-3.jpg"
+        }
+      ],
+      "elderlyFriendly": "西湖环线平缓、公交地铁便利；推荐避开周末客流高峰，可租公共自行车或坐游船代步。",
+      "packingNote": "春夏多雨带雨伞雨衣；湖边早晚温差大，薄外套必备；茶园蚊虫多备驱蚊液。",
+      "description": "“上有天堂，下有苏杭”。杭州的节奏很慢，西湖边推着老人散步、陪孩子喂鸽子，是典型适合全家老小的休闲目的地。"
+    },
+    {
+      "id": "sanya",
+      "name": "三亚",
+      "enName": "Sanya",
+      "province": "海南",
+      "emoji": "🌴",
+      "accent": "#e67e22",
+      "tagline": "冬天带爸妈去三亚晒晒太阳，温暖一整个春节",
+      "tags": [
+        "海滨",
+        "亲子",
+        "休闲",
+        "老人友好"
+      ],
+      "bestSeasons": [
+        "冬",
+        "春",
+        "秋"
+      ],
+      "suggestDays": "4-6 天",
+      "climate": "热带海洋性气候，冬季温暖避寒，夏季炎热多阵雨",
+      "cover": "/images/sanya/cover.jpg",
+      "gallery": [
+        "/images/sanya/gallery-1.jpg",
+        "/images/sanya/gallery-2.jpg",
+        "/images/sanya/gallery-3.jpg"
+      ],
+      "highlights": [
+        {
+          "title": "亚龙湾",
+          "text": "沙细浪缓，海水清澈，是带老人小孩玩水的最佳选择。",
+          "image": "/images/sanya/hl-1.jpg"
+        },
+        {
+          "title": "蜈支洲岛",
+          "text": "潜水与玻璃船观光并存，老人可乘环岛电瓶车轻松游览。",
+          "image": "/images/sanya/hl-2.jpg"
+        },
+        {
+          "title": "南山文化旅游区",
+          "text": "108 米海上观音庄严壮观，园区宽敞，适合长辈礼佛散步。",
+          "image": "/images/sanya/hl-3.jpg"
+        }
+      ],
+      "elderlyFriendly": "冬季温暖是最大的适老优势；亚龙湾、南山园区平坦，注意防晒与补水，避免正午暴晒。",
+      "packingNote": "泳衣、防晒霜、遮阳帽、沙滩鞋必备；老人备宽松衣物与常用药，温差不大但空调房注意保暖。",
+      "description": "三亚是国内最合适的“避寒”家庭目的地。冬季二十几度的温暖、细腻的沙滩和成熟的服务设施，特别适合带父母过冬或春节全家游。"
+    },
+    {
+      "id": "chengdu",
+      "name": "成都",
+      "enName": "Chengdu",
+      "province": "四川",
+      "emoji": "🐼",
+      "accent": "#8e44ad",
+      "tagline": "看滚滚熊猫、吃地道火锅，慢生活天花板",
+      "tags": [
+        "美食",
+        "亲子",
+        "休闲",
+        "老人友好"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋",
+        "冬"
+      ],
+      "suggestDays": "3-4 天",
+      "climate": "盆地气候，秋冬多雾湿冷，夏季闷热",
+      "cover": "/images/chengdu/cover.jpg",
+      "gallery": [
+        "/images/chengdu/gallery-1.jpg",
+        "/images/chengdu/gallery-2.jpg",
+        "/images/chengdu/gallery-3.jpg"
+      ],
+      "highlights": [
+        {
+          "title": "成都大熊猫繁育研究基地",
+          "text": "早上看滚滚吃竹子最萌，园区平缓，老人孩子都超爱。",
+          "image": "/images/chengdu/hl-1.jpg"
+        },
+        {
+          "title": "人民公园·鹤鸣茶社",
+          "text": "竹椅盖碗茶、掏耳朵，让爸妈体验最地道的成都慢生活。",
+          "image": "/images/chengdu/hl-2.jpg"
+        },
+        {
+          "title": "宽窄巷子",
+          "text": "青砖黛瓦的川西民居，小吃遍地，晚上灯火辉煌。",
+          "image": "/images/chengdu/hl-3.jpg"
+        }
+      ],
+      "elderlyFriendly": "市区景点大多平缓；注意饮食以清淡为主，火锅可选鸳鸯锅，湿冷天气备好保暖衣物。",
+      "packingNote": "冬季湿冷需羽绒服，春秋备薄外套；川菜偏辣，肠胃药与润喉糖建议带上。",
+      "description": "成都把“适合全家”写进了骨子里：大熊猫让所有人回归童真，茶馆公园让长辈悠闲自在，火锅串串满足全家人的胃。"
+    },
+    {
+      "id": "guilin",
+      "name": "桂林",
+      "enName": "Guilin",
+      "province": "广西",
+      "emoji": "⛰️",
+      "accent": "#27ae60",
+      "tagline": "桂林山水甲天下，泛舟漓江看水墨丹青",
+      "tags": [
+        "自然",
+        "摄影",
+        "休闲"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋",
+        "夏"
+      ],
+      "suggestDays": "4-5 天",
+      "climate": "亚热带季风，全年温和多雨，夏季湿热，秋季最宜人",
+      "cover": "/images/guilin/cover.jpg",
+      "gallery": [
+        "/images/guilin/gallery-1.jpg",
+        "/images/guilin/gallery-2.jpg",
+        "/images/guilin/gallery-3.jpg"
+      ],
+      "highlights": [
+        {
+          "title": "漓江竹筏/游船",
+          "text": "从桂林到阳朔的精华段，山水如画，坐船最省力，适合全家。",
+          "image": "/images/guilin/hl-1.jpg"
+        },
+        {
+          "title": "遇龙河",
+          "text": "“小漓江”竹筏漂流，水流平缓，亲子戏水乐趣多。",
+          "image": "/images/guilin/hl-2.jpg"
+        },
+        {
+          "title": "阳朔西街",
+          "text": "中西合璧的步行街，晚上热闹，适合全家逛吃。",
+          "image": "/images/guilin/hl-3.jpg"
+        }
+      ],
+      "elderlyFriendly": "以乘船观景为主，步行强度低；山区景区注意台阶与湿滑，雨季备雨具。",
+      "packingNote": "全年备雨具，夏季防晒防蚊，穿防滑鞋；山区早晚凉带薄外套。",
+      "description": "桂林的美在山水之间。乘船漓江、骑行遇龙河、夜逛阳朔，节奏舒缓、风景治愈，是很适合带长辈慢慢看的自然目的地。"
+    },
+    {
+      "id": "xian",
+      "name": "西安",
+      "enName": "Xi'an",
+      "province": "陕西",
+      "emoji": "🏮",
+      "accent": "#d35400",
+      "tagline": "十三朝古都，从兵马俑到回民街，历史与美食的盛宴",
+      "tags": [
+        "历史",
+        "文化",
+        "美食"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋"
+      ],
+      "suggestDays": "3-4 天",
+      "climate": "四季分明，春秋舒适，夏季炎热干燥，冬季干冷",
+      "cover": "/images/xian/cover.jpg",
+      "gallery": [
+        "/images/xian/gallery-1.jpg",
+        "/images/xian/gallery-2.jpg",
+        "/images/xian/gallery-3.jpg"
+      ],
+      "highlights": [
+        {
+          "title": "秦始皇帝陵博物院",
+          "text": "世界第八大奇迹，馆内平缓有扶梯，长辈也能轻松参观。",
+          "image": "/images/xian/hl-1.jpg"
+        },
+        {
+          "title": "西安城墙",
+          "text": "骑行或坐电瓶车环城，日落时俯瞰古城，氛围拉满。",
+          "image": "/images/xian/hl-2.jpg"
+        },
+        {
+          "title": "回民街",
+          "text": "肉夹馍、羊肉泡馍、甑糕……美食地图在这里展开。",
+          "image": "/images/xian/hl-3.jpg"
+        }
+      ],
+      "elderlyFriendly": "博物馆、城墙等设施完善，注意行程别太赶；回民街人多，看管好老人小孩。",
+      "packingNote": "春秋备外套防风沙，夏季防晒；古都步行多，舒适鞋最重要。",
+      "description": "西安是给全家人上“历史课”的最好课堂。兵马俑的震撼、城墙的厚重、回民街的烟火气，一次旅程看尽十三朝。"
+    },
+    {
+      "id": "zhangjiajie",
+      "name": "张家界",
+      "enName": "Zhangjiajie",
+      "province": "湖南",
+      "emoji": "🌄",
+      "accent": "#2ecc71",
+      "tagline": "悬浮山原型地，《阿凡达》同款奇峰秘境",
+      "tags": [
+        "自然",
+        "摄影",
+        "探险"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋",
+        "夏"
+      ],
+      "suggestDays": "3-4 天",
+      "climate": "山地气候，云雾多、温差大，夏季凉爽避暑",
+      "cover": "/images/zhangjiajie/cover.jpg",
+      "gallery": [
+        "/images/zhangjiajie/gallery-1.jpg",
+        "/images/zhangjiajie/gallery-2.jpg",
+        "/images/zhangjiajie/gallery-3.jpg"
+      ],
+      "highlights": [
+        {
+          "title": "袁家界·哈利路亚山",
+          "text": "《阿凡达》悬浮山取景地，百龙天梯直达，气势磅礴。",
+          "image": "/images/zhangjiajie/hl-1.jpg"
+        },
+        {
+          "title": "天子山",
+          "text": "云海与峰林同框，索道+环保车串联，省力不累。",
+          "image": "/images/zhangjiajie/hl-2.jpg"
+        },
+        {
+          "title": "金鞭溪",
+          "text": "峡谷溪流平缓，适合亲子徒步吸氧，猕猴常出没。",
+          "image": "/images/zhangjiajie/hl-3.jpg"
+        }
+      ],
+      "elderlyFriendly": "景区索道/电梯/环保车完善，但山路多台阶，腿脚不便的长辈需评估；建议备登山杖。",
+      "packingNote": "山地温差大，薄羽绒/冲锋衣必备；防滑登山鞋、雨衣、驱蚊液。",
+      "description": "张家界把“奇”字写进每一座山峰。带家人坐百龙天梯直上云霄、穿行云雾峰林，是一场震撼的自然洗礼。"
+    },
+    {
+      "id": "qingdao",
+      "name": "青岛",
+      "enName": "Qingdao",
+      "province": "山东",
+      "emoji": "🍺",
+      "accent": "#2980b9",
+      "tagline": "红瓦绿树碧海蓝天，啤酒与海风的老城浪漫",
+      "tags": [
+        "海滨",
+        "美食",
+        "亲子"
+      ],
+      "bestSeasons": [
+        "夏",
+        "秋"
+      ],
+      "suggestDays": "3-4 天",
+      "climate": "海洋性气候，夏季凉爽宜人，是避暑胜地",
+      "cover": "/images/qingdao/cover.jpg",
+      "gallery": [
+        "/images/qingdao/gallery-1.jpg",
+        "/images/qingdao/gallery-2.jpg",
+        "/images/qingdao/gallery-3.jpg"
+      ],
+      "highlights": [
+        {
+          "title": "栈桥",
+          "text": "百年地标，海鸥成群，清晨喂海鸥是全家必玩项目。",
+          "image": "/images/qingdao/hl-1.jpg"
+        },
+        {
+          "title": "八大关",
+          "text": "万国建筑博览区，绿荫红瓦，推着老人散步刚刚好。",
+          "image": "/images/qingdao/hl-2.jpg"
+        },
+        {
+          "title": "青岛啤酒博物馆",
+          "text": "了解百年酿酒史，凭门票还能领一杯原浆，长辈也能小酌。",
+          "image": "/images/qingdao/hl-3.jpg"
+        }
+      ],
+      "elderlyFriendly": "老城道路平缓适合散步，海风大记得加外套；夏季是全家避暑首选。",
+      "packingNote": "夏季防晒+薄外套（海边风大），备创可贴防贝壳划伤；吃海鲜注意肠胃药。",
+      "description": "青岛把德式老城与海洋温柔地叠在一起。陪父母在八大关林荫下散步，带孩子去海边挖沙，晚上吃一顿海鲜大餐——完美的家庭夏日。"
+    },
+    {
+      "id": "lijiang",
+      "name": "丽江",
+      "enName": "Lijiang",
+      "province": "云南",
+      "emoji": "🏞️",
+      "accent": "#9b59b6",
+      "tagline": "古城慢时光，雪山与纳西文化的温柔相遇",
+      "tags": [
+        "古城",
+        "休闲",
+        "文化"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋",
+        "夏"
+      ],
+      "suggestDays": "3-5 天",
+      "climate": "高原气候，昼夜温差大，日照强，四季皆宜但防晒必备",
+      "cover": "/images/lijiang/cover.jpg",
+      "gallery": [
+        "/images/lijiang/gallery-1.jpg",
+        "/images/lijiang/gallery-2.jpg",
+        "/images/lijiang/gallery-3.jpg"
+      ],
+      "highlights": [
+        {
+          "title": "丽江古城",
+          "text": "石板路、小桥流水，住一晚特色客栈，感受纳西慢生活。",
+          "image": "/images/lijiang/hl-1.jpg"
+        },
+        {
+          "title": "玉龙雪山",
+          "text": "乘大索道登 4506 米观景台，需备氧气与厚衣，量力而行。",
+          "image": "/images/lijiang/hl-2.jpg"
+        },
+        {
+          "title": "拉市海",
+          "text": "高原湖泊，湿地观鸟、骑马划船，轻松惬意。",
+          "image": "/images/lijiang/hl-3.jpg"
+        }
+      ],
+      "elderlyFriendly": "古城石板路对腿脚不便者略颠簸，注意慢行；高海拔地区老人先适应 1-2 天，备好常用药。",
+      "packingNote": "高原温差大：白天防晒、早晚厚外套；备氧气瓶/红景天，防高反。",
+      "description": "丽江适合放慢脚步。在古城客栈的院子里晒太阳、去雪山脚下看云海，是逃离城市、陪伴家人的温柔选择。"
+    },
+    {
+      "id": "shanghai",
+      "name": "上海",
+      "enName": "Shanghai",
+      "province": "上海",
+      "emoji": "🌆",
+      "accent": "#e74c3c",
+      "tagline": "外滩夜景与石库门风情，现代都市的全家漫游",
+      "tags": [
+        "都市",
+        "亲子",
+        "美食",
+        "老人友好"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋"
+      ],
+      "suggestDays": "3-4 天",
+      "climate": "亚热带季风，春秋舒适，夏季闷热多雨",
+      "cover": "/images/shanghai/cover.jpg",
+      "gallery": [
+        "/images/shanghai/gallery-1.jpg",
+        "/images/shanghai/gallery-2.jpg",
+        "/images/shanghai/gallery-3.jpg"
+      ],
+      "highlights": [
+        {
+          "title": "外滩",
+          "text": "万国建筑群与陆家嘴天际线隔江相望，夜景是全家合影的经典机位。",
+          "image": "/images/shanghai/hl-1.jpg"
+        },
+        {
+          "title": "上海博物馆",
+          "text": "免费预约，馆藏丰富，室内舒适，雨天遛娃首选。",
+          "image": "/images/shanghai/hl-2.jpg"
+        },
+        {
+          "title": "豫园",
+          "text": "江南园林与城隍庙小吃街，一步一景，边逛边吃。",
+          "image": "/images/shanghai/hl-3.jpg"
+        }
+      ],
+      "elderlyFriendly": "地铁无障碍完善，博物馆/商场室内空调舒适；夏季注意室内外温差防感冒。",
+      "packingNote": "春秋备薄外套，夏季防晒+雨伞；地铁步行多，舒适鞋必备。",
+      "description": "上海把繁华与烟火气收进同一条街：外滩看世界、豫园尝小吃、博物馆长知识，三代人的上海之旅各有各的精彩。"
+    },
+    {
+      "id": "dali",
+      "name": "大理",
+      "enName": "Dali",
+      "province": "云南",
+      "emoji": "🛶",
+      "accent": "#3498db",
+      "tagline": "苍山洱海间，风花雪月里的家庭慢旅",
+      "tags": [
+        "自然",
+        "古城",
+        "休闲"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋",
+        "夏"
+      ],
+      "suggestDays": "3-5 天",
+      "climate": "高原气候，四季如春，昼夜温差大，紫外线强",
+      "cover": "/images/dali/cover.jpg",
+      "gallery": [
+        "/images/dali/gallery-1.jpg",
+        "/images/dali/gallery-2.jpg",
+        "/images/dali/gallery-3.jpg"
+      ],
+      "highlights": [
+        {
+          "title": "洱海环线",
+          "text": "自驾/包车环洱海，途经喜洲古镇、双廊，风光一路都是明信片。",
+          "image": "/images/dali/hl-1.jpg"
+        },
+        {
+          "title": "大理古城",
+          "text": "白族民居、人民路小酒馆，节奏极慢，适合陪爸妈闲逛。",
+          "image": "/images/dali/hl-2.jpg"
+        },
+        {
+          "title": "苍山",
+          "text": "乘索道上山看杜鹃花海，远眺洱海全景。",
+          "image": "/images/dali/hl-3.jpg"
+        }
+      ],
+      "elderlyFriendly": "洱海环线坐车观光为主，几乎无强度；注意紫外线与高反，节奏放慢。",
+      "packingNote": "防晒霜/墨镜/帽子必备，早晚厚外套；环海风大备披肩。",
+      "description": "大理的“慢”是治愈的。环洱海看云、逛古镇晒太阳、吃一顿白族酸辣鱼，全家人都能在苍山洱海间放松下来。"
+    },
+    {
+      "id": "chongqing",
+      "name": "重庆",
+      "enName": "Chongqing",
+      "province": "重庆",
+      "emoji": "🌃",
+      "accent": "#c0392b",
+      "tagline": "8D 魔幻山城，火锅与夜景的双重烟火",
+      "tags": [
+        "都市",
+        "美食",
+        "夜景"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋"
+      ],
+      "suggestDays": "3-4 天",
+      "climate": "亚热带季风，夏季炎热是“火炉”，春秋最舒服",
+      "cover": "/images/chongqing/cover.jpg",
+      "gallery": [
+        "/images/chongqing/gallery-1.jpg",
+        "/images/chongqing/gallery-2.jpg",
+        "/images/chongqing/gallery-3.jpg"
+      ],
+      "highlights": [
+        {
+          "title": "洪崖洞",
+          "text": "千与千寻同款吊脚楼夜景，江边灯火璀璨，记得占好观景位。",
+          "image": "/images/chongqing/hl-1.jpg"
+        },
+        {
+          "title": "长江索道",
+          "text": "空中过江的“山城空中巴士”，横跨两岸，全家必体验。",
+          "image": "/images/chongqing/hl-2.jpg"
+        },
+        {
+          "title": "磁器口古镇",
+          "text": "石板老街、陈麻花与鸡杂，边逛边吃老重庆味道。",
+          "image": "/images/chongqing/hl-3.jpg"
+        }
+      ],
+      "elderlyFriendly": "山城坡坎多、台阶多，带长辈建议多打车/轻轨；夏季酷热避免正午外出。",
+      "packingNote": "春秋舒适带薄外套；夏季避暑装备（小风扇/防晒）；爬坡多备舒适鞋。",
+      "description": "重庆是立体的：轻轨穿楼、索道过江、火锅沸腾、夜景璀璨。带全家人体验 8D 魔幻城市的震撼，白天吃、晚上看，处处是惊喜。"
+    }
+  ]
+}

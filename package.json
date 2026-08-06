@@ -1,0 +1,13 @@
+{
+  "name": "jiayouhui-family-travel",
+  "version": "0.1.0",
+  "description": "家游汇 - 家庭旅游推荐与攻略选择（AI 大模型 + 平台热门数据采集 + 老年人模式）",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": { "node": ">=18" },
+  "license": "MIT"
+}

@@ -1,0 +1,84 @@
+{
+  "categories": ["证件财务", "衣物鞋帽", "药品健康", "洗护防晒", "电子设备", "出行装备", "其他"],
+  "generic": [
+    { "category": "证件财务", "name": "身份证", "reason": "乘机、高铁、酒店入住必备（儿童带户口本）", "priority": 3 },
+    { "category": "证件财务", "name": "少量现金 + 银行卡", "reason": "部分景区/小摊只收现金", "priority": 2 },
+    { "category": "电子设备", "name": "手机 + 充电宝", "reason": "导航、拍照、支付续航保障", "priority": 3 },
+    { "category": "电子设备", "name": "充电线/插头", "reason": "酒店共享充电贵且不方便", "priority": 2 },
+    { "category": "药品健康", "name": "常用药包（感冒/肠胃/创可贴）", "reason": "异地就医麻烦，应急必备", "priority": 3 },
+    { "category": "出行装备", "name": "轻便背包", "reason": "装水、证件、应急物品，解放双手", "priority": 2 }
+  ],
+  "seasons": {
+    "春": [
+      { "category": "衣物鞋帽", "name": "薄外套/风衣", "reason": "春季早晚温差大，注意保暖", "priority": 3 },
+      { "category": "出行装备", "name": "折叠雨伞", "reason": "春季多雨，随身携带", "priority": 2 },
+      { "category": "药品健康", "name": "抗过敏药", "reason": "春季花粉柳絮多，过敏人群常备", "priority": 1 }
+    ],
+    "夏": [
+      { "category": "洗护防晒", "name": "防晒霜 SPF50+", "reason": "夏季紫外线强，全家都要涂", "priority": 3 },
+      { "category": "衣物鞋帽", "name": "遮阳帽/墨镜", "reason": "防晒防刺眼，老人孩子必备", "priority": 3 },
+      { "category": "药品健康", "name": "驱蚊液/防蚊贴", "reason": "户外蚊虫多，尤其水边山林", "priority": 3 },
+      { "category": "出行装备", "name": "便携水杯", "reason": "高温及时补水，防中暑", "priority": 2 },
+      { "category": "药品健康", "name": "藿香正气/防暑药", "reason": "炎热天气预防中暑", "priority": 1 }
+    ],
+    "秋": [
+      { "category": "衣物鞋帽", "name": "长袖外套/针织衫", "reason": "秋意渐凉，早晚需加衣", "priority": 3 },
+      { "category": "洗护防晒", "name": "润唇膏/保湿霜", "reason": "秋季干燥，皮肤易干裂", "priority": 2 },
+      { "category": "出行装备", "name": "薄围巾", "reason": "早晚风大，保护颈部", "priority": 1 }
+    ],
+    "冬": [
+      { "category": "衣物鞋帽", "name": "厚羽绒服", "reason": "冬季寒冷，保暖第一", "priority": 3 },
+      { "category": "衣物鞋帽", "name": "帽子/手套/围巾", "reason": "防寒保暖三件套", "priority": 3 },
+      { "category": "出行装备", "name": "暖宝宝", "reason": "户外长时间活动驱寒", "priority": 2 },
+      { "category": "药品健康", "name": "感冒药/维生素C", "reason": "冬季易感冒，提前预防", "priority": 1 }
+    ]
+  },
+  "travelers": {
+    "elderly": [
+      { "category": "药品健康", "name": "慢性病常用药（降压/降糖等）", "reason": "按出行天数加倍带，分装随身+托运各一份", "priority": 3 },
+      { "category": "药品健康", "name": "应急联系卡（姓名/病史/过敏/紧急联系人）", "reason": "突发情况便于就医沟通", "priority": 3 },
+      { "category": "出行装备", "name": "折叠登山杖/拐杖", "reason": "台阶、长距离步行省力防摔", "priority": 2 },
+      { "category": "衣物鞋帽", "name": "防滑舒适平底鞋", "reason": "老人防滑防崴脚第一重要", "priority": 3 },
+      { "category": "出行装备", "name": "保温杯", "reason": "随时喝温水，习惯使然", "priority": 2 },
+      { "category": "电子设备", "name": "老花镜", "reason": "看行程单、菜单、提示牌", "priority": 2 },
+      { "category": "药品健康", "name": "血压计（如日常使用）", "reason": "规律监测，安心出行", "priority": 1 }
+    ],
+    "adult": [
+      { "category": "证件财务", "name": "驾驶证（如自驾）", "reason": "租车、自驾必备", "priority": 1 }
+    ],
+    "child": [
+      { "category": "出行装备", "name": "儿童水杯/小零食", "reason": "随时补充能量，安抚情绪", "priority": 2 },
+      { "category": "洗护防晒", "name": "儿童湿巾/免洗洗手液", "reason": "户外清洁卫生", "priority": 3 },
+      { "category": "药品健康", "name": "儿童退烧贴/常用药", "reason": "孩子体质敏感，应急必备", "priority": 3 },
+      { "category": "电子设备", "name": "绘本/玩具/平板", "reason": "长途车程/排队时安抚", "priority": 1 },
+      { "category": "出行装备", "name": "婴儿车（如有小宝宝）", "reason": "解放双手，孩子可午睡", "priority": 2 }
+    ]
+  },
+  "destination": {
+    "海滨": [
+      { "category": "衣物鞋帽", "name": "泳衣/泳裤", "reason": "下海玩水必备", "priority": 3 },
+      { "category": "出行装备", "name": "防水袋/手机防水套", "reason": "海边玩水保护电子设备", "priority": 3 },
+      { "category": "衣物鞋帽", "name": "沙滩鞋/人字拖", "reason": "防贝壳扎脚、沙子烫脚", "priority": 2 },
+      { "category": "洗护防晒", "name": "晒后修复芦荟胶", "reason": "晒后镇定修复", "priority": 1 },
+      { "category": "药品健康", "name": "创可贴", "reason": "贝壳划伤常见", "priority": 2 }
+    ],
+    "高原": [
+      { "category": "药品健康", "name": "红景天/氧气瓶", "reason": "提前预防与应急缓解高反", "priority": 3 },
+      { "category": "衣物鞋帽", "name": "抓绒/冲锋衣", "reason": "高原昼夜温差极大", "priority": 3 },
+      { "category": "洗护防晒", "name": "高倍防晒 + 墨镜", "reason": "高原紫外线极强", "priority": 3 }
+    ],
+    "山地": [
+      { "category": "衣物鞋帽", "name": "防滑登山鞋", "reason": "山路湿滑，防摔", "priority": 3 },
+      { "category": "出行装备", "name": "雨衣（非雨伞）", "reason": "山区天气多变，雨衣解放双手", "priority": 3 },
+      { "category": "出行装备", "name": "登山杖", "reason": "省力保护膝盖", "priority": 2 }
+    ],
+    "古城": [
+      { "category": "衣物鞋帽", "name": "舒适平底鞋", "reason": "古城石板路多，步行量大", "priority": 3 },
+      { "category": "出行装备", "name": "便携小风扇（夏季）", "reason": "人群密集处降温", "priority": 1 }
+    ],
+    "都市": [
+      { "category": "出行装备", "name": "地铁/公交卡或乘车码", "reason": "大城市公共交通为主", "priority": 2 },
+      { "category": "衣物鞋帽", "name": "舒适鞋", "reason": "日均万步，脚感最重要", "priority": 2 }
+    ]
+  }
+}
