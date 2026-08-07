@@ -5,7 +5,7 @@
     const list = document.getElementById('hotList');
     try {
       const data = await app.api('/api/hot-data');
-      if (meta) meta.textContent = `更新于 ${new Date(data.collectedAt).toLocaleString('zh-CN')} · 数据源：${(data.sources || []).filter((s) => s.ok).map((s) => s.label).join('、') || '无可用数据源'}`;
+      if (meta) meta.textContent = `${data.monthLabel || (new Date().getMonth() + 1) + '月'}热门榜 · 更新于 ${new Date(data.collectedAt).toLocaleString('zh-CN')} · 数据源：${(data.sources || []).filter((s) => s.ok).map((s) => s.label).join('、') || '无可用数据源'}`;
       if (list) list.innerHTML = (data.items || []).map((it) => `
         <div class="hot-item">
           <div class="hot-rank">${it.rank}</div>
@@ -15,7 +15,7 @@
           </div>
           <div class="hot-heat">
             <div class="bar"><i style="width:${Math.min(100, it.heat || 0)}%"></i></div>
-            <span class="num">热度 ${it.heat || 0}</span>
+            <span class="num">本月热度 ${it.heat || 0}</span>
           </div>
           <span class="hot-trend ${String(it.trend || '').startsWith('-') ? 'down' : 'up'}">${app.esc(it.trend || '')}</span>
           <span class="hot-src">${app.esc(it.source || '综合')}</span>

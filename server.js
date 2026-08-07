@@ -104,8 +104,9 @@ async function handleApi(req, res, pathname) {
   // GET /api/hot-data —— 平台热门数据
   if (pathname === '/api/hot-data' && req.method === 'GET') {
     const data = await collector.collect(config);
-    const items = collector.merge(data.results);
-    return sendJson(res, 200, { collectedAt: data.collectedAt, sources: data.results, items });
+    const month = new Date().getMonth() + 1;
+    const items = collector.monthlyRank(collector.merge(data.results), month);
+    return sendJson(res, 200, { collectedAt: data.collectedAt, sources: data.results, month, monthLabel: month + '月', items });
   }
 
   // POST /api/recommend —— AI/规则 出行打包清单
