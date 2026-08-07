@@ -97,7 +97,7 @@ async function main() {
     // 写回该目的地（已存在则直接用本地路径）
     if (exists(path.join(dir, 'cover.jpg'))) dest.cover = `/images/${dest.id}/cover.jpg`;
     const gList = [];
-    for (let i = 0; i < 3; i++) { if (exists(path.join(dir, `gallery-${i + 1}.jpg`))) gList.push(`/images/${dest.id}/gallery-${i + 1}.jpg`); }
+    for (let i = 0; i < 4; i++) { if (exists(path.join(dir, `gallery-${i + 1}.jpg`))) gList.push(`/images/${dest.id}/gallery-${i + 1}.jpg`); }
     if (gList.length) dest.gallery = gList;
     let hlCount = 0;
     for (let i = 0; i < dest.highlights.length && i < m.highlights.length; i++) {

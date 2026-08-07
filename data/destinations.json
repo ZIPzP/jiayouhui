@@ -24,7 +24,8 @@
       "gallery": [
         "/images/beijing/gallery-1.jpg",
         "/images/beijing/gallery-2.jpg",
-        "/images/beijing/gallery-3.jpg"
+        "/images/beijing/gallery-3.jpg",
+        "/images/beijing/gallery-4.jpg"
       ],
       "highlights": [
         {
@@ -71,7 +72,8 @@
       "gallery": [
         "/images/hangzhou/gallery-1.jpg",
         "/images/hangzhou/gallery-2.jpg",
-        "/images/hangzhou/gallery-3.jpg"
+        "/images/hangzhou/gallery-3.jpg",
+        "/images/hangzhou/gallery-4.jpg"
       ],
       "highlights": [
         {
@@ -119,7 +121,8 @@
       "gallery": [
         "/images/sanya/gallery-1.jpg",
         "/images/sanya/gallery-2.jpg",
-        "/images/sanya/gallery-3.jpg"
+        "/images/sanya/gallery-3.jpg",
+        "/images/sanya/gallery-4.jpg"
       ],
       "highlights": [
         {
@@ -167,7 +170,8 @@
       "gallery": [
         "/images/chengdu/gallery-1.jpg",
         "/images/chengdu/gallery-2.jpg",
-        "/images/chengdu/gallery-3.jpg"
+        "/images/chengdu/gallery-3.jpg",
+        "/images/chengdu/gallery-4.jpg"
       ],
       "highlights": [
         {
@@ -214,7 +218,8 @@
       "gallery": [
         "/images/guilin/gallery-1.jpg",
         "/images/guilin/gallery-2.jpg",
-        "/images/guilin/gallery-3.jpg"
+        "/images/guilin/gallery-3.jpg",
+        "/images/guilin/gallery-4.jpg"
       ],
       "highlights": [
         {
@@ -260,7 +265,8 @@
       "gallery": [
         "/images/xian/gallery-1.jpg",
         "/images/xian/gallery-2.jpg",
-        "/images/xian/gallery-3.jpg"
+        "/images/xian/gallery-3.jpg",
+        "/images/xian/gallery-4.jpg"
       ],
       "highlights": [
         {
@@ -307,7 +313,8 @@
       "gallery": [
         "/images/zhangjiajie/gallery-1.jpg",
         "/images/zhangjiajie/gallery-2.jpg",
-        "/images/zhangjiajie/gallery-3.jpg"
+        "/images/zhangjiajie/gallery-3.jpg",
+        "/images/zhangjiajie/gallery-4.jpg"
       ],
       "highlights": [
         {
@@ -353,7 +360,8 @@
       "gallery": [
         "/images/qingdao/gallery-1.jpg",
         "/images/qingdao/gallery-2.jpg",
-        "/images/qingdao/gallery-3.jpg"
+        "/images/qingdao/gallery-3.jpg",
+        "/images/qingdao/gallery-4.jpg"
       ],
       "highlights": [
         {
@@ -400,7 +408,8 @@
       "gallery": [
         "/images/lijiang/gallery-1.jpg",
         "/images/lijiang/gallery-2.jpg",
-        "/images/lijiang/gallery-3.jpg"
+        "/images/lijiang/gallery-3.jpg",
+        "/images/lijiang/gallery-4.jpg"
       ],
       "highlights": [
         {
@@ -447,7 +456,8 @@
       "gallery": [
         "/images/shanghai/gallery-1.jpg",
         "/images/shanghai/gallery-2.jpg",
-        "/images/shanghai/gallery-3.jpg"
+        "/images/shanghai/gallery-3.jpg",
+        "/images/shanghai/gallery-4.jpg"
       ],
       "highlights": [
         {
@@ -494,7 +504,8 @@
       "gallery": [
         "/images/dali/gallery-1.jpg",
         "/images/dali/gallery-2.jpg",
-        "/images/dali/gallery-3.jpg"
+        "/images/dali/gallery-3.jpg",
+        "/images/dali/gallery-4.jpg"
       ],
       "highlights": [
         {
@@ -540,7 +551,8 @@
       "gallery": [
         "/images/chongqing/gallery-1.jpg",
         "/images/chongqing/gallery-2.jpg",
-        "/images/chongqing/gallery-3.jpg"
+        "/images/chongqing/gallery-3.jpg",
+        "/images/chongqing/gallery-4.jpg"
       ],
       "highlights": [
         {
@@ -562,6 +574,1360 @@
       "elderlyFriendly": "山城坡坎多、台阶多，带长辈建议多打车/轻轨；夏季酷热避免正午外出。",
       "packingNote": "春秋舒适带薄外套；夏季避暑装备（小风扇/防晒）；爬坡多备舒适鞋。",
       "description": "重庆是立体的：轻轨穿楼、索道过江、火锅沸腾、夜景璀璨。带全家人体验 8D 魔幻城市的震撼，白天吃、晚上看，处处是惊喜。"
+    },
+    {
+      "id": "quanzhou",
+      "name": "泉州",
+      "enName": "Quanzhou",
+      "province": "福建",
+      "emoji": "🏮",
+      "accent": "#b45309",
+      "tagline": "海上丝绸之路起点，古厝与闽南美食的慢生活",
+      "tags": [
+        "古城",
+        "美食",
+        "文化",
+        "老人友好"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋",
+        "冬"
+      ],
+      "suggestDays": "2-3 天",
+      "climate": "亚热带海洋性季风，四季温润，冬无严寒",
+      "cover": "/images/quanzhou/cover.jpg",
+      "gallery": [
+        "/images/quanzhou/gallery-1.jpg",
+        "/images/quanzhou/gallery-2.jpg",
+        "/images/quanzhou/gallery-3.jpg",
+        "/images/quanzhou/gallery-4.jpg"
+      ],
+      "elderlyFriendly": "市区平缓，开元寺、西街步行友好；海鲜街市注意肠胃。",
+      "packingNote": "春秋带薄外套，冬季轻便保暖；美食街步行多，穿舒适鞋。",
+      "description": "泉州是\"宋元中国的世界海洋商贸中心\"，红砖古厝、千年开元寺、簪花渔村，还有满街地道的闽南小吃，节奏慢、人情暖，很适合陪父母慢慢逛。",
+      "highlights": [
+        {
+          "title": "开元寺·东西双塔",
+          "text": "千年古刹与宋代石塔，庭院清幽，适合长辈礼佛散步。",
+          "image": "/images/quanzhou/hl-1.jpg"
+        },
+        {
+          "title": "西街美食",
+          "text": "面线糊、土笋冻、润饼……一条街吃遍闽南味。",
+          "image": "/images/quanzhou/hl-2.jpg"
+        },
+        {
+          "title": "蟳埔村",
+          "text": "簪花围、蚵壳厝，体验\"头上花园\"的渔村浪漫。",
+          "image": "/images/quanzhou/hl-3.jpg"
+        }
+      ]
+    },
+    {
+      "id": "weihai",
+      "name": "威海",
+      "enName": "Weihai",
+      "province": "山东",
+      "emoji": "🌊",
+      "accent": "#2b6cb0",
+      "tagline": "干净的海滨小城，环海路骑行与海鲜大餐",
+      "tags": [
+        "海滨",
+        "亲子",
+        "休闲"
+      ],
+      "bestSeasons": [
+        "夏",
+        "秋"
+      ],
+      "suggestDays": "3 天",
+      "climate": "海洋性气候，夏季凉爽，是避暑胜地",
+      "cover": "/images/weihai/cover.jpg",
+      "gallery": [
+        "/images/weihai/gallery-1.jpg",
+        "/images/weihai/gallery-2.jpg",
+        "/images/weihai/gallery-3.jpg",
+        "/images/weihai/gallery-4.jpg"
+      ],
+      "elderlyFriendly": "环海路平缓、可骑行，海边风大注意防风。",
+      "packingNote": "夏季防晒+薄外套，泳衣按需；吃海鲜备肠胃药。",
+      "description": "威海人少景美，海水干净。刘公岛看历史、环海路吹海风、浴场挖沙赶海，节奏轻松，是全家人度夏的好去处。",
+      "highlights": [
+        {
+          "title": "刘公岛",
+          "text": "甲午故地，岛上绿树成荫，乘船半小时即达。",
+          "image": "/images/weihai/hl-1.jpg"
+        },
+        {
+          "title": "环海路",
+          "text": "沿海慢行或骑行，一路海天一色，随手都是明信片。",
+          "image": "/images/weihai/hl-2.jpg"
+        },
+        {
+          "title": "国际海水浴场",
+          "text": "沙细水清，傍晚看落日，孩子挖沙玩水正合适。",
+          "image": "/images/weihai/hl-3.jpg"
+        }
+      ]
+    },
+    {
+      "id": "datong",
+      "name": "大同",
+      "enName": "Datong",
+      "province": "山西",
+      "emoji": "🏛️",
+      "accent": "#7c3aed",
+      "tagline": "云冈石窟与悬空寺，北魏古都的低调宝藏",
+      "tags": [
+        "历史",
+        "文化",
+        "老人友好"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋"
+      ],
+      "suggestDays": "2-3 天",
+      "climate": "温带大陆性气候，四季分明，春秋最宜",
+      "cover": "/images/datong/cover.jpg",
+      "gallery": [
+        "/images/datong/gallery-1.jpg",
+        "/images/datong/gallery-2.jpg",
+        "/images/datong/gallery-3.jpg",
+        "/images/datong/gallery-4.jpg"
+      ],
+      "elderlyFriendly": "云冈石窟、悬空寺均有游览车/索道，减少步行。",
+      "packingNote": "春秋备外套防风沙；古建多台阶，穿防滑鞋。",
+      "description": "大同是北魏古都，云冈石窟的千年石刻、悬空寺的奇险、古城墙的厚重，游客不多、物价实在，适合喜欢历史文化的一家人。",
+      "highlights": [
+        {
+          "title": "云冈石窟",
+          "text": "世界文化遗产，5.9 万尊造像气势恢宏，有电瓶车代步。",
+          "image": "/images/datong/hl-1.jpg"
+        },
+        {
+          "title": "悬空寺",
+          "text": "建于悬崖上的千年寺庙，登临需走台阶，远观亦震撼。",
+          "image": "/images/datong/hl-2.jpg"
+        },
+        {
+          "title": "大同古城墙",
+          "text": "可骑行或电瓶车环城，傍晚看古城灯火。",
+          "image": "/images/datong/hl-3.jpg"
+        }
+      ]
+    },
+    {
+      "id": "enshi",
+      "name": "恩施",
+      "enName": "Enshi",
+      "province": "湖北",
+      "emoji": "🏞️",
+      "accent": "#059669",
+      "tagline": "恩施大峡谷与屏山峡谷，藏在鄂西的山水秘境",
+      "tags": [
+        "自然",
+        "探险",
+        "摄影"
+      ],
+      "bestSeasons": [
+        "春",
+        "夏",
+        "秋"
+      ],
+      "suggestDays": "3-4 天",
+      "climate": "亚热带山地气候，夏季凉爽，云雾多",
+      "cover": "/images/enshi/cover.jpg",
+      "gallery": [
+        "/images/enshi/gallery-1.jpg",
+        "/images/enshi/gallery-2.jpg",
+        "/images/enshi/gallery-3.jpg",
+        "/images/enshi/gallery-4.jpg"
+      ],
+      "elderlyFriendly": "大峡谷台阶较多，腿脚不便的长辈建议只走精华段或乘观光电梯。",
+      "packingNote": "防滑鞋、雨衣、驱蚊液必备；山地温差大带薄外套。",
+      "description": "恩施把\"仙本那\"般的屏山峡谷、奇绝的大峡谷和土家女儿城装进一座城，是摄影与探险爱好者的心头好。",
+      "highlights": [
+        {
+          "title": "恩施大峡谷",
+          "text": "绝壁栈道、一炷香，云海翻涌时如同仙境。",
+          "image": "/images/enshi/hl-1.jpg"
+        },
+        {
+          "title": "屏山峡谷",
+          "text": "\"悬浮船\"网红打卡地，清澈见底的翡翠水。",
+          "image": "/images/enshi/hl-2.jpg"
+        },
+        {
+          "title": "土家女儿城",
+          "text": "土家风情街市，晚上有民俗表演，老少皆宜。",
+          "image": "/images/enshi/hl-3.jpg"
+        }
+      ]
+    },
+    {
+      "id": "tengchong",
+      "name": "腾冲",
+      "enName": "Tengchong",
+      "province": "云南",
+      "emoji": "♨️",
+      "accent": "#dc2626",
+      "tagline": "火山热海泡温泉，银杏村的金色童话",
+      "tags": [
+        "自然",
+        "温泉",
+        "休闲",
+        "老人友好"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋",
+        "冬"
+      ],
+      "suggestDays": "3 天",
+      "climate": "高原季风气候，四季如春，冬暖夏凉",
+      "cover": "/images/tengchong/cover.jpg",
+      "gallery": [
+        "/images/tengchong/gallery-1.jpg",
+        "/images/tengchong/gallery-2.jpg",
+        "/images/tengchong/gallery-3.jpg",
+        "/images/tengchong/gallery-4.jpg"
+      ],
+      "elderlyFriendly": "热海温泉、和顺古镇节奏舒缓，特别适合陪长辈放松。",
+      "packingNote": "泡温泉带泳衣；高原紫外线强备防晒；早晚温差大加外套。",
+      "description": "腾冲有火山热海的地热奇观、秋天满村金黄的银杏、安静的和顺古镇，还有边境侨乡的慢时光，是\"带爸妈泡汤放空\"的理想地。",
+      "highlights": [
+        {
+          "title": "热海温泉",
+          "text": "大滚锅地热蒸腾，泡汤祛寒，长辈最爱。",
+          "image": "/images/tengchong/hl-1.jpg"
+        },
+        {
+          "title": "银杏村",
+          "text": "11 月满村银杏金黄，拍照超出片。",
+          "image": "/images/tengchong/hl-2.jpg"
+        },
+        {
+          "title": "和顺古镇",
+          "text": "图书馆、洗衣亭、老宅水田，田园牧歌般清净。",
+          "image": "/images/tengchong/hl-3.jpg"
+        }
+      ]
+    },
+    {
+      "id": "jingdezhen",
+      "name": "景德镇",
+      "enName": "Jingdezhen",
+      "province": "江西",
+      "emoji": "🏺",
+      "accent": "#0d9488",
+      "tagline": "千年瓷都，亲手做一件属于自己的瓷器",
+      "tags": [
+        "文化",
+        "亲子",
+        "古城"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋"
+      ],
+      "suggestDays": "2-3 天",
+      "climate": "亚热带季风气候，春秋最宜",
+      "cover": "/images/jingdezhen/cover.jpg",
+      "gallery": [
+        "/images/jingdezhen/gallery-1.jpg",
+        "/images/jingdezhen/gallery-2.jpg",
+        "/images/jingdezhen/gallery-3.jpg",
+        "/images/jingdezhen/gallery-4.jpg"
+      ],
+      "elderlyFriendly": "古窑、陶溪川以室内为主，步道平缓。",
+      "packingNote": "体验陶艺备围裙/换洗衣物；春秋带薄外套。",
+      "description": "在景德镇，全家可以一起拉坯、画瓷、烧窑，带走一件独一无二的\"家传瓷器\"；古窑民俗区和陶溪川的夜景各有味道。",
+      "highlights": [
+        {
+          "title": "古窑民俗博览区",
+          "text": "看非遗匠人现场制瓷，感受千年窑火。",
+          "image": "/images/jingdezhen/hl-1.jpg"
+        },
+        {
+          "title": "陶溪川",
+          "text": "老厂房改造的文创街区，夜晚灯火很有氛围。",
+          "image": "/images/jingdezhen/hl-2.jpg"
+        },
+        {
+          "title": "御窑厂",
+          "text": "明清皇家瓷厂遗址，博物馆里藏着历代瓷器精品。",
+          "image": "/images/jingdezhen/hl-3.jpg"
+        }
+      ]
+    },
+    {
+      "id": "liuzhou",
+      "name": "柳州",
+      "enName": "Liuzhou",
+      "province": "广西",
+      "emoji": "🍜",
+      "accent": "#ea580c",
+      "tagline": "螺蛳粉故乡+柳江山水，好吃又好玩",
+      "tags": [
+        "美食",
+        "自然",
+        "休闲"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋",
+        "冬"
+      ],
+      "suggestDays": "2-3 天",
+      "climate": "亚热带季风气候，冬无严寒",
+      "cover": "/images/liuzhou/cover.jpg",
+      "gallery": [
+        "/images/liuzhou/gallery-1.jpg",
+        "/images/liuzhou/gallery-2.jpg",
+        "/images/liuzhou/gallery-3.jpg",
+        "/images/liuzhou/gallery-4.jpg"
+      ],
+      "elderlyFriendly": "柳江夜游、公园平缓；螺蛳粉辣度可选不辣。",
+      "packingNote": "体验螺蛳粉备换洗衣物；山水景区备防滑鞋。",
+      "description": "柳州不止有螺蛳粉：百里柳江十里画廊、程阳八寨的侗族风雨桥，还有满城紫荆花，好吃好玩还便宜。",
+      "highlights": [
+        {
+          "title": "螺蛳粉街",
+          "text": "来柳州必须来一碗正宗的，本地小店最地道。",
+          "image": "/images/liuzhou/hl-1.jpg"
+        },
+        {
+          "title": "百里柳江",
+          "text": "乘船夜游柳江，看蟠龙山瀑布灯光秀。",
+          "image": "/images/liuzhou/hl-2.jpg"
+        },
+        {
+          "title": "程阳八寨",
+          "text": "侗族风雨桥与鼓楼，山水田园间的民族风情。",
+          "image": "/images/liuzhou/hl-3.jpg"
+        }
+      ]
+    },
+    {
+      "id": "pingyao",
+      "name": "平遥",
+      "enName": "Pingyao",
+      "province": "山西",
+      "emoji": "🏯",
+      "accent": "#92400e",
+      "tagline": "保存最完整的明清古城，穿越回晋商时代",
+      "tags": [
+        "古城",
+        "历史",
+        "老人友好"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋"
+      ],
+      "suggestDays": "2-3 天",
+      "climate": "温带大陆性气候，四季分明",
+      "cover": "/images/pingyao/cover.jpg",
+      "gallery": [
+        "/images/pingyao/gallery-1.jpg",
+        "/images/pingyao/gallery-2.jpg",
+        "/images/pingyao/gallery-3.jpg",
+        "/images/pingyao/gallery-4.jpg"
+      ],
+      "elderlyFriendly": "古城以平缓步行为主，可坐电瓶车代步；石板路注意防滑。",
+      "packingNote": "春秋带外套防风沙；古城步行多穿舒适鞋。",
+      "description": "平遥古城完整保留明清格局，城墙、票号、镖局、县衙一应俱全，仿佛时光倒流，适合带长辈怀旧、带孩子开眼界。",
+      "highlights": [
+        {
+          "title": "平遥古城墙",
+          "text": "登墙俯瞰整座古城，黄昏时分最有味道。",
+          "image": "/images/pingyao/hl-1.jpg"
+        },
+        {
+          "title": "日升昌票号",
+          "text": "中国第一家票号，看晋商如何\"汇通天下\"。",
+          "image": "/images/pingyao/hl-2.jpg"
+        },
+        {
+          "title": "双林寺",
+          "text": "城外彩塑艺术宝库，两千余尊造像栩栩如生。",
+          "image": "/images/pingyao/hl-3.jpg"
+        }
+      ]
+    },
+    {
+      "id": "huzhou",
+      "name": "湖州",
+      "enName": "Huzhou",
+      "province": "浙江",
+      "emoji": "🎋",
+      "accent": "#65a30d",
+      "tagline": "南浔古镇与安吉竹海，江南的小众清静",
+      "tags": [
+        "自然",
+        "亲子",
+        "休闲"
+      ],
+      "bestSeasons": [
+        "春",
+        "夏",
+        "秋"
+      ],
+      "suggestDays": "2-3 天",
+      "climate": "亚热带季风气候，四季分明",
+      "cover": "/images/huzhou/cover.jpg",
+      "gallery": [
+        "/images/huzhou/gallery-1.jpg",
+        "/images/huzhou/gallery-2.jpg",
+        "/images/huzhou/gallery-3.jpg",
+        "/images/huzhou/gallery-4.jpg"
+      ],
+      "elderlyFriendly": "古镇平缓、竹海有接驳车，整体轻松。",
+      "packingNote": "夏季防晒防蚊；竹海山区备薄外套。",
+      "description": "相比乌镇西塘，南浔更清净；安吉的万顷竹海、莫干山的绿意，让湖州成为江南\"避人潮\"的宝藏地。",
+      "highlights": [
+        {
+          "title": "南浔古镇",
+          "text": "中西合璧的江南水乡，人少景美，摇橹船慢游。",
+          "image": "/images/huzhou/hl-1.jpg"
+        },
+        {
+          "title": "安吉竹海",
+          "text": "《卧虎藏龙》取景地，竹海步道清凉洗肺。",
+          "image": "/images/huzhou/hl-2.jpg"
+        },
+        {
+          "title": "莫干山",
+          "text": "竹林民宿与山间绿道，亲子骑行正合适。",
+          "image": "/images/huzhou/hl-3.jpg"
+        }
+      ]
+    },
+    {
+      "id": "leshan",
+      "name": "乐山",
+      "enName": "Leshan",
+      "province": "四川",
+      "emoji": "🗿",
+      "accent": "#b91c1c",
+      "tagline": "乐山大佛与峨眉金顶，佛国山水",
+      "tags": [
+        "历史",
+        "自然",
+        "老人友好"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋"
+      ],
+      "suggestDays": "2-3 天",
+      "climate": "亚热带湿润气候，春秋最宜",
+      "cover": "/images/leshan/cover.jpg",
+      "gallery": [
+        "/images/leshan/gallery-1.jpg",
+        "/images/leshan/gallery-2.jpg",
+        "/images/leshan/gallery-3.jpg",
+        "/images/leshan/gallery-4.jpg"
+      ],
+      "elderlyFriendly": "大佛有游船观景路线，免爬栈道；峨眉山可坐索道。",
+      "packingNote": "峨眉金顶海拔高备外套；登山防滑鞋、雨具。",
+      "description": "乐山大佛\"佛是一座山\"，游船远观最震撼；登峨眉金顶看云海日出，还有嘉阳小火车穿越油菜花田，一条线满足全家。",
+      "highlights": [
+        {
+          "title": "乐山大佛",
+          "text": "乘船看大佛全貌最省力，气势震撼。",
+          "image": "/images/leshan/hl-1.jpg"
+        },
+        {
+          "title": "峨眉山",
+          "text": "索道+金顶，云海日出美如仙境（注意高反与保暖）。",
+          "image": "/images/leshan/hl-2.jpg"
+        },
+        {
+          "title": "嘉阳小火车",
+          "text": "蒸汽小火车穿越油菜花田，童趣满满。",
+          "image": "/images/leshan/hl-3.jpg"
+        }
+      ]
+    },
+    {
+      "id": "zhangzhou",
+      "name": "漳州",
+      "enName": "Zhangzhou",
+      "province": "福建",
+      "emoji": "🏠",
+      "accent": "#a16207",
+      "tagline": "福建土楼与东山岛，客家文化与海岛风情",
+      "tags": [
+        "古城",
+        "海滨",
+        "亲子"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋",
+        "冬"
+      ],
+      "suggestDays": "3 天",
+      "climate": "亚热带海洋性气候，冬暖夏凉",
+      "cover": "/images/zhangzhou/cover.jpg",
+      "gallery": [
+        "/images/zhangzhou/gallery-1.jpg",
+        "/images/zhangzhou/gallery-2.jpg",
+        "/images/zhangzhou/gallery-3.jpg",
+        "/images/zhangzhou/gallery-4.jpg"
+      ],
+      "elderlyFriendly": "土楼景区有观光车；海岛路况良好，节奏可慢。",
+      "packingNote": "海边防晒、泳衣按需；土楼景区备舒适鞋。",
+      "description": "漳州把《大鱼海棠》同款土楼群、马銮湾的碧海和骑楼老街装在一起，游客不多，很适合慢节奏家庭游。",
+      "highlights": [
+        {
+          "title": "南靖土楼",
+          "text": "四菜一汤、云水谣，客家圆楼的震撼与温情。",
+          "image": "/images/zhangzhou/hl-1.jpg"
+        },
+        {
+          "title": "东山岛",
+          "text": "风动石、南门湾，海风与彩色渔村。",
+          "image": "/images/zhangzhou/hl-2.jpg"
+        },
+        {
+          "title": "漳州古城",
+          "text": "骑楼老街与闽南小吃，烟火气十足。",
+          "image": "/images/zhangzhou/hl-3.jpg"
+        }
+      ]
+    },
+    {
+      "id": "beihai",
+      "name": "北海",
+      "enName": "Beihai",
+      "province": "广西",
+      "emoji": "🏖️",
+      "accent": "#0891b2",
+      "tagline": "银滩+涠洲岛，人少景美的平价海滨",
+      "tags": [
+        "海滨",
+        "亲子",
+        "休闲"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋",
+        "冬"
+      ],
+      "suggestDays": "3-4 天",
+      "climate": "亚热带海洋性气候，冬季温暖避寒",
+      "cover": "/images/beihai/cover.jpg",
+      "gallery": [
+        "/images/beihai/gallery-1.jpg",
+        "/images/beihai/gallery-2.jpg",
+        "/images/beihai/gallery-3.jpg",
+        "/images/beihai/gallery-4.jpg"
+      ],
+      "elderlyFriendly": "银滩平缓、老街好逛，冬天带爸妈避寒很合适。",
+      "packingNote": "防晒、泳衣、沙滩鞋；上岛船程约1小时备晕船药。",
+      "description": "北海银滩\"滩长平、沙细白\"，冬季依然温暖；涠洲岛的火山地貌与玻璃海更是宝藏，性价比极高的海滨度假地。",
+      "highlights": [
+        {
+          "title": "银滩",
+          "text": "平缓细腻的\"天下第一滩\"，挖沙玩水一整天。",
+          "image": "/images/beihai/hl-1.jpg"
+        },
+        {
+          "title": "涠洲岛",
+          "text": "火山岩海岸与清澈海水，环岛看日出日落。",
+          "image": "/images/beihai/hl-2.jpg"
+        },
+        {
+          "title": "北海老街",
+          "text": "百年骑楼老街，虾饼与糖水的老城味道。",
+          "image": "/images/beihai/hl-3.jpg"
+        }
+      ]
+    },
+    {
+      "id": "xiamen",
+      "name": "厦门",
+      "enName": "Xiamen",
+      "province": "福建",
+      "emoji": "🏝️",
+      "accent": "#0ea5e9",
+      "tagline": "文艺海滨与鼓浪屿，都市里的慢生活",
+      "tags": [
+        "都市",
+        "海滨",
+        "美食",
+        "亲子"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋",
+        "冬"
+      ],
+      "suggestDays": "3 天",
+      "climate": "亚热带海洋性气候，冬暖夏凉",
+      "elderlyFriendly": "鼓浪屿、环岛路平缓；海滨注意防晒。",
+      "packingNote": "防晒、泳衣按需；鼓浪屿步行多穿舒适鞋。",
+      "description": "城在海上、海在城中，鼓浪屿的琴声、沙坡尾的文艺、中山路的美食，厦门是把\"度假感\"装进城市的典范。",
+      "highlights": [
+        {
+          "title": "鼓浪屿",
+          "text": "万国建筑与小巷琴声，步行一天刚好。",
+          "image": ""
+        },
+        {
+          "title": "环岛路",
+          "text": "骑行或漫步，看海天一色。",
+          "image": ""
+        },
+        {
+          "title": "沙坡尾",
+          "text": "老渔港改造的文艺街区，咖啡馆与创意小店。",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "dalian",
+      "name": "大连",
+      "enName": "Dalian",
+      "province": "辽宁",
+      "emoji": "⛴️",
+      "accent": "#2563eb",
+      "tagline": "北方明珠，滨海路与欧式老城的夏日",
+      "tags": [
+        "都市",
+        "海滨",
+        "休闲",
+        "亲子"
+      ],
+      "bestSeasons": [
+        "夏",
+        "秋"
+      ],
+      "suggestDays": "3 天",
+      "climate": "海洋性气候，夏季凉爽宜人",
+      "elderlyFriendly": "滨海路、星海广场平缓；海风大注意防风。",
+      "packingNote": "夏季防晒+薄外套；海鲜备肠胃药。",
+      "description": "大连有浪漫的滨海路、异域风情的老建筑和新鲜的海鲜，是北方家庭的避暑首选。",
+      "highlights": [
+        {
+          "title": "滨海路",
+          "text": "依山傍海的城市风光带，木栈道适合散步。",
+          "image": ""
+        },
+        {
+          "title": "星海广场",
+          "text": "亚洲最大城市广场，看海喂海鸥。",
+          "image": ""
+        },
+        {
+          "title": "老虎滩",
+          "text": "海洋公园亲子必去，表演精彩。",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "guangzhou",
+      "name": "广州",
+      "enName": "Guangzhou",
+      "province": "广东",
+      "emoji": "🌆",
+      "accent": "#f59e0b",
+      "tagline": "食在广州，骑楼老街与早茶的烟火",
+      "tags": [
+        "都市",
+        "美食",
+        "历史",
+        "老人友好"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋",
+        "冬"
+      ],
+      "suggestDays": "3 天",
+      "climate": "亚热带季风气候，冬季温暖",
+      "elderlyFriendly": "地铁发达、茶楼舒适，特别适合陪长辈吃早茶。",
+      "packingNote": "夏季湿热防晒；吃早茶、逛老城穿舒适鞋。",
+      "description": "广州的早茶、骑楼、花市和珠江夜景，把岭南的生活气息浓缩成一座城，长辈最爱。",
+      "highlights": [
+        {
+          "title": "广州早茶",
+          "text": "一盅两件，从早吃到午的广式生活方式。",
+          "image": ""
+        },
+        {
+          "title": "沙面",
+          "text": "欧陆风情建筑群，绿荫下散步拍照。",
+          "image": ""
+        },
+        {
+          "title": "珠江夜游",
+          "text": "华灯初上，看小蛮腰与两岸夜景。",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "nanjing",
+      "name": "南京",
+      "enName": "Nanjing",
+      "province": "江苏",
+      "emoji": "🦁",
+      "accent": "#8b5cf6",
+      "tagline": "六朝古都，梧桐大道与金陵往事",
+      "tags": [
+        "都市",
+        "历史",
+        "文化",
+        "亲子"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋"
+      ],
+      "suggestDays": "3 天",
+      "climate": "亚热带季风，春秋最宜",
+      "elderlyFriendly": "中山陵、玄武湖平缓开阔；梧桐大道适合散步。",
+      "packingNote": "春秋带外套；景点步行多穿舒适鞋。",
+      "description": "中山陵的庄严、梧桐大道的浪漫、夫子庙的烟火，南京是带孩子和长辈读\"金陵史\"的好地方。",
+      "highlights": [
+        {
+          "title": "中山陵",
+          "text": "392级台阶登顶俯瞰，气势恢宏。",
+          "image": ""
+        },
+        {
+          "title": "玄武湖",
+          "text": "城中大湖，泛舟散步皆宜。",
+          "image": ""
+        },
+        {
+          "title": "夫子庙秦淮河",
+          "text": "夜游秦淮，看灯火桨声。",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "suzhou",
+      "name": "苏州",
+      "enName": "Suzhou",
+      "province": "江苏",
+      "emoji": "🌿",
+      "accent": "#84cc16",
+      "tagline": "园林之城，小桥流水的江南诗意",
+      "tags": [
+        "都市",
+        "古城",
+        "自然",
+        "休闲"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋"
+      ],
+      "suggestDays": "3 天",
+      "climate": "亚热带季风，四季分明",
+      "elderlyFriendly": "园林步道平缓，适合长辈慢慢逛。",
+      "packingNote": "春秋带薄外套；园林石阶注意防滑。",
+      "description": "拙政园的匠心、平江路的摇橹、太湖的浩渺，苏州把\"江南\"两个字做到了极致。",
+      "highlights": [
+        {
+          "title": "拙政园",
+          "text": "中国四大名园之首，一步一景。",
+          "image": ""
+        },
+        {
+          "title": "平江路",
+          "text": "水巷并行，坐摇橹船听评弹。",
+          "image": ""
+        },
+        {
+          "title": "太湖",
+          "text": "乘船观湖，吃太湖三白。",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "tianjin",
+      "name": "天津",
+      "enName": "Tianjin",
+      "province": "天津",
+      "emoji": "🎡",
+      "accent": "#dc2626",
+      "tagline": "洋楼与相声，海河畔的津味儿",
+      "tags": [
+        "都市",
+        "历史",
+        "美食",
+        "老人友好"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋"
+      ],
+      "suggestDays": "2-3 天",
+      "climate": "温带季风气候，四季分明",
+      "elderlyFriendly": "五大道、海河沿线平缓；相声茶馆适合长辈。",
+      "packingNote": "春秋带外套；城市步行多穿舒适鞋。",
+      "description": "五大道的小洋楼、海河之眼摩天轮、茶馆里的相声，天津把\"幽默\"过成了日子。",
+      "highlights": [
+        {
+          "title": "五大道",
+          "text": "万国建筑博物馆，骑行或马车游览。",
+          "image": ""
+        },
+        {
+          "title": "海河夜景",
+          "text": "乘船夜游，看两岸灯火。",
+          "image": ""
+        },
+        {
+          "title": "茶馆相声",
+          "text": "天津卫的快乐，听一场就懂。",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "haerbin",
+      "name": "哈尔滨",
+      "enName": "Harbin",
+      "province": "黑龙江",
+      "emoji": "❄️",
+      "accent": "#38bdf8",
+      "tagline": "冰雪之都，中央大街与索菲亚教堂",
+      "tags": [
+        "都市",
+        "历史",
+        "美食"
+      ],
+      "bestSeasons": [
+        "冬",
+        "夏",
+        "秋"
+      ],
+      "suggestDays": "3 天",
+      "climate": "寒温带气候，冬季严寒",
+      "elderlyFriendly": "冬季冰雪路面注意防滑保暖；室内外温差大。",
+      "packingNote": "冬季厚羽绒+保暖三件套；夏季凉爽备薄外套。",
+      "description": "冬天的冰雪大世界、夏天的太阳岛、一年四季的中央大街与俄式美食，哈尔滨总有理由去一次。",
+      "highlights": [
+        {
+          "title": "冰雪大世界",
+          "text": "冬日冰雕王国，梦幻璀璨。",
+          "image": ""
+        },
+        {
+          "title": "中央大街",
+          "text": "面包石街道与俄式建筑，马迭尔冰棍必吃。",
+          "image": ""
+        },
+        {
+          "title": "圣索菲亚教堂",
+          "text": "绿顶洋葱头教堂，夜景很美。",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "changsha",
+      "name": "长沙",
+      "enName": "Changsha",
+      "province": "湖南",
+      "emoji": "🌶️",
+      "accent": "#ef4444",
+      "tagline": "夜生活与湘菜，橘子洲头的青春",
+      "tags": [
+        "都市",
+        "美食",
+        "休闲"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋",
+        "夏"
+      ],
+      "suggestDays": "2-3 天",
+      "climate": "亚热带季风，夏季湿热",
+      "elderlyFriendly": "岳麓山、橘子洲步道完善；辣度可调。",
+      "packingNote": "吃辣备肠胃药；夏季防晒。",
+      "description": "长沙的夜宵文化、橘子洲的烟火、岳麓书院的千年文脉，让这座城永远年轻。",
+      "highlights": [
+        {
+          "title": "橘子洲",
+          "text": "看青年毛主席雕像，周末有烟花。",
+          "image": ""
+        },
+        {
+          "title": "岳麓书院",
+          "text": "千年学府，爱晚亭看红叶。",
+          "image": ""
+        },
+        {
+          "title": "太平街夜宵",
+          "text": "臭豆腐、糖油粑粑，越夜越热闹。",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "wuhan",
+      "name": "武汉",
+      "enName": "Wuhan",
+      "province": "湖北",
+      "emoji": "🏙️",
+      "accent": "#7c3aed",
+      "tagline": "江城过早与樱花，江湖气的大武汉",
+      "tags": [
+        "都市",
+        "美食",
+        "历史"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋"
+      ],
+      "suggestDays": "3 天",
+      "climate": "亚热带季风，夏热冬冷",
+      "elderlyFriendly": "东湖绿道平缓；博物馆室内舒适。",
+      "packingNote": "夏季炎热注意防暑；春秋带外套。",
+      "description": "武汉的\"过早\"文化、长江与东湖的江湖气、江汉关的百年建筑，值得为一口热干面而来。",
+      "highlights": [
+        {
+          "title": "黄鹤楼",
+          "text": "登楼望长江，看古今同框。",
+          "image": ""
+        },
+        {
+          "title": "东湖绿道",
+          "text": "中国最大城中湖，骑行樱花季最美。",
+          "image": ""
+        },
+        {
+          "title": "户部巷",
+          "text": "热干面、豆皮，过早一条街。",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "fuzhou",
+      "name": "福州",
+      "enName": "Fuzhou",
+      "province": "福建",
+      "emoji": "🏮",
+      "accent": "#b45309",
+      "tagline": "有福之州，三坊七巷与闽都古韵",
+      "tags": [
+        "都市",
+        "古城",
+        "美食",
+        "老人友好"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋",
+        "冬"
+      ],
+      "suggestDays": "2-3 天",
+      "climate": "亚热带海洋性，冬暖夏凉",
+      "elderlyFriendly": "三坊七巷平缓、老城好逛，适合陪长辈。",
+      "packingNote": "春秋带薄外套；老城步行多穿舒适鞋。",
+      "description": "三坊七巷的明清古建、温泉古都的历史、闽菜的清鲜，福州是一座\"有福气\"的慢城。",
+      "highlights": [
+        {
+          "title": "三坊七巷",
+          "text": "中国城市里坊制度活化石，名人辈出。",
+          "image": ""
+        },
+        {
+          "title": "福州温泉",
+          "text": "\"温泉之都\"，泡汤放松。",
+          "image": ""
+        },
+        {
+          "title": "西湖公园",
+          "text": "城中古园林，秋看菊花展。",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "zhoushan",
+      "name": "舟山",
+      "enName": "Zhoushan",
+      "province": "浙江",
+      "emoji": "🎣",
+      "accent": "#06b6d4",
+      "tagline": "千岛之城，普陀山与海鲜渔港",
+      "tags": [
+        "海滨",
+        "自然",
+        "美食",
+        "休闲"
+      ],
+      "bestSeasons": [
+        "夏",
+        "秋"
+      ],
+      "suggestDays": "3 天",
+      "climate": "海洋性气候，夏季凉爽",
+      "elderlyFriendly": "普陀山、桃花岛船程平缓；注意晕船。",
+      "packingNote": "防晒、晕船药；海岛昼夜风大带外套。",
+      "description": "舟山群岛是\"海钓天堂\"与佛教圣地，普陀山的梵音、嵊泗的渔村、鲜活的海鲜，宁静治愈。",
+      "highlights": [
+        {
+          "title": "普陀山",
+          "text": "海天佛国，观音道场，香火与海风。",
+          "image": ""
+        },
+        {
+          "title": "嵊泗列岛",
+          "text": "渔村与灯塔，看海上日出。",
+          "image": ""
+        },
+        {
+          "title": "沈家门渔港",
+          "text": "吃一顿现捞海鲜，夜排档热闹。",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "shantou",
+      "name": "汕头",
+      "enName": "Shantou",
+      "province": "广东",
+      "emoji": "🍲",
+      "accent": "#ea580c",
+      "tagline": "潮汕美食与骑楼，海边的工夫茶",
+      "tags": [
+        "海滨",
+        "美食",
+        "古城",
+        "休闲"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋",
+        "冬"
+      ],
+      "suggestDays": "2-3 天",
+      "climate": "亚热带海洋性，冬暖",
+      "elderlyFriendly": "老城骑楼平缓；肠胃敏感备药。",
+      "packingNote": "秋冬带薄外套；美食街步行多。",
+      "description": "汕头是潮汕美食的大本营：牛肉火锅、生腌、蚝烙、工夫茶，配上骑楼老街，吃得停不下来。",
+      "highlights": [
+        {
+          "title": "小公园骑楼",
+          "text": "百年商埠的骑楼群，复古好拍。",
+          "image": ""
+        },
+        {
+          "title": "南澳岛",
+          "text": "环岛看灯塔与海湾，吃海鲜。",
+          "image": ""
+        },
+        {
+          "title": "牛肉火锅",
+          "text": "现切现涮，潮汕人的讲究。",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "yantai",
+      "name": "烟台",
+      "enName": "Yantai",
+      "province": "山东",
+      "emoji": "🍇",
+      "accent": "#64748b",
+      "tagline": "仙境海岸，葡萄庄园与海岛",
+      "tags": [
+        "海滨",
+        "休闲",
+        "美食"
+      ],
+      "bestSeasons": [
+        "夏",
+        "秋"
+      ],
+      "suggestDays": "3 天",
+      "climate": "海洋性气候，夏季凉爽",
+      "elderlyFriendly": "海边栈道平缓；注意防晒。",
+      "packingNote": "夏季防晒+薄外套；海鲜备肠胃药。",
+      "description": "烟台有蓬莱阁的仙气、长岛的海鸥与礁石、张裕酒庄的葡萄园，是山东的另一片海。",
+      "highlights": [
+        {
+          "title": "蓬莱阁",
+          "text": "\"八仙过海\"传说地，海市蜃楼。",
+          "image": ""
+        },
+        {
+          "title": "长岛",
+          "text": "海上仙山，看海鸥与日落。",
+          "image": ""
+        },
+        {
+          "title": "张裕酒庄",
+          "text": "百年葡萄酒庄园，品酒参观。",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "wanning",
+      "name": "万宁",
+      "enName": "Wanning",
+      "province": "海南",
+      "emoji": "🏄",
+      "accent": "#0d9488",
+      "tagline": "冲浪小镇，日月湾的青春海风",
+      "tags": [
+        "海滨",
+        "自然",
+        "休闲"
+      ],
+      "bestSeasons": [
+        "冬",
+        "春",
+        "秋"
+      ],
+      "suggestDays": "3 天",
+      "climate": "热带海洋性，冬季温暖",
+      "elderlyFriendly": "日月湾平缓；注意防晒补水。",
+      "packingNote": "冬季避寒备薄外套；防晒必备。",
+      "description": "万宁有日月湾的冲浪浪点、兴隆的温泉与咖啡，比三亚更安静、更年轻。",
+      "highlights": [
+        {
+          "title": "日月湾",
+          "text": "中国冲浪胜地，海边咖啡店看海。",
+          "image": ""
+        },
+        {
+          "title": "兴隆热带植物园",
+          "text": "认识热带植物，喝地道兴隆咖啡。",
+          "image": ""
+        },
+        {
+          "title": "石梅湾",
+          "text": "\"海南最美海湾\"之一，人少沙细。",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "qinhuangdao",
+      "name": "秦皇岛",
+      "enName": "Qinhuangdao",
+      "province": "河北",
+      "emoji": "🏰",
+      "accent": "#1d4ed8",
+      "tagline": "山海关与北戴河，长城入海处",
+      "tags": [
+        "海滨",
+        "历史",
+        "休闲"
+      ],
+      "bestSeasons": [
+        "夏",
+        "秋"
+      ],
+      "suggestDays": "2-3 天",
+      "climate": "温带季风，夏季凉爽",
+      "elderlyFriendly": "北戴河海滨平缓；老龙头台阶注意。",
+      "packingNote": "夏季防晒+薄外套；海滨穿防滑鞋。",
+      "description": "山海关\"天下第一关\"、老龙头长城入海、北戴河的避暑海滩，历史与海风同在。",
+      "highlights": [
+        {
+          "title": "山海关",
+          "text": "天下第一关，城墙下听历史。",
+          "image": ""
+        },
+        {
+          "title": "老龙头",
+          "text": "万里长城唯一入海处，壮阔。",
+          "image": ""
+        },
+        {
+          "title": "北戴河",
+          "text": "老牌避暑胜地，看日出吃海鲜。",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "yangzhou",
+      "name": "扬州",
+      "enName": "Yangzhou",
+      "province": "江苏",
+      "emoji": "🍃",
+      "accent": "#65a30d",
+      "tagline": "烟花三月下扬州，早茶与园林",
+      "tags": [
+        "古城",
+        "美食",
+        "历史",
+        "老人友好"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋"
+      ],
+      "suggestDays": "2-3 天",
+      "climate": "亚热带季风，四季分明",
+      "elderlyFriendly": "园林平缓、早茶舒适，特别适合陪长辈。",
+      "packingNote": "春秋带外套；老城步行多穿舒适鞋。",
+      "description": "瘦西湖的婉约、个园的四季假山、富春茶社的早茶，扬州把\"慢\"活成了生活方式。",
+      "highlights": [
+        {
+          "title": "瘦西湖",
+          "text": "\"两堤花柳全依水\"，江南园林典范。",
+          "image": ""
+        },
+        {
+          "title": "个园",
+          "text": "以竹石取胜，四季假山一园看尽。",
+          "image": ""
+        },
+        {
+          "title": "扬州早茶",
+          "text": "烫干丝、蟹黄汤包，早茶文化源远流长。",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "shaoxing",
+      "name": "绍兴",
+      "enName": "Shaoxing",
+      "province": "浙江",
+      "emoji": "🛶",
+      "accent": "#0f766e",
+      "tagline": "乌篷船与水乡，鲁迅笔下的故乡",
+      "tags": [
+        "古城",
+        "文化",
+        "美食",
+        "历史"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋",
+        "冬"
+      ],
+      "suggestDays": "2-3 天",
+      "climate": "亚热带季风，四季分明",
+      "elderlyFriendly": "水乡平缓、可坐乌篷船，适合长辈。",
+      "packingNote": "秋冬带外套；水乡石板路注意防滑。",
+      "description": "乌篷船划过鲁迅故里、沈园的陆游唐婉、咸亨酒店的茴香豆，绍兴是江南文脉的缩影。",
+      "highlights": [
+        {
+          "title": "鲁迅故里",
+          "text": "三味书屋与百草园，课本里的童年。",
+          "image": ""
+        },
+        {
+          "title": "沈园",
+          "text": "宋代园林，夜游有实景演出。",
+          "image": ""
+        },
+        {
+          "title": "东湖",
+          "text": "乌篷船穿行崖壁水潭，别有洞天。",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "fenghuang",
+      "name": "凤凰",
+      "enName": "Fenghuang",
+      "province": "湖南",
+      "emoji": "🏯",
+      "accent": "#b91c1c",
+      "tagline": "沱江边的边城，吊脚楼与苗寨",
+      "tags": [
+        "古城",
+        "自然",
+        "休闲"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋",
+        "夏"
+      ],
+      "suggestDays": "2-3 天",
+      "climate": "亚热带季风，四季宜人",
+      "elderlyFriendly": "古城石板路注意防滑；沱江边平缓。",
+      "packingNote": "防滑鞋；夏天防晒防蚊。",
+      "description": "沈从文笔下的边城，沱江吊脚楼、虹桥夜景、苗寨银饰，文艺又出片。",
+      "highlights": [
+        {
+          "title": "沱江夜景",
+          "text": "吊脚楼灯火倒映江面，如梦似幻。",
+          "image": ""
+        },
+        {
+          "title": "虹桥",
+          "text": "古城地标，登桥看全城。",
+          "image": ""
+        },
+        {
+          "title": "苗寨",
+          "text": "银饰与歌舞，感受苗族风情。",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "id": "shangrila",
+      "name": "香格里拉",
+      "enName": "Shangri-La",
+      "province": "云南",
+      "emoji": "🏔️",
+      "accent": "#7f1d1d",
+      "tagline": "心中的日月，雪山草甸与藏地秘境",
+      "tags": [
+        "自然",
+        "摄影",
+        "休闲"
+      ],
+      "bestSeasons": [
+        "春",
+        "秋",
+        "夏"
+      ],
+      "suggestDays": "3-4 天",
+      "climate": "高原气候，昼夜温差大",
+      "elderlyFriendly": "高海拔注意防高反；景点车程长备晕车药。",
+      "packingNote": "高原防晒+厚外套；氧气瓶备好。",
+      "description": "普达措的湖光、松赞林寺的金顶、独克宗古城的经幡，香格里拉是离天堂最近的地方。",
+      "highlights": [
+        {
+          "title": "普达措国家公园",
+          "text": "高原湖泊与牧场，徒步洗肺。",
+          "image": ""
+        },
+        {
+          "title": "松赞林寺",
+          "text": "\"小布达拉宫\"，金顶气势恢宏。",
+          "image": ""
+        },
+        {
+          "title": "独克宗古城",
+          "text": "藏式古城，转经筒祈福。",
+          "image": ""
+        }
+      ]
     }
   ]
 }

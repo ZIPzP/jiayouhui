@@ -1,6 +1,7 @@
 (() => {
   'use strict';
-  const state = { filter: '全部', destId: null };
+  const state = { filter: '全部', destId: null, visible: 12 };
+  const lb = { urls: [], titles: [], index: 0 };
   window.pageInit = async function () {
     renderFilters();
     renderGrid();
@@ -32,7 +33,12 @@
     if (!grid) return;
     const items = filtered();
     if (!items.length) { grid.innerHTML = '<p style="text-align:center;color:var(--ink-soft)">没有符合条件的目的地</p>'; return; }
-    grid.innerHTML = items.map((d) => `
+    const shown = items.slice(0, state.visible);
+    const wrap = document.getElementById('moreWrap');
+    if (wrap) wrap.innerHTML = items.length > state.visible
+      ? `<button id="moreBtn" class="btn btn-ghost" type="button">查看更多目的地（还有 ${items.length - state.visible} 个）</button>`
+      : '';
+    grid.innerHTML = shown.map((d) => `
       <article class="dest-card" data-id="${app.esc(d.id)}" role="button" tabindex="0" aria-label="查看 ${app.esc(d.name)} 详情">
         <div class="dest-cover" style="background-color:${app.esc(d.accent || '#0f766e')}">
           <div class="dest-emoji">${app.esc(d.emoji || '🏡')}</div>
@@ -44,7 +50,7 @@
           <div class="dest-meta"><span>${app.esc((d.tags || []).slice(0, 3).join(' · '))}</span><span class="dest-more">查看详情 →</span></div>
         </div>
       </article>`).join('');
-    items.forEach((d) => {
+    shown.forEach((d) => {
       const card = grid.querySelector(`[data-id="${d.id}"]`);
       const cover = card && card.querySelector('.dest-cover');
       if (cover && d.cover) { const probe = new Image(); probe.onload = () => app.setBg(cover, d.cover); probe.src = d.cover; }
@@ -65,6 +71,24 @@
     if (close) close.addEventListener('click', closeDetail);
     const modal = document.getElementById('detailModal');
     if (modal) modal.addEventListener('click', (e) => { if (e.target === e.currentTarget) closeDetail(); });
+    const wrap = document.getElementById('moreWrap');
+    if (wrap) wrap.addEventListener('click', (e) => { if (e.target.closest('#moreBtn')) { state.visible += 12; renderGrid(); } });
+    const lc = document.getElementById('lightboxClose');
+    if (lc) lc.addEventListener('click', closeLightbox);
+    const lp = document.getElementById('lightboxPrev');
+    if (lp) lp.addEventListener('click', () => navLightbox(-1));
+    const ln = document.getElementById('lightboxNext');
+    if (ln) ln.addEventListener('click', () => navLightbox(1));
+    const lbx = document.getElementById('lightbox');
+    if (lbx) lbx.addEventListener('click', (e) => { if (e.target === lbx) closeLightbox(); });
+    document.addEventListener('keydown', (e) => {
+      const box = document.getElementById('lightbox');
+      if (box && !box.hidden) {
+        if (e.key === 'Escape') closeLightbox();
+        else if (e.key === 'ArrowLeft') navLightbox(-1);
+        else if (e.key === 'ArrowRight') navLightbox(1);
+      }
+    });
     const body = document.getElementById('modalBody');
     if (body) body.addEventListener('click', async (e) => {
       const guideBtn = e.target.closest('[data-guide]');
@@ -86,6 +110,24 @@
     state.destId = id;
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
+    const wrap = document.getElementById('moreWrap');
+    if (wrap) wrap.addEventListener('click', (e) => { if (e.target.closest('#moreBtn')) { state.visible += 12; renderGrid(); } });
+    const lc = document.getElementById('lightboxClose');
+    if (lc) lc.addEventListener('click', closeLightbox);
+    const lp = document.getElementById('lightboxPrev');
+    if (lp) lp.addEventListener('click', () => navLightbox(-1));
+    const ln = document.getElementById('lightboxNext');
+    if (ln) ln.addEventListener('click', () => navLightbox(1));
+    const lbx = document.getElementById('lightbox');
+    if (lbx) lbx.addEventListener('click', (e) => { if (e.target === lbx) closeLightbox(); });
+    document.addEventListener('keydown', (e) => {
+      const box = document.getElementById('lightbox');
+      if (box && !box.hidden) {
+        if (e.key === 'Escape') closeLightbox();
+        else if (e.key === 'ArrowLeft') navLightbox(-1);
+        else if (e.key === 'ArrowRight') navLightbox(1);
+      }
+    });
     const body = document.getElementById('modalBody');
     body.innerHTML = '<p style="padding:40px;text-align:center">加载中…</p>';
     try {
@@ -102,6 +144,24 @@
     document.body.style.overflow = '';
   }
   function renderDetail(d) {
+    const wrap = document.getElementById('moreWrap');
+    if (wrap) wrap.addEventListener('click', (e) => { if (e.target.closest('#moreBtn')) { state.visible += 12; renderGrid(); } });
+    const lc = document.getElementById('lightboxClose');
+    if (lc) lc.addEventListener('click', closeLightbox);
+    const lp = document.getElementById('lightboxPrev');
+    if (lp) lp.addEventListener('click', () => navLightbox(-1));
+    const ln = document.getElementById('lightboxNext');
+    if (ln) ln.addEventListener('click', () => navLightbox(1));
+    const lbx = document.getElementById('lightbox');
+    if (lbx) lbx.addEventListener('click', (e) => { if (e.target === lbx) closeLightbox(); });
+    document.addEventListener('keydown', (e) => {
+      const box = document.getElementById('lightbox');
+      if (box && !box.hidden) {
+        if (e.key === 'Escape') closeLightbox();
+        else if (e.key === 'ArrowLeft') navLightbox(-1);
+        else if (e.key === 'ArrowRight') navLightbox(1);
+      }
+    });
     const body = document.getElementById('modalBody');
     const tags = (d.tags || []).map((t) => `<span class="badge">${app.esc(t)}</span>`).join('');
     const gallery = (d.gallery || []).map((g, i) => `<img src="${app.esc(g)}" alt="${app.esc(d.name)} 风光 ${i + 1}" onerror="window.__jyhImgFallback(this,'${app.esc(d.emoji || '🏡')}','${app.esc(d.name)}','${app.esc(d.accent || '#0f766e')}')" />`).join('');
@@ -141,7 +201,42 @@
       </div>`;
     const hero = body.querySelector('.detail-hero');
     if (d.cover) { const probe = new Image(); probe.onload = () => app.setBg(hero, d.cover); probe.src = d.cover; }
+
+    // 收集可点击查看的大图（避免重复）
+    const urls = [];
+    const titles = [];
+    if (d.cover) { urls.push(d.cover); titles.push(d.name + ' · 封面'); }
+    const seen = new Set(urls);
+    (d.gallery || []).filter(Boolean).forEach((g, i) => { if (!seen.has(g)) { seen.add(g); urls.push(g); titles.push(d.name + ' · 风光' + (i + 1)); } });
+    (d.highlights || []).forEach((h, i) => { if (h.image && !seen.has(h.image)) { seen.add(h.image); urls.push(h.image); titles.push(h.title); } });
+    lb.urls = urls; lb.titles = titles; lb.index = 0;
+    const galleryImgs = [...body.querySelectorAll('.gallery-row img')];
+    const hlImgs = [...body.querySelectorAll('.highlight-card img')];
+    galleryImgs.forEach((img, i) => {
+      img.style.cursor = 'zoom-in';
+      img.addEventListener('click', () => openLightbox((d.cover ? 1 : 0) + i));
+    });
+    hlImgs.forEach((img, i) => {
+      img.style.cursor = 'zoom-in';
+      img.addEventListener('click', () => openLightbox((d.cover ? 1 : 0) + galleryImgs.length + i));
+    });
   }
+  function openLightbox(i) {
+    const box = document.getElementById('lightbox');
+    if (!box || !lb.urls.length) return;
+    lb.index = (i + lb.urls.length) % lb.urls.length;
+    const img = document.getElementById('lightboxImg');
+    img.src = lb.urls[lb.index];
+    document.getElementById('lightboxCaption').textContent = lb.titles[lb.index] || '';
+    box.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    const box = document.getElementById('lightbox');
+    if (box) box.hidden = true;
+    document.body.style.overflow = '';
+  }
+  function navLightbox(dir) { openLightbox(lb.index + dir); }
 
   async function generateGuide(id) {
     const box = document.getElementById('guideBox');

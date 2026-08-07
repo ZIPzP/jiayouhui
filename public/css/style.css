@@ -428,3 +428,18 @@ a.dest-card { display: block; text-decoration: none; color: inherit; }
 .settings-menu button:hover, .settings-menu a:hover { background: var(--primary-light); color: var(--primary-dark); }
 .settings-menu .menu-on::after { content: " ✓"; color: var(--primary); font-weight: 800; margin-left: auto; }
 html.elderly .settings-menu button, html.elderly .settings-menu a { font-size: 1.1rem; padding: 14px 16px; }
+
+/* ---------- 更多按钮 ---------- */
+.more-wrap { text-align: center; margin-top: 24px; }
+
+/* ---------- 大图预览（灯箱） ---------- */
+.lightbox { position: fixed; inset: 0; z-index: 500; background: rgba(10,14,20,.92); display: flex; align-items: center; justify-content: center; flex-direction: column; }
+.lightbox img { max-width: 92vw; max-height: 80vh; border-radius: 10px; box-shadow: var(--shadow-lg); }
+.lightbox-close { position: absolute; top: 16px; right: 18px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255,255,255,.15); color: #fff; font-size: 1.3rem; cursor: pointer; }
+.lightbox-close:hover { background: rgba(255,255,255,.3); }
+.lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 52px; height: 52px; border-radius: 50%; border: 0; background: rgba(255,255,255,.12); color: #fff; font-size: 2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.lightbox-nav:hover { background: rgba(255,255,255,.28); }
+.lightbox-nav.prev { left: 14px; }
+.lightbox-nav.next { right: 14px; }
+.lightbox-caption { margin-top: 12px; color: rgba(255,255,255,.9); font-size: .95rem; }
+html.elderly .lightbox-nav { width: 64px; height: 64px; font-size: 2.2rem; }
