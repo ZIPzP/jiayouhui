@@ -45,6 +45,20 @@ function exists(file) {
   try { return fs.statSync(file).size > 5000; } catch { return false; }
 }
 
+/** 安全写 JSON：遇锁重试 */
+function writeJsonSafe(file, obj) {
+  for (let i = 0; i < 6; i++) {
+    try {
+      fs.writeFileSync(file, JSON.stringify(obj, null, 2), 'utf8');
+      return;
+    } catch (e) {
+      if (i === 5) throw e;
+      const wait = new Promise((r) => setTimeout(r, 800 + i * 500));
+      return wait.then(() => writeJsonSafe(file, obj));
+    }
+  }
+}
+
 async function main() {
   const map = JSON.parse(fs.readFileSync(MAP_FILE, 'utf8'));
   const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
@@ -105,7 +119,7 @@ async function main() {
       if (exists(f)) { dest.highlights[i].image = `/images/${dest.id}/hl-${i + 1}.jpg`; hlCount++; }
     }
 
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8'); // 增量保存
+    writeJsonSafe(DATA_FILE, data); // 增量保存（带重试）
     report.push(`${dest.name}: cover=${dest.cover.startsWith('/images/') ? 'OK' : 'FAIL'} gallery=${gList.length} highlights=${hlCount}`);
   }
 

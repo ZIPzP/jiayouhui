@@ -1176,18 +1176,25 @@
         {
           "title": "鼓浪屿",
           "text": "万国建筑与小巷琴声，步行一天刚好。",
-          "image": ""
+          "image": "/images/xiamen/hl-1.jpg"
         },
         {
           "title": "环岛路",
           "text": "骑行或漫步，看海天一色。",
-          "image": ""
+          "image": "/images/xiamen/hl-2.jpg"
         },
         {
           "title": "沙坡尾",
           "text": "老渔港改造的文艺街区，咖啡馆与创意小店。",
-          "image": ""
+          "image": "/images/xiamen/hl-3.jpg"
         }
+      ],
+      "cover": "/images/xiamen/cover.jpg",
+      "gallery": [
+        "/images/xiamen/gallery-1.jpg",
+        "/images/xiamen/gallery-2.jpg",
+        "/images/xiamen/gallery-3.jpg",
+        "/images/xiamen/gallery-4.jpg"
       ]
     },
     {
@@ -1217,18 +1224,25 @@
         {
           "title": "滨海路",
           "text": "依山傍海的城市风光带，木栈道适合散步。",
-          "image": ""
+          "image": "/images/dalian/hl-1.jpg"
         },
         {
           "title": "星海广场",
           "text": "亚洲最大城市广场，看海喂海鸥。",
-          "image": ""
+          "image": "/images/dalian/hl-2.jpg"
         },
         {
           "title": "老虎滩",
           "text": "海洋公园亲子必去，表演精彩。",
-          "image": ""
+          "image": "/images/dalian/hl-3.jpg"
         }
+      ],
+      "cover": "/images/dalian/cover.jpg",
+      "gallery": [
+        "/images/dalian/gallery-1.jpg",
+        "/images/dalian/gallery-2.jpg",
+        "/images/dalian/gallery-3.jpg",
+        "/images/dalian/gallery-4.jpg"
       ]
     },
     {
@@ -1259,18 +1273,25 @@
         {
           "title": "广州早茶",
           "text": "一盅两件，从早吃到午的广式生活方式。",
-          "image": ""
+          "image": "/images/guangzhou/hl-1.jpg"
         },
         {
           "title": "沙面",
           "text": "欧陆风情建筑群，绿荫下散步拍照。",
-          "image": ""
+          "image": "/images/guangzhou/hl-2.jpg"
         },
         {
           "title": "珠江夜游",
           "text": "华灯初上，看小蛮腰与两岸夜景。",
-          "image": ""
+          "image": "/images/guangzhou/hl-3.jpg"
         }
+      ],
+      "cover": "/images/guangzhou/cover.jpg",
+      "gallery": [
+        "/images/guangzhou/gallery-1.jpg",
+        "/images/guangzhou/gallery-2.jpg",
+        "/images/guangzhou/gallery-3.jpg",
+        "/images/guangzhou/gallery-4.jpg"
       ]
     },
     {
@@ -1300,18 +1321,25 @@
         {
           "title": "中山陵",
           "text": "392级台阶登顶俯瞰，气势恢宏。",
-          "image": ""
+          "image": "/images/nanjing/hl-1.jpg"
         },
         {
           "title": "玄武湖",
           "text": "城中大湖，泛舟散步皆宜。",
-          "image": ""
+          "image": "/images/nanjing/hl-2.jpg"
         },
         {
           "title": "夫子庙秦淮河",
           "text": "夜游秦淮，看灯火桨声。",
-          "image": ""
+          "image": "/images/nanjing/hl-3.jpg"
         }
+      ],
+      "cover": "/images/nanjing/cover.jpg",
+      "gallery": [
+        "/images/nanjing/gallery-1.jpg",
+        "/images/nanjing/gallery-2.jpg",
+        "/images/nanjing/gallery-3.jpg",
+        "/images/nanjing/gallery-4.jpg"
       ]
     },
     {
@@ -1341,19 +1369,26 @@
         {
           "title": "拙政园",
           "text": "中国四大名园之首，一步一景。",
-          "image": ""
+          "image": "/images/suzhou/hl-1.jpg"
         },
         {
           "title": "平江路",
           "text": "水巷并行，坐摇橹船听评弹。",
-          "image": ""
+          "image": "/images/suzhou/hl-2.jpg"
         },
         {
           "title": "太湖",
           "text": "乘船观湖，吃太湖三白。",
-          "image": ""
+          "image": "/images/suzhou/hl-3.jpg"
         }
-      ]
+      ],
+      "gallery": [
+        "/images/suzhou/gallery-1.jpg",
+        "/images/suzhou/gallery-2.jpg",
+        "/images/suzhou/gallery-3.jpg",
+        "/images/suzhou/gallery-4.jpg"
+      ],
+      "cover": "/images/suzhou/cover.jpg"
     },
     {
       "id": "tianjin",
@@ -1382,18 +1417,25 @@
         {
           "title": "五大道",
           "text": "万国建筑博物馆，骑行或马车游览。",
-          "image": ""
+          "image": "/images/tianjin/hl-1.jpg"
         },
         {
           "title": "海河夜景",
           "text": "乘船夜游，看两岸灯火。",
-          "image": ""
+          "image": "/images/tianjin/hl-2.jpg"
         },
         {
           "title": "茶馆相声",
           "text": "天津卫的快乐，听一场就懂。",
-          "image": ""
+          "image": "/images/tianjin/hl-3.jpg"
         }
+      ],
+      "cover": "/images/tianjin/cover.jpg",
+      "gallery": [
+        "/images/tianjin/gallery-1.jpg",
+        "/images/tianjin/gallery-2.jpg",
+        "/images/tianjin/gallery-3.jpg",
+        "/images/tianjin/gallery-4.jpg"
       ]
     },
     {
@@ -1423,18 +1465,25 @@
         {
           "title": "冰雪大世界",
           "text": "冬日冰雕王国，梦幻璀璨。",
-          "image": ""
+          "image": "/images/haerbin/hl-1.jpg"
         },
         {
           "title": "中央大街",
           "text": "面包石街道与俄式建筑，马迭尔冰棍必吃。",
-          "image": ""
+          "image": "/images/haerbin/hl-2.jpg"
         },
         {
           "title": "圣索菲亚教堂",
           "text": "绿顶洋葱头教堂，夜景很美。",
-          "image": ""
+          "image": "/images/haerbin/hl-3.jpg"
         }
+      ],
+      "cover": "/images/haerbin/cover.jpg",
+      "gallery": [
+        "/images/haerbin/gallery-1.jpg",
+        "/images/haerbin/gallery-2.jpg",
+        "/images/haerbin/gallery-3.jpg",
+        "/images/haerbin/gallery-4.jpg"
       ]
     },
     {
@@ -1464,18 +1513,25 @@
         {
           "title": "橘子洲",
           "text": "看青年毛主席雕像，周末有烟花。",
-          "image": ""
+          "image": "/images/changsha/hl-1.jpg"
         },
         {
           "title": "岳麓书院",
           "text": "千年学府，爱晚亭看红叶。",
-          "image": ""
+          "image": "/images/changsha/hl-2.jpg"
         },
         {
           "title": "太平街夜宵",
           "text": "臭豆腐、糖油粑粑，越夜越热闹。",
-          "image": ""
+          "image": "/images/changsha/hl-3.jpg"
         }
+      ],
+      "cover": "/images/changsha/cover.jpg",
+      "gallery": [
+        "/images/changsha/gallery-1.jpg",
+        "/images/changsha/gallery-2.jpg",
+        "/images/changsha/gallery-3.jpg",
+        "/images/changsha/gallery-4.jpg"
       ]
     },
     {
@@ -1504,18 +1560,25 @@
         {
           "title": "黄鹤楼",
           "text": "登楼望长江，看古今同框。",
-          "image": ""
+          "image": "/images/wuhan/hl-1.jpg"
         },
         {
           "title": "东湖绿道",
           "text": "中国最大城中湖，骑行樱花季最美。",
-          "image": ""
+          "image": "/images/wuhan/hl-2.jpg"
         },
         {
           "title": "户部巷",
           "text": "热干面、豆皮，过早一条街。",
-          "image": ""
+          "image": "/images/wuhan/hl-3.jpg"
         }
+      ],
+      "cover": "/images/wuhan/cover.jpg",
+      "gallery": [
+        "/images/wuhan/gallery-1.jpg",
+        "/images/wuhan/gallery-2.jpg",
+        "/images/wuhan/gallery-3.jpg",
+        "/images/wuhan/gallery-4.jpg"
       ]
     },
     {
@@ -1546,18 +1609,25 @@
         {
           "title": "三坊七巷",
           "text": "中国城市里坊制度活化石，名人辈出。",
-          "image": ""
+          "image": "/images/fuzhou/hl-1.jpg"
         },
         {
           "title": "福州温泉",
           "text": "\"温泉之都\"，泡汤放松。",
-          "image": ""
+          "image": "/images/fuzhou/hl-2.jpg"
         },
         {
           "title": "西湖公园",
           "text": "城中古园林，秋看菊花展。",
-          "image": ""
+          "image": "/images/fuzhou/hl-3.jpg"
         }
+      ],
+      "cover": "",
+      "gallery": [
+        "/images/fuzhou/gallery-1.jpg",
+        "/images/fuzhou/gallery-2.jpg",
+        "/images/fuzhou/gallery-3.jpg",
+        "/images/fuzhou/gallery-4.jpg"
       ]
     },
     {
@@ -1587,18 +1657,25 @@
         {
           "title": "普陀山",
           "text": "海天佛国，观音道场，香火与海风。",
-          "image": ""
+          "image": "/images/zhoushan/hl-1.jpg"
         },
         {
           "title": "嵊泗列岛",
           "text": "渔村与灯塔，看海上日出。",
-          "image": ""
+          "image": "/images/zhoushan/hl-2.jpg"
         },
         {
           "title": "沈家门渔港",
           "text": "吃一顿现捞海鲜，夜排档热闹。",
-          "image": ""
+          "image": "/images/zhoushan/hl-3.jpg"
         }
+      ],
+      "cover": "/images/zhoushan/cover.jpg",
+      "gallery": [
+        "/images/zhoushan/gallery-1.jpg",
+        "/images/zhoushan/gallery-2.jpg",
+        "/images/zhoushan/gallery-3.jpg",
+        "/images/zhoushan/gallery-4.jpg"
       ]
     },
     {
@@ -1629,18 +1706,25 @@
         {
           "title": "小公园骑楼",
           "text": "百年商埠的骑楼群，复古好拍。",
-          "image": ""
+          "image": "/images/shantou/hl-1.jpg"
         },
         {
           "title": "南澳岛",
           "text": "环岛看灯塔与海湾，吃海鲜。",
-          "image": ""
+          "image": "/images/shantou/hl-2.jpg"
         },
         {
           "title": "牛肉火锅",
           "text": "现切现涮，潮汕人的讲究。",
-          "image": ""
+          "image": "/images/shantou/hl-3.jpg"
         }
+      ],
+      "cover": "/images/shantou/cover.jpg",
+      "gallery": [
+        "/images/shantou/gallery-1.jpg",
+        "/images/shantou/gallery-2.jpg",
+        "/images/shantou/gallery-3.jpg",
+        "/images/shantou/gallery-4.jpg"
       ]
     },
     {
@@ -1669,18 +1753,25 @@
         {
           "title": "蓬莱阁",
           "text": "\"八仙过海\"传说地，海市蜃楼。",
-          "image": ""
+          "image": "/images/yantai/hl-1.jpg"
         },
         {
           "title": "长岛",
           "text": "海上仙山，看海鸥与日落。",
-          "image": ""
+          "image": "/images/yantai/hl-2.jpg"
         },
         {
           "title": "张裕酒庄",
           "text": "百年葡萄酒庄园，品酒参观。",
-          "image": ""
+          "image": "/images/yantai/hl-3.jpg"
         }
+      ],
+      "cover": "/images/yantai/cover.jpg",
+      "gallery": [
+        "/images/yantai/gallery-1.jpg",
+        "/images/yantai/gallery-2.jpg",
+        "/images/yantai/gallery-3.jpg",
+        "/images/yantai/gallery-4.jpg"
       ]
     },
     {
@@ -1710,18 +1801,25 @@
         {
           "title": "日月湾",
           "text": "中国冲浪胜地，海边咖啡店看海。",
-          "image": ""
+          "image": "/images/wanning/hl-1.jpg"
         },
         {
           "title": "兴隆热带植物园",
           "text": "认识热带植物，喝地道兴隆咖啡。",
-          "image": ""
+          "image": "/images/wanning/hl-2.jpg"
         },
         {
           "title": "石梅湾",
           "text": "\"海南最美海湾\"之一，人少沙细。",
-          "image": ""
+          "image": "/images/wanning/hl-3.jpg"
         }
+      ],
+      "cover": "/images/wanning/cover.jpg",
+      "gallery": [
+        "/images/wanning/gallery-1.jpg",
+        "/images/wanning/gallery-2.jpg",
+        "/images/wanning/gallery-3.jpg",
+        "/images/wanning/gallery-4.jpg"
       ]
     },
     {
@@ -1750,18 +1848,25 @@
         {
           "title": "山海关",
           "text": "天下第一关，城墙下听历史。",
-          "image": ""
+          "image": "/images/qinhuangdao/hl-1.jpg"
         },
         {
           "title": "老龙头",
           "text": "万里长城唯一入海处，壮阔。",
-          "image": ""
+          "image": "/images/qinhuangdao/hl-2.jpg"
         },
         {
           "title": "北戴河",
           "text": "老牌避暑胜地，看日出吃海鲜。",
-          "image": ""
+          "image": "/images/qinhuangdao/hl-3.jpg"
         }
+      ],
+      "cover": "/images/qinhuangdao/cover.jpg",
+      "gallery": [
+        "/images/qinhuangdao/gallery-1.jpg",
+        "/images/qinhuangdao/gallery-2.jpg",
+        "/images/qinhuangdao/gallery-3.jpg",
+        "/images/qinhuangdao/gallery-4.jpg"
       ]
     },
     {
@@ -1791,18 +1896,25 @@
         {
           "title": "瘦西湖",
           "text": "\"两堤花柳全依水\"，江南园林典范。",
-          "image": ""
+          "image": "/images/yangzhou/hl-1.jpg"
         },
         {
           "title": "个园",
           "text": "以竹石取胜，四季假山一园看尽。",
-          "image": ""
+          "image": "/images/yangzhou/hl-2.jpg"
         },
         {
           "title": "扬州早茶",
           "text": "烫干丝、蟹黄汤包，早茶文化源远流长。",
-          "image": ""
+          "image": "/images/yangzhou/hl-3.jpg"
         }
+      ],
+      "cover": "/images/yangzhou/cover.jpg",
+      "gallery": [
+        "/images/yangzhou/gallery-1.jpg",
+        "/images/yangzhou/gallery-2.jpg",
+        "/images/yangzhou/gallery-3.jpg",
+        "/images/yangzhou/gallery-4.jpg"
       ]
     },
     {
@@ -1833,18 +1945,25 @@
         {
           "title": "鲁迅故里",
           "text": "三味书屋与百草园，课本里的童年。",
-          "image": ""
+          "image": "/images/shaoxing/hl-1.jpg"
         },
         {
           "title": "沈园",
           "text": "宋代园林，夜游有实景演出。",
-          "image": ""
+          "image": "/images/shaoxing/hl-2.jpg"
         },
         {
           "title": "东湖",
           "text": "乌篷船穿行崖壁水潭，别有洞天。",
-          "image": ""
+          "image": "/images/shaoxing/hl-3.jpg"
         }
+      ],
+      "cover": "/images/shaoxing/cover.jpg",
+      "gallery": [
+        "/images/shaoxing/gallery-1.jpg",
+        "/images/shaoxing/gallery-2.jpg",
+        "/images/shaoxing/gallery-3.jpg",
+        "/images/shaoxing/gallery-4.jpg"
       ]
     },
     {
@@ -1874,18 +1993,25 @@
         {
           "title": "沱江夜景",
           "text": "吊脚楼灯火倒映江面，如梦似幻。",
-          "image": ""
+          "image": "/images/fenghuang/hl-1.jpg"
         },
         {
           "title": "虹桥",
           "text": "古城地标，登桥看全城。",
-          "image": ""
+          "image": "/images/fenghuang/hl-2.jpg"
         },
         {
           "title": "苗寨",
           "text": "银饰与歌舞，感受苗族风情。",
-          "image": ""
+          "image": "/images/fenghuang/hl-3.jpg"
         }
+      ],
+      "cover": "/images/fenghuang/cover.jpg",
+      "gallery": [
+        "/images/fenghuang/gallery-1.jpg",
+        "/images/fenghuang/gallery-2.jpg",
+        "/images/fenghuang/gallery-3.jpg",
+        "/images/fenghuang/gallery-4.jpg"
       ]
     },
     {
@@ -1915,18 +2041,25 @@
         {
           "title": "普达措国家公园",
           "text": "高原湖泊与牧场，徒步洗肺。",
-          "image": ""
+          "image": "/images/shangrila/hl-1.jpg"
         },
         {
           "title": "松赞林寺",
           "text": "\"小布达拉宫\"，金顶气势恢宏。",
-          "image": ""
+          "image": "/images/shangrila/hl-2.jpg"
         },
         {
           "title": "独克宗古城",
           "text": "藏式古城，转经筒祈福。",
-          "image": ""
+          "image": "/images/shangrila/hl-3.jpg"
         }
+      ],
+      "cover": "/images/shangrila/cover.jpg",
+      "gallery": [
+        "/images/shangrila/gallery-1.jpg",
+        "/images/shangrila/gallery-2.jpg",
+        "/images/shangrila/gallery-3.jpg",
+        "/images/shangrila/gallery-4.jpg"
       ]
     }
   ]
