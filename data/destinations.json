@@ -1622,7 +1622,7 @@
           "image": "/images/fuzhou/hl-3.jpg"
         }
       ],
-      "cover": "",
+      "cover": "/images/fuzhou/cover.jpg",
       "gallery": [
         "/images/fuzhou/gallery-1.jpg",
         "/images/fuzhou/gallery-2.jpg",
