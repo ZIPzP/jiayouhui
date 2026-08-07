@@ -16,7 +16,12 @@
   }
   function fillDest() {
     const opts = app.state.destinations.map((d) => `<option value="${app.esc(d.id)}">${app.esc(d.name)}（${app.esc(d.province)}）</option>`).join('');
-    document.getElementById('hf-dest').innerHTML = opts;
+    document.getElementById('hf-dest').innerHTML = opts + '<option value="__custom__">✍️ 自定义目的地（自己输入城市）</option>';
+    document.getElementById('hf-dest').addEventListener('change', () => {
+      const show = document.getElementById('hf-dest').value === '__custom__';
+      document.getElementById('hf-custom').hidden = !show;
+      if (show) document.getElementById('hf-custom').focus();
+    });
   }
   function setHero() {
     const ds = app.state.destinations;
@@ -51,14 +56,18 @@
   function bindQuick() {
     const btn = document.getElementById('hf-submit');
     if (btn) btn.addEventListener('click', () => {
+      const dest = document.getElementById('hf-dest').value;
       const vals = {
-        destinationId: document.getElementById('hf-dest').value,
+        destinationId: dest === '__custom__' ? 'custom' : dest,
         month: document.getElementById('hf-month').value,
         durationDays: document.getElementById('hf-duration').value,
         elderly: document.getElementById('hf-elderly').value,
         adults: document.getElementById('hf-adults').value,
         children: document.getElementById('hf-children').value
       };
+      if (dest === '__custom__') {
+        vals.customDest = { name: document.getElementById('hf-custom').value.trim(), note: '' };
+      }
       sessionStorage.setItem('jyh_quick', JSON.stringify(vals));
       location.href = '/packing.html';
     });

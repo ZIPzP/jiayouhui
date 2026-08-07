@@ -36,7 +36,10 @@
       <div class="quick-planner card">
         <div class="quick-title">✈️ 快速生成我的出行清单</div>
         <div class="form-row">
-          <label>目的地 <select id="hf-dest" class="input"></select></label>
+          <label>目的地
+            <select id="hf-dest" class="input"></select>
+            <input id="hf-custom" class="input" placeholder="✍️ 输入城市名，如：拉萨" hidden style="margin-top:6px" />
+          </label>
           <label>出行月份 <select id="hf-month" class="input"></select></label>
           <label>天数 <select id="hf-duration" class="input">
             <option value="2">2 天</option><option value="3" selected>3 天</option>
