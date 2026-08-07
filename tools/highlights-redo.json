@@ -1,0 +1,217 @@
+{
+  "beijing": [
+    "https://images.unsplash.com/photo-1603036662536-802c5b47f980?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fEZvcmJpZGRlbiUyMENpdHklMjBCZWlqaW5nfGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1510332981392-36692ea3a195?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fEdyZWF0JTIwV2FsbCUyMG9mJTIwQ2hpbmF8ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1601203084563-c3f270c893e6?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8VGVtcGxlJTIwb2YlMjBIZWF2ZW4lMjBCZWlqaW5nfGVufDB8fDB8fHww"
+  ],
+  "hangzhou": [
+    "https://images.unsplash.com/photo-1558422719-d6982435e4e4?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8V2VzdCUyMExha2UlMjBIYW5nemhvdXxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1680535105125-0f719ce3b2c8?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8TG9uZ2ppbmclMjBUZWElMjBGaWVsZHN8ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1757400338008-e320710c553a?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8TGluZ3lpbiUyMFRlbXBsZSUyMEhhbmd6aG91fGVufDB8fDB8fHww"
+  ],
+  "sanya": [
+    "https://images.unsplash.com/photo-1559678158-0c162a7cbf4c?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8TmFuc2hhbiUyMFRlbXBsZSUyMFNhbnlhfGVufDB8fDB8fHww",
+    null,
+    null
+  ],
+  "chengdu": [
+    "https://images.unsplash.com/photo-1625859043880-56acbcb6a6ac?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8R2lhbnQlMjBQYW5kYSUyMEJhc2UlMjBDaGVuZ2R1fGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1462803966231-b88ec09ff42a?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8R2lhbnQlMjBQYW5kYSUyMEJhc2UlMjBDaGVuZ2R1fGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1723242015936-ab12ca2626b3?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8S3VhbnpoYWklMjBBbGxleSUyMENoZW5nZHV8ZW58MHx8MHx8fDA%3D"
+  ],
+  "guilin": [
+    "https://images.unsplash.com/photo-1659233306527-226a26a08634?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8TGklMjBSaXZlciUyMEd1aWxpbnxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1709824641132-76bae18ee951?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8WXVsb25nJTIwUml2ZXIlMjBZYW5nc2h1b3xlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1659233297460-55b6532562f3?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fExpJTIwUml2ZXIlMjBHdWlsaW58ZW58MHx8MHx8fDA%3D"
+  ],
+  "xian": [
+    "https://images.unsplash.com/photo-1602086232476-ff8c246b3438?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8VGVycmFjb3R0YSUyMEFybXl8ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1690732622610-930df3fc41ba?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8WGknYW4lMjBDaXR5JTIwV2FsbHxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1690303129179-8c9720d4656d?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8TXVzbGltJTIwUXVhcnRlciUyMFhpJ2FufGVufDB8fDB8fHww"
+  ],
+  "zhangjiajie": [
+    "https://images.unsplash.com/photo-1569396364521-0fad3682a389?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8WmhhbmdqaWFqaWUlMjBOYXRpb25hbCUyMEZvcmVzdCUyMFBhcmt8ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1630164875646-19bd2b49bae6?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8WmhhbmdqaWFqaWUlMjBOYXRpb25hbCUyMEZvcmVzdCUyMFBhcmt8ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1762087122192-c089f7c1c623?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fFpoYW5namlhamllJTIwTmF0aW9uYWwlMjBGb3Jlc3QlMjBQYXJrfGVufDB8fDB8fHww"
+  ],
+  "qingdao": [
+    "https://images.unsplash.com/photo-1710172899520-1db2e7cf6e32?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8WmhhbnFpYW8lMjBQaWVyJTIwUWluZ2Rhb3xlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1682426182468-0e9492f00cc2?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8QmFkYWd1YW4lMjBRaW5nZGFvfGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1585203832835-affee96ff160?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8VHNpbmd0YW8lMjBCcmV3ZXJ5JTIwTXVzZXVtfGVufDB8fDB8fHww"
+  ],
+  "lijiang": [
+    "https://images.unsplash.com/photo-1510001618818-4b4e3d86bf0f?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8TGlqaWFuZyUyME9sZCUyMFRvd258ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1684764546274-b01907447618?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8SmFkZSUyMERyYWdvbiUyMFNub3clMjBNb3VudGFpbnxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1739855877494-bc4f7a6d9204?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fExpamlhbmclMjBPbGQlMjBUb3dufGVufDB8fDB8fHww"
+  ],
+  "shanghai": [
+    "https://images.unsplash.com/photo-1523281855495-b46cf55b1e7e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8VGhlJTIwQnVuZCUyMFNoYW5naGFpfGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1719015867410-9c809d29b7c9?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8U2hhbmdoYWklMjBNdXNldW18ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1559305985-12da02eab6c0?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fFl1JTIwR2FyZGVuJTIwU2hhbmdoYWl8ZW58MHx8MHx8fDA%3D"
+  ],
+  "dali": [
+    "https://images.unsplash.com/photo-1615874334296-35adc00bf71e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8RXJoYWklMjBMYWtlJTIwRGFsaXxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1694355045197-276c3c72672e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8RGFsaSUyME9sZCUyMFRvd258ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1677922069750-944be2b9ad20?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Q2FuZ3NoYW4lMjBNb3VudGFpbiUyMERhbGl8ZW58MHx8MHx8fDA%3D"
+  ],
+  "chongqing": [
+    "https://images.unsplash.com/photo-1696610647747-8d724ad3783b?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8SG9uZ3lhJTIwQ2F2ZSUyMENob25ncWluZ3xlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1706945658618-94d2cb8187a9?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8WWFuZ3R6ZSUyMFJpdmVyJTIwQ2FibGV3YXklMjBDaG9uZ3Fpbmd8ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1739855877494-bc4f7a6d9204?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Q2lxaWtvdSUyMENob25ncWluZ3xlbnwwfHwwfHx8MA%3D%3D"
+  ],
+  "quanzhou": [
+    null,
+    null,
+    null
+  ],
+  "weihai": [
+    "https://images.unsplash.com/photo-1587538716374-408bb1118e67?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8TGl1Z29uZyUyMElzbGFuZCUyMFdlaWhhaXxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1694494282151-2b200c3c21a7?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8V2VpaGFpJTIwQmVhY2h8ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1709305241296-f85383cac4f0?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8V2VpaGFpJTIwQ29hc3RsaW5lfGVufDB8fDB8fHww"
+  ],
+  "datong": [
+    "https://images.unsplash.com/photo-1664980333650-33a0f22ace18?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8WXVuZ2FuZyUyMEdyb3R0b2VzfGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1597106378392-a6f517dab90b?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8SGFuZ2luZyUyMFRlbXBsZSUyMERhdG9uZ3xlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1710133250046-6e65df370dbf?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8RGF0b25nJTIwQ2l0eSUyMFdhbGx8ZW58MHx8MHx8fDA%3D"
+  ],
+  "enshi": [
+    null,
+    null,
+    null
+  ],
+  "tengchong": [
+    "https://images.unsplash.com/photo-1672843458799-fbaef4727caf?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8SGVzaHVuJTIwQW5jaWVudCUyMFRvd258ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1672843460091-80e04f2ecfc6?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8SGVzaHVuJTIwQW5jaWVudCUyMFRvd258ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1672842035443-1da163e3b938?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8SGVzaHVuJTIwQW5jaWVudCUyMFRvd258ZW58MHx8MHx8fDA%3D"
+  ],
+  "jingdezhen": [
+    "https://images.unsplash.com/photo-1697439300754-5c12d40c1dee?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8SmluZ2RlemhlbiUyMEFuY2llbnQlMjBLaWxufGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1776584617698-735cda644b2c?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8SmluZ2RlemhlbiUyMEFuY2llbnQlMjBLaWxufGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1776584617698-735cda644b2c?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8SmluZ2RlemhlbiUyMHBvcmNlbGFpbnxlbnwwfHwwfHx8MA%3D%3D"
+  ],
+  "liuzhou": [
+    "https://images.unsplash.com/photo-1776175913865-b3a46b907fbf?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8TGl1emhvdSUyMG5pZ2h0fGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1584970936722-30904d81a6f4?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8TGl1emhvdSUyMG5pZ2h0fGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1765699111620-6f1f75e25369?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Q2hlbmd5YW5nJTIwV2luZCUyMGFuZCUyMFJhaW4lMjBCcmlkZ2V8ZW58MHx8MHx8fDA%3D"
+  ],
+  "pingyao": [
+    "https://images.unsplash.com/photo-1688261218652-08457c6aa726?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8UGluZ3lhbyUyMENpdHklMjBXYWxsfGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1760637627114-659997dd5a96?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8UGluZ3lhbyUyMFJpc2hlbmdjaGFuZ3xlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1677607225949-d83fd9d29f83?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8U2h1YW5nbGluJTIwVGVtcGxlJTIwUGluZ3lhb3xlbnwwfHwwfHx8MA%3D%3D"
+  ],
+  "huzhou": [
+    "https://images.unsplash.com/photo-1769405028722-56178ada5c6b?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8TmFueHVuJTIwQW5jaWVudCUyMFRvd258ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1586061968253-7bf5724aab7b?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8QW5qaSUyMEJhbWJvbyUyMEZvcmVzdHxlbnwwfHwwfHx8MA%3D%3D",
+    null
+  ],
+  "leshan": [
+    "https://images.unsplash.com/photo-1694565166352-276ffb8e6a8e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8TGVzaGFuJTIwR2lhbnQlMjBCdWRkaGF8ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1668910485123-055498415fae?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8TW91bnQlMjBFbWVpfGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1624418304676-e1b6ff23e780?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fExlc2hhbiUyMEdpYW50JTIwQnVkZGhhfGVufDB8fDB8fHww"
+  ],
+  "zhangzhou": [
+    "https://images.unsplash.com/photo-1716043835776-9ac7fbc72631?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8TmFuamluZyUyMFR1bG91JTIwRnVqaWFufGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1680666468982-34ec95b50067?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Wmhhbmd6aG91JTIwQW5jaWVudCUyMENpdHl8ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1708992486037-3410746e79b0?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Wmhhbmd6aG91JTIwQW5jaWVudCUyMENpdHl8ZW58MHx8MHx8fDA%3D"
+  ],
+  "beihai": [
+    "https://images.unsplash.com/photo-1599325601183-042bed55081c?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8QmVpaGFpJTIwU2lsdmVyJTIwQmVhY2h8ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1651860282131-e3257674ccd1?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8QmVpaGFpJTIwU2lsdmVyJTIwQmVhY2h8ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1597820334272-af87b2d917c1?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fEJlaWhhaSUyMFNpbHZlciUyMEJlYWNofGVufDB8fDB8fHww"
+  ],
+  "xiamen": [
+    "https://images.unsplash.com/photo-1706151901862-11a5d3e7753f?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8R3VsYW5neXUlMjBJc2xhbmR8ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1681222897726-d3fdcb278117?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8WGlhbWVuJTIwVW5pdmVyc2l0eXxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1688287632043-c2a3b5cd5547?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8U2hhcG93ZWklMjBYaWFtZW58ZW58MHx8MHx8fDA%3D"
+  ],
+  "dalian": [
+    "https://images.unsplash.com/photo-1707747686475-4a87ffe53653?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8WGluZ2hhaSUyMFNxdWFyZSUyMERhbGlhbnxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1707747583444-98207288443b?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8WGluZ2hhaSUyMFNxdWFyZSUyMERhbGlhbnxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1621982068749-d74c76e05720?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8TGFvaHV0YW4lMjBEYWxpYW58ZW58MHx8MHx8fDA%3D"
+  ],
+  "guangzhou": [
+    "https://images.unsplash.com/photo-1569730193579-e4e4c901a64d?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Q2FudG9uJTIwVG93ZXJ8ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1607420413010-11421a35e804?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8U2hhbWlhbiUyMElzbGFuZCUyMEd1YW5nemhvdXxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1693304398101-c6ee38d5666b?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8UGVhcmwlMjBSaXZlciUyMG5pZ2h0JTIwY3J1aXNlJTIwR3Vhbmd6aG91fGVufDB8fDB8fHww"
+  ],
+  "nanjing": [
+    "https://images.unsplash.com/photo-1647410753395-b1ec0a922883?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8U3VuJTIwWWF0JTIwc2VuJTIwTWF1c29sZXVtfGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1651237491958-9a6b5b230c35?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8WHVhbnd1JTIwTGFrZSUyME5hbmppbmd8ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1743534518445-d3ae04cb51fb?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fFN1biUyMFlhdCUyMHNlbiUyME1hdXNvbGV1bXxlbnwwfHwwfHx8MA%3D%3D"
+  ],
+  "suzhou": [
+    "https://images.unsplash.com/photo-1624523994701-83798154f78a?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fEh1bWJsZSUyMEFkbWluaXN0cmF0b3IncyUyMEdhcmRlbnxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1623822932291-32a9f7924838?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8UGluZ2ppYW5nJTIwUm9hZCUyMFN1emhvdXxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1680765747993-0f123b02169a?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8VGFpaHUlMjBMYWtlfGVufDB8fDB8fHww"
+  ],
+  "tianjin": [
+    "https://images.unsplash.com/photo-1775464081312-81bf0fa8578f?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Rml2ZSUyMEdyZWF0JTIwQXZlbnVlcyUyMFRpYW5qaW58ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1652712237391-773a38f82ee5?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Rml2ZSUyMEdyZWF0JTIwQXZlbnVlcyUyMFRpYW5qaW58ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1678097624468-9b17e0da9fe7?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8VGlhbmppbiUyMEV5ZXxlbnwwfHwwfHx8MA%3D%3D"
+  ],
+  "haerbin": [
+    "https://images.unsplash.com/photo-1716308352490-271359910f14?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8SGFyYmluJTIwSWNlJTIwYW5kJTIwU25vdyUyMFdvcmxkfGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1582959998108-e7a3dca5e399?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Q2VudHJhbCUyMFN0cmVldCUyMEhhcmJpbnxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1716308259016-8424849dc156?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8U2FpbnQlMjBTb3BoaWElMjBDYXRoZWRyYWwlMjBIYXJiaW58ZW58MHx8MHx8fDA%3D"
+  ],
+  "changsha": [
+    "https://images.unsplash.com/photo-1724049608602-1af84bf03b45?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8WXVlbHUlMjBBY2FkZW15fGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1621848324965-2857c478fc31?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8WXVlbHUlMjBBY2FkZW15fGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1621855212347-8e09b28facc5?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8WXVlbHUlMjBBY2FkZW15fGVufDB8fDB8fHww"
+  ],
+  "wuhan": [
+    "https://images.unsplash.com/photo-1709870844569-a50997a47a6c?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8WWVsbG93JTIwQ3JhbmUlMjBUb3dlcnxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1720016790842-fdb884267947?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8RWFzdCUyMExha2UlMjBXdWhhbnxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1699664690471-e7a9bea26811?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8SHVidSUyMEFsbGV5JTIwV3VoYW58ZW58MHx8MHx8fDA%3D"
+  ],
+  "fuzhou": [
+    "https://images.unsplash.com/photo-1654363137016-6e3a72570920?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fFRocmVlJTIwTGFuZXMlMjBhbmQlMjBTZXZlbiUyMEFsbGV5c3xlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1692650699195-90ac6a70eeac?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fFRocmVlJTIwTGFuZXMlMjBhbmQlMjBTZXZlbiUyMEFsbGV5c3xlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1703524212699-0a88686e114b?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8RnV6aG91JTIwY2l0eSUyMENoaW5hfGVufDB8fDB8fHww"
+  ],
+  "zhoushan": [
+    "https://images.unsplash.com/photo-1699868461351-57e0c40af384?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8TW91bnQlMjBQdXR1b3xlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1699868463623-f44d8fb5e86f?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8TW91bnQlMjBQdXR1b3xlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1699868461625-74c7783148e8?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8TW91bnQlMjBQdXR1b3xlbnwwfHwwfHx8MA%3D%3D"
+  ],
+  "shantou": [
+    "https://images.unsplash.com/photo-1609948952339-76f02790cfcb?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Q2hhb3NoYW4lMjBiZWVmJTIwaG90cG90fGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1567946008244-08f993981ba5?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fENoYW9zaGFuJTIwYmVlZiUyMGhvdHBvdHxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1773969416268-aa4c032d8de2?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fENoYW9zaGFuJTIwYmVlZiUyMGhvdHBvdHxlbnwwfHwwfHx8MA%3D%3D"
+  ],
+  "yantai": [
+    null,
+    null,
+    null
+  ],
+  "wanning": [
+    null,
+    null,
+    null
+  ],
+  "qinhuangdao": [
+    "https://images.unsplash.com/photo-1618171730119-7aa87e6fb76d?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8U2hhbmhhaWd1YW4lMjBQYXNzfGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1558981017-9c65fb6f2530?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8TGFvbG9uZ3RvdSUyMEdyZWF0JTIwV2FsbHxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1648692753936-75cf72f3da67?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8U2hhbmhhaWd1YW4lMjBQYXNzfGVufDB8fDB8fHww"
+  ],
+  "yangzhou": [
+    "https://images.unsplash.com/photo-1656459590978-052fbee790e8?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8U2xlbmRlciUyMFdlc3QlMjBMYWtlfGVufDB8fDB8fHww",
+    "https://images.unsplash.com/photo-1568368460359-3e777fa1f29c?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fFNsZW5kZXIlMjBXZXN0JTIwTGFrZXxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1744725034330-7a4aba89987e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8WWFuZ3pob3UlMjBvbGQlMjB0b3dufGVufDB8fDB8fHww"
+  ],
+  "shaoxing": [
+    null,
+    null,
+    null
+  ],
+  "fenghuang": [
+    "https://images.unsplash.com/photo-1701153873188-be41833219a1?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8RmVuZ2h1YW5nJTIwQW5jaWVudCUyMFRvd258ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1742522634696-b8bd1b50ad0f?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8SG9uZ3FpYW8lMjBGZW5naHVhbmd8ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1705628078563-14043307d002?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8RmVuZ2h1YW5nJTIwTWlhbyUyMFZpbGxhZ2V8ZW58MHx8MHx8fDA%3D"
+  ],
+  "shangrila": [
+    "https://images.unsplash.com/photo-1759626507894-68a2c5cbc20a?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8U29uZ3phbmxpbiUyME1vbmFzdGVyeXxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1760410731956-8fca77e1201c?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8U29uZ3phbmxpbiUyME1vbmFzdGVyeXxlbnwwfHwwfHx8MA%3D%3D",
+    "https://images.unsplash.com/photo-1672735952864-c6b0e9c4029e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8RHVrZXpvbmclMjBBbmNpZW50JTIwVG93bnxlbnwwfHwwfHx8MA%3D%3D"
+  ]
+}
