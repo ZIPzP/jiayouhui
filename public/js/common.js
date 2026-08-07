@@ -274,6 +274,23 @@
         toast('⬆️ 已把本机 Key 内置到服务器，所有用户共享该 Key');
       } catch (e) { toast('操作失败：' + e.message); }
     });
+    const mpb = $('#mobilePreviewBtn');
+    if (mpb) mpb.addEventListener('click', () => {
+      const pv = $('#mobilePreview');
+      if (!pv) return;
+      const frame = $('#previewIframe');
+      if (frame) frame.src = location.pathname === '/' ? '/' : location.pathname;
+      pv.hidden = false;
+      document.body.style.overflow = 'hidden';
+    });
+    const pc = $('#previewClose');
+    if (pc) pc.addEventListener('click', () => {
+      const pv = $('#mobilePreview');
+      if (pv) pv.hidden = true;
+      document.body.style.overflow = '';
+    });
+    const pv = $('#mobilePreview');
+    if (pv) pv.addEventListener('click', (e) => { if (e.target === pv) { pv.hidden = true; document.body.style.overflow = ''; } });
     const presets = $('#providerPresets');
     if (presets) presets.addEventListener('click', (e) => {
       const btn = e.target.closest('.chip[data-provider]');
@@ -347,7 +364,28 @@
     if (!document.getElementById('toast')) {
       html += '<div id="toast" class="toast" hidden></div>';
     }
+    if (!document.getElementById('mobilePreview')) {
+      html += `<div class="preview-backdrop" id="mobilePreview" hidden>
+        <div class="preview-frame">
+          <div class="preview-bar"><span>📱 手机预览 · 390px</span><button id="previewClose" type="button" class="btn btn-ghost" style="padding:6px 12px">✕ 关闭</button></div>
+          <iframe id="previewIframe" src="/" title="手机预览"></iframe>
+        </div>
+      </div>`;
+    }
     if (html) document.body.insertAdjacentHTML('beforeend', html);
+    // 导航栏加「手机预览」按钮
+    if (!document.getElementById('mobilePreviewBtn')) {
+      const actions = document.querySelector('.nav-actions');
+      if (actions) {
+        const btn = document.createElement('button');
+        btn.id = 'mobilePreviewBtn';
+        btn.className = 'btn btn-ghost';
+        btn.type = 'button';
+        btn.textContent = '📱 手机预览';
+        btn.title = '在手机屏幕尺寸下预览本网站';
+        actions.appendChild(btn);
+      }
+    }
   }
 
   /* ---------------- 导航高亮 ---------------- */
