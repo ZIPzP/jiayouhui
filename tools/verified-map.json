@@ -1,0 +1,397 @@
+{
+  "beijing": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      "https://images.unsplash.com/photo-1509265226434-5f4ddbdb2f7a?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fEZvcmJpZGRlbiUyMENpdHklMjBCZWlqaW5nfGVufDB8fDB8fHww",
+      "https://images.unsplash.com/photo-1510332981392-36692ea3a195?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fEdyZWF0JTIwV2FsbCUyMG9mJTIwQ2hpbmF8ZW58MHx8MHx8fDA%3D",
+      "https://images.unsplash.com/photo-1743343109188-8ed30d92ca78?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fFRlbXBsZSUyMG9mJTIwSGVhdmVuJTIwQmVpamluZ3xlbnwwfHwwfHx8MA%3D%3D"
+    ]
+  },
+  "hangzhou": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      "https://images.unsplash.com/photo-1648874856218-6e25adc4e88e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8TG9uZ2ppbmclMjBUZWElMjBGaWVsZHN8ZW58MHx8MHx8fDA%3D",
+      null
+    ]
+  },
+  "sanya": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "chengdu": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      "https://images.unsplash.com/photo-1625859043880-56acbcb6a6ac?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8R2lhbnQlMjBQYW5kYSUyMEJhc2UlMjBDaGVuZ2R1fGVufDB8fDB8fHww",
+      null,
+      "https://images.unsplash.com/photo-1784534923689-183903242da9?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fEt1YW56aGFpJTIwQWxsZXklMjBDaGVuZ2R1fGVufDB8fDB8fHww"
+    ]
+  },
+  "guilin": {
+    "cover": "https://images.unsplash.com/photo-1659233306527-226a26a08634?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8TGklMjBSaXZlciUyMEd1aWxpbnxlbnwwfHwwfHx8MA%3D%3D",
+    "gallery": [
+      "https://images.unsplash.com/photo-1659233297460-55b6532562f3?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fExpJTIwUml2ZXIlMjBHdWlsaW58ZW58MHx8MHx8fDA%3D",
+      "https://images.unsplash.com/photo-1659233297460-55b6532562f3?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fGd1aWxpbiUyMGxpJTIwcml2ZXJ8ZW58MHx8MHx8fDA%3D"
+    ],
+    "highlights": [
+      "https://images.unsplash.com/photo-1659233306527-226a26a08634?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8TGklMjBSaXZlciUyMEd1aWxpbnxlbnwwfHwwfHx8MA%3D%3D",
+      "https://images.unsplash.com/photo-1659233306527-226a26a08634?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8TGklMjBSaXZlciUyMEd1aWxpbnxlbnwwfHwwfHx8MA%3D%3D",
+      "https://images.unsplash.com/photo-1659233306527-226a26a08634?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8TGklMjBSaXZlciUyMEd1aWxpbnxlbnwwfHwwfHx8MA%3D%3D"
+    ]
+  },
+  "xian": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      "https://images.unsplash.com/photo-1527922891260-918d42a4efc8?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8VGVycmFjb3R0YSUyMEFybXl8ZW58MHx8MHx8fDA%3D",
+      null,
+      null
+    ]
+  },
+  "zhangjiajie": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "qingdao": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      "https://images.unsplash.com/photo-1766418745304-29f43dd27a92?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fFRzaW5ndGFvJTIwQnJld2VyeSUyME11c2V1bXxlbnwwfHwwfHx8MA%3D%3D"
+    ]
+  },
+  "lijiang": {
+    "cover": "https://images.unsplash.com/photo-1781448375973-d80a5be0b1f4?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fExpamlhbmclMjBPbGQlMjBUb3dufGVufDB8fDB8fHww",
+    "gallery": [],
+    "highlights": [
+      "https://images.unsplash.com/photo-1781448375973-d80a5be0b1f4?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fExpamlhbmclMjBPbGQlMjBUb3dufGVufDB8fDB8fHww",
+      "https://images.unsplash.com/photo-1781448375973-d80a5be0b1f4?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fExpamlhbmclMjBPbGQlMjBUb3dufGVufDB8fDB8fHww",
+      "https://images.unsplash.com/photo-1781448375973-d80a5be0b1f4?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fExpamlhbmclMjBPbGQlMjBUb3dufGVufDB8fDB8fHww"
+    ]
+  },
+  "shanghai": {
+    "cover": "https://images.unsplash.com/photo-1523281855495-b46cf55b1e7e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8VGhlJTIwQnVuZCUyMFNoYW5naGFpfGVufDB8fDB8fHww",
+    "gallery": [
+      "https://images.unsplash.com/photo-1574504500022-de9a6309a501?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8VGhlJTIwQnVuZCUyMFNoYW5naGFpfGVufDB8fDB8fHww",
+      "https://images.unsplash.com/photo-1506158669146-619067262a00?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8VGhlJTIwQnVuZCUyMFNoYW5naGFpfGVufDB8fDB8fHww",
+      "https://images.unsplash.com/photo-1574504500022-de9a6309a501?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHNoYW5naGFpJTIwYnVuZHxlbnwwfHwwfHx8MA%3D%3D",
+      "https://images.unsplash.com/photo-1538428494232-9c0d8a3ab403?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2hhbmdoYWklMjBidW5kfGVufDB8fDB8fHww"
+    ],
+    "highlights": [
+      "https://images.unsplash.com/photo-1523281855495-b46cf55b1e7e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8VGhlJTIwQnVuZCUyMFNoYW5naGFpfGVufDB8fDB8fHww",
+      "https://images.unsplash.com/photo-1523281855495-b46cf55b1e7e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8VGhlJTIwQnVuZCUyMFNoYW5naGFpfGVufDB8fDB8fHww",
+      "https://images.unsplash.com/photo-1523281855495-b46cf55b1e7e?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8VGhlJTIwQnVuZCUyMFNoYW5naGFpfGVufDB8fDB8fHww"
+    ]
+  },
+  "dali": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "chongqing": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "quanzhou": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "weihai": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "datong": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "enshi": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "tengchong": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "jingdezhen": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "liuzhou": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "pingyao": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "huzhou": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      "https://images.unsplash.com/photo-1586061968253-7bf5724aab7b?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8QW5qaSUyMEJhbWJvbyUyMEZvcmVzdHxlbnwwfHwwfHx8MA%3D%3D",
+      null
+    ]
+  },
+  "leshan": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "zhangzhou": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "beihai": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "xiamen": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "dalian": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "guangzhou": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "nanjing": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "suzhou": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "tianjin": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "haerbin": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      "https://images.unsplash.com/photo-1716308352490-271359910f14?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8SGFyYmluJTIwSWNlJTIwYW5kJTIwU25vdyUyMFdvcmxkfGVufDB8fDB8fHww",
+      null,
+      null
+    ]
+  },
+  "changsha": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "wuhan": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      "https://images.unsplash.com/photo-1707649631086-ad82c1f45816?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fFllbGxvdyUyMENyYW5lJTIwVG93ZXJ8ZW58MHx8MHx8fDA%3D",
+      null,
+      null
+    ]
+  },
+  "fuzhou": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "zhoushan": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "shantou": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      "https://images.unsplash.com/photo-1765295218807-2d58d3b01123?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fENoYW9zaGFuJTIwYmVlZiUyMGhvdHBvdHxlbnwwfHwwfHx8MA%3D%3D"
+    ]
+  },
+  "yantai": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "wanning": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "qinhuangdao": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "yangzhou": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "shaoxing": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "fenghuang": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      null,
+      null
+    ]
+  },
+  "shangrila": {
+    "cover": null,
+    "gallery": [],
+    "highlights": [
+      null,
+      "https://images.unsplash.com/photo-1760410731956-8fca77e1201c?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8U29uZ3phbmxpbiUyME1vbmFzdGVyeXxlbnwwfHwwfHx8MA%3D%3D",
+      null
+    ]
+  }
+}
