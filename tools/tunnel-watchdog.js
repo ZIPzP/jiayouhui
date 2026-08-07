@@ -12,7 +12,7 @@ const EXE = path.join(ROOT, 'tools', 'cloudflared.exe');
 const TUNNEL_LOG = path.join(ROOT, 'tools', 'tunnel.log');
 const WATCH_LOG = path.join(ROOT, 'tools', 'tunnel-watchdog.log');
 const INTERVAL_MS = 60000;
-const FAIL_LIMIT = 2;
+const FAIL_LIMIT = 5;
 
 let child = null;
 let failCount = 0;
@@ -23,11 +23,8 @@ function log(msg) {
   console.log(line);
 }
 function currentUrl() {
-  try {
-    const t = fs.readFileSync(TUNNEL_LOG, 'utf8');
-    const matches = t.match(/https:\/\/[a-z0-9-]+\.trycloudflare\.com/g);
-    return matches && matches.length ? matches[matches.length - 1] : null;
-  } catch { return null; }
+  // 正式隧道：固定域名
+  return 'https://familytravelhublz.top';
 }
 async function urlOk(url) {
   try {
@@ -46,9 +43,9 @@ function killAllCloudflared() {
 function startTunnel() {
   if (child && child.exitCode === null) { try { child.kill(); } catch {} }
   killAllCloudflared();
-  log('重启隧道…');
+  log('重启正式隧道(jiayouhui)…');
   const out = fs.openSync(TUNNEL_LOG, 'a');
-  child = spawn(EXE, ['tunnel', '--url', 'http://localhost:3000', '--no-autoupdate'], { windowsHide: true, stdio: ['ignore', out, out] });
+  child = spawn(EXE, ['tunnel', '--config', 'C:\\Users\\34968\\.cloudflared\\config.yml', 'run', 'jiayouhui'], { windowsHide: true, stdio: ['ignore', out, out] });
   child.on('exit', (code) => { log('cloudflared 退出 code=' + code); child = null; });
   failCount = 0;
 }
@@ -66,7 +63,8 @@ async function tick() {
 }
 (async () => {
   log('隧道看护已启动，每 ' + (INTERVAL_MS / 1000) + ' 秒检查一次');
-  await new Promise((r) => setTimeout(r, 6000));
+  startTunnel(); // 启动即拉起正式隧道
+  await new Promise((r) => setTimeout(r, 10000));
   await tick();
   setInterval(tick, INTERVAL_MS);
 })();
