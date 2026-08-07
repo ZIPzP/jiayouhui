@@ -53,6 +53,11 @@ function norm(s) { return String(s || '').replace(/[·.·•]/g, '').replace(/\s
       if (idx >= 0 && idx < 4) slot = 'gallery-' + (idx + 1);
     } else if (/封面|背景/.test(base)) {
       slot = 'cover';
+    } else if (/^更多/.test(base)) {
+      // 文件名带"更多"(如 更多照片3.jpg) → 画廊
+      const m = base.match(/(\d+)/);
+      const idx = m ? parseInt(m[1], 10) - 1 : 0;
+      if (idx >= 0 && idx < 4) slot = 'gallery-' + (idx + 1);
     } else {
       const nb = norm(base.replace(new RegExp('^' + norm(dest.name)), '')); // 去掉城市名前缀
       for (let i = 0; i < (dest.highlights || []).length; i++) {
