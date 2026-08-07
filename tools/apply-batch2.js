@@ -22,7 +22,8 @@ async function download(url, file) {
     const buf = Buffer.from(await r.arrayBuffer());
     if (buf.length < 5000) throw new Error('too small');
     fs.writeFileSync(file, buf);
-  } finally { clearTimeout(t); }
+    return true;
+  } catch (e) { return false; } finally { clearTimeout(t); }
 }
 function writeJsonSafe(file, obj) {
   for (let i = 0; i < 6; i++) {
@@ -39,7 +40,8 @@ function writeJsonSafe(file, obj) {
     if (key === 'show') continue;
     const [city, file] = key.split('/');
     const dest = data.destinations.find(x => x.id === city);
-    await download(resizeUrl(src, file === 'cover.jpg' ? 1600 : 1000), path.join(IMG, city, file));
+    const ok = await download(resizeUrl(src, file === 'cover.jpg' ? 1600 : 1000), path.join(IMG, city, file));
+    if (!ok) { console.log('skip', key); continue; }
     const rel = `/images/${city}/${file}`;
     if (file === 'cover.jpg') dest.cover = rel;
     else if (file.startsWith('gallery-')) { const i = parseInt(file.match(/\d+/)[0], 10) - 1; dest.gallery[i] = rel; }
