@@ -1,5 +1,5 @@
 'use strict';
-/** 自动识别「待上传图片」里的用户照片：文件夹=城市，文件名=景点/封面/画廊 */
+/** 自动识别「待上传图片」照片 v2：支持更多照片/根目录编号图/文件名前缀城市 */
 const fs = require('fs');
 const path = require('path');
 const ROOT = 'D:\\家庭旅游篇';
@@ -26,15 +26,25 @@ function norm(s) { return String(s || '').replace(/[·.·•]/g, '').replace(/\s
   (function walk(dir, cityHint) {
     for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
       const full = path.join(dir, ent.name);
-      if (ent.isDirectory()) walk(full, ent.name === '更多图片' ? cityHint : ent.name);
-      else if (/\.(jpe?g|png|webp)$/i.test(ent.name)) items.push({ city: cityHint, file: ent.name, full, inMore: path.basename(dir) === '更多图片' });
+      if (ent.isDirectory()) walk(full, /更多/.test(ent.name) ? cityHint : ent.name);
+      else if (/\.(jpe?g|png|webp)$/i.test(ent.name)) items.push({ city: cityHint, file: ent.name, full, inMore: /更多/.test(path.basename(dir)) });
     }
   })(SRC, null);
 
+  // 按城市分组（用于根目录编号图→画廊）
+  const byCity = {};
+  for (const it of items) { (byCity[it.city || ''] = byCity[it.city || ''] || []).push(it); }
+
   for (const it of items) {
     let dest = dests.find(d => d.name === it.city || d.id === it.city);
-    if (!dest) dest = dests.find(d => it.city && (d.name.includes(it.city) || it.city.includes(d.name)));
+    if (!dest && it.city) dest = dests.find(d => d.name.includes(it.city) || it.city.includes(d.name));
+    // 根目录文件：文件名前缀=城市（如 苏州封面.jpg）
+    if (!dest && !it.city) {
+      const b = it.file;
+      dest = dests.find(d => b.startsWith(d.name) || b.startsWith(d.id));
+    }
     if (!dest) { unmatched.push(it.full.replace(SRC, '')); continue; }
+
     const base = path.basename(it.file, path.extname(it.file));
     let slot = null;
     if (it.inMore) {
@@ -44,13 +54,20 @@ function norm(s) { return String(s || '').replace(/[·.·•]/g, '').replace(/\s
     } else if (/封面|背景/.test(base)) {
       slot = 'cover';
     } else {
-      const nb = norm(base);
+      const nb = norm(base.replace(new RegExp('^' + norm(dest.name)), '')); // 去掉城市名前缀
       for (let i = 0; i < (dest.highlights || []).length; i++) {
         const t = norm(dest.highlights[i].title);
         if (t && (t.includes(nb) || nb.includes(t))) { slot = 'hl-' + (i + 1); break; }
       }
     }
+    // 根目录编号图（如 万宁/1.jpg）→ 画廊
+    if (!slot && !it.inMore && /^\d+$/.test(base)) {
+      const siblings = (byCity[it.city] || []).filter(x => /^\d+\.(jpe?g|png|webp)$/i.test(x.file)).map(x => x.file).sort();
+      const idx = siblings.indexOf(it.file);
+      if (idx >= 0 && idx < 4) slot = 'gallery-' + (idx + 1);
+    }
     if (!slot) { unmatched.push(it.full.replace(SRC, '')); continue; }
+
     const ext = path.extname(it.file).toLowerCase();
     if (ext !== '.jpg' && ext !== '.jpeg') { unmatched.push(it.full.replace(SRC, '') + ' (需jpg)'); continue; }
     const dir = path.join(IMG, dest.id);
