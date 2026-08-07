@@ -1,5 +1,6 @@
-﻿$ErrorActionPreference = 'SilentlyContinue'
+$ErrorActionPreference = 'SilentlyContinue'
 $root = Split-Path -Parent $PSScriptRoot
 Start-Process node -ArgumentList 'server.js' -WorkingDirectory $root -WindowStyle Hidden
 Start-Sleep -Seconds 3
-Start-Process (Join-Path $root 'tools\cloudflared.exe') -ArgumentList 'tunnel','--url','http://localhost:3000','--no-autoupdate' -WindowStyle Hidden -RedirectStandardError (Join-Path $root 'tools\tunnel.log')
+# 隧道由看护程序管理（自动检测并重启）
+Start-Process node -ArgumentList 'tools\tunnel-watchdog.js' -WorkingDirectory $root -WindowStyle Hidden
