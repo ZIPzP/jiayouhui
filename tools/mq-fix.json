@@ -1,0 +1,18 @@
+{
+ "xian/hl-3.jpg": "https://images.unsplash.com/photo-1742689500915-dcc1a95ad11c?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fE11c2xpbSUyMFF1YXJ0ZXIlMjBYaSdhbnxlbnwwfHwwfHx8MA%3D%3D",
+ "qingdao/hl-2.jpg": "https://images.unsplash.com/photo-1659194089115-ebfe7194ef61?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8UWluZ2RhbyUyMGNvYXN0YWwlMjByb2FkJTIwdmlsbGFzfGVufDB8fDB8fHww",
+ "show": {
+  "xian_muslim": [
+   "https://images.unsplash.com/photo-1742689500915-dcc1a95ad11c?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fE11c2xpbSUyMFF1YXJ0ZXIlMjBYaSdhbnxlbnwwfHwwfHx8MA%3D%3D",
+   "https://images.unsplash.com/photo-1742689502186-fe7d6aa1402a?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8TXVzbGltJTIwUXVhcnRlciUyMFhpJ2FufGVufDB8fDB8fHww",
+   "https://images.unsplash.com/photo-1742689501190-c47b51db7cbe?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fFhpJ2FuJTIwTXVzbGltJTIwU3RyZWV0fGVufDB8fDB8fHww",
+   "https://images.unsplash.com/photo-1742689502050-a407e55af693?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8TXVzbGltJTIwUXVhcnRlciUyMFhpJ2FufGVufDB8fDB8fHww"
+  ],
+  "qingdao_bada": [
+   "https://images.unsplash.com/photo-1659194089115-ebfe7194ef61?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8UWluZ2RhbyUyMGNvYXN0YWwlMjByb2FkJTIwdmlsbGFzfGVufDB8fDB8fHww",
+   "https://images.unsplash.com/photo-1647567377738-9d73d9a22bb0?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fFFpbmdkYW8lMjBCYWRhZ3VhbiUyMHZpbGxhc3xlbnwwfHwwfHx8MA%3D%3D",
+   "https://images.unsplash.com/photo-1710172899520-1db2e7cf6e32?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fFFpbmdkYW8lMjBjb2FzdGFsJTIwcm9hZCUyMHZpbGxhc3xlbnwwfHwwfHx8MA%3D%3D",
+   "https://images.unsplash.com/photo-1710173304525-60cacfc1b0b6?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8UWluZ2RhbyUyMEJhZGFndWFuJTIwdmlsbGFzfGVufDB8fDB8fHww"
+  ]
+ }
+}
