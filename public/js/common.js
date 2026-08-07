@@ -72,6 +72,8 @@
     document.documentElement.classList.toggle('elderly', state.elderly);
     const btn = $('#elderlyToggle');
     if (btn) btn.setAttribute('aria-pressed', state.elderly ? 'true' : 'false');
+    const meLabel = $('#menuElderly span');
+    if (meLabel) meLabel.textContent = state.elderly ? '长辈模式（已开启）' : '长辈模式';
   }
   function toggleElderly() {
     state.elderly = !state.elderly;
@@ -209,6 +211,19 @@
     toast(state.ai.apiKey ? '🤖 AI 设置已保存，开始使用大模型' : '已切换为演示模式（内置规则引擎）');
   }
 
+  function openMobilePreview() {
+    const pv = $('#mobilePreview');
+    if (!pv) return;
+    const frame = $('#previewIframe');
+    if (frame) frame.src = location.pathname === '/' ? '/' : location.pathname;
+    pv.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMobilePreview() {
+    const pv = $('#mobilePreview');
+    if (pv) pv.hidden = true;
+    document.body.style.overflow = '';
+  }
   function bindSettings() {
     const et = $('#elderlyToggle');
     if (et) et.addEventListener('click', toggleElderly);
@@ -274,23 +289,26 @@
         toast('⬆️ 已把本机 Key 内置到服务器，所有用户共享该 Key');
       } catch (e) { toast('操作失败：' + e.message); }
     });
-    const mpb = $('#mobilePreviewBtn');
-    if (mpb) mpb.addEventListener('click', () => {
-      const pv = $('#mobilePreview');
-      if (!pv) return;
-      const frame = $('#previewIframe');
-      if (frame) frame.src = location.pathname === '/' ? '/' : location.pathname;
-      pv.hidden = false;
-      document.body.style.overflow = 'hidden';
+    // 设置菜单
+    const closeMenu = () => { const m = $('#settingsMenu'); if (m) m.hidden = true; };
+    const sb = $('#settingsBtn');
+    if (sb) sb.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const m = $('#settingsMenu');
+      if (m) m.hidden = !m.hidden;
     });
+    const me = $('#menuElderly');
+    if (me) me.addEventListener('click', toggleElderly);
+    const ma = $('#menuAi');
+    if (ma) ma.addEventListener('click', () => { closeMenu(); openAiModal(); });
+    const mm = $('#menuMobile');
+    if (mm) mm.addEventListener('click', () => { closeMenu(); openMobilePreview(); });
+    document.addEventListener('click', (e) => { if (!e.target.closest('.settings-wrap')) closeMenu(); });
+    // 手机预览
     const pc = $('#previewClose');
-    if (pc) pc.addEventListener('click', () => {
-      const pv = $('#mobilePreview');
-      if (pv) pv.hidden = true;
-      document.body.style.overflow = '';
-    });
+    if (pc) pc.addEventListener('click', closeMobilePreview);
     const pv = $('#mobilePreview');
-    if (pv) pv.addEventListener('click', (e) => { if (e.target === pv) { pv.hidden = true; document.body.style.overflow = ''; } });
+    if (pv) pv.addEventListener('click', (e) => { if (e.target === pv) closeMobilePreview(); });
     const presets = $('#providerPresets');
     if (presets) presets.addEventListener('click', (e) => {
       const btn = e.target.closest('.chip[data-provider]');
@@ -373,18 +391,24 @@
       </div>`;
     }
     if (html) document.body.insertAdjacentHTML('beforeend', html);
-    // 导航栏加「手机预览」按钮
-    if (!document.getElementById('mobilePreviewBtn')) {
-      const actions = document.querySelector('.nav-actions');
-      if (actions) {
-        const btn = document.createElement('button');
-        btn.id = 'mobilePreviewBtn';
-        btn.className = 'btn btn-ghost';
-        btn.type = 'button';
-        btn.textContent = '📱 手机预览';
-        btn.title = '在手机屏幕尺寸下预览本网站';
-        actions.appendChild(btn);
-      }
+    // 导航栏：把长辈模式 / AI设置 / 手机预览 / 关于 收进「⚙️ 设置」菜单
+    const actions = document.querySelector('.nav-actions');
+    if (actions && !document.getElementById('settingsBtn')) {
+      const et = document.getElementById('elderlyToggle');
+      if (et) et.hidden = true;
+      const ab = document.getElementById('aiSettingsBtn');
+      if (ab) ab.hidden = true;
+      const aboutLink = document.querySelector('.nav-links a[data-nav="about"]');
+      if (aboutLink) aboutLink.remove();
+      actions.innerHTML = `<div class="settings-wrap">
+        <button id="settingsBtn" class="btn btn-ghost" type="button">⚙️ 设置</button>
+        <div class="settings-menu" id="settingsMenu" hidden>
+          <button id="menuElderly" type="button">👴 <span>长辈模式</span></button>
+          <button id="menuAi" type="button">🤖 AI 设置</button>
+          <button id="menuMobile" type="button">📱 手机预览</button>
+          <a href="/about.html">📖 关于</a>
+        </div>
+      </div>`;
     }
   }
 
