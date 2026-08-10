@@ -2,8 +2,6 @@
   'use strict';
   window.pageInit = async function () {
     fillMonths();
-    // 目的地：输入即提示 + 城市自查
-    app.cityAutocomplete('pf-dest', 'pf-dest-sug', 'pf-dest-err', '目的地');
     bindEvents();
     // 从首页快捷规划跳转过来时，自动带入选择并生成
     const quick = sessionStorage.getItem('jyh_quick');
@@ -22,7 +20,7 @@
         if (v.elderly !== undefined) document.getElementById('pf-elderly').value = v.elderly;
         if (v.adults !== undefined) document.getElementById('pf-adults').value = v.adults;
         if (v.children !== undefined) document.getElementById('pf-children').value = v.children;
-        if (validateForm()) generatePacking(formValues());
+        generatePacking(formValues());
       } catch (e) { /* 忽略 */ }
     } else {
       restorePack();
@@ -34,15 +32,6 @@
     const now = new Date().getMonth() + 1;
     const sel = document.getElementById('pf-month');
     sel.innerHTML = labels.map((m, i) => `<option value="${i + 1}" ${i + 1 === now ? 'selected' : ''}>${m}</option>`).join('');
-  }
-  function validateForm() {
-    const raw = document.getElementById('pf-dest').value.trim();
-    const name = app.normCity(raw);
-    const err = document.getElementById('pf-dest-err');
-    if (!name) { if (err) { err.textContent = '请填写目的地城市'; err.hidden = false; } return false; }
-    if (!app.findCityInList(name)) { if (err) { err.textContent = '未找到「' + raw + '」，请从提示中选择'; err.hidden = false; } return false; }
-    if (err) err.hidden = true;
-    return true;
   }
   function formValues() {
     const raw = document.getElementById('pf-dest').value.trim();
@@ -60,7 +49,7 @@
     return Object.assign({}, base, { destinationId: 'custom', customDest: { name: raw, note: '' } });
   }
   function bindEvents() {
-    document.getElementById('pf-submit').addEventListener('click', () => { if (validateForm()) generatePacking(formValues()); });
+    document.getElementById('pf-submit').addEventListener('click', () => generatePacking(formValues()));
     const body = document.getElementById('resultBody');
     body.addEventListener('click', (e) => {
       if (e.target.closest('[data-print]')) { window.print(); return; }

@@ -13,7 +13,6 @@
     const sel = document.getElementById('hf-month');
     if (sel) sel.innerHTML = labels.map((m, i) => `<option value="${i + 1}" ${i + 1 === now ? 'selected' : ''}>${m}</option>`).join('');
   }
-
   function setHero() {
     const ds = app.state.destinations;
     const d = ds[Math.floor(Math.random() * ds.length)];
@@ -45,16 +44,12 @@
     });
   }
   function bindQuick() {
-    // 目的地：输入即提示 + 城市自查
-    app.cityAutocomplete('hf-dest', 'hf-dest-sug', 'hf-dest-err', '目的地');
     const btn = document.getElementById('hf-submit');
     if (btn) btn.addEventListener('click', () => {
       const raw = document.getElementById('hf-dest').value.trim();
       const name = app.normCity(raw);
-      const err = document.getElementById('hf-dest-err');
-      if (!name) { if (err) { err.textContent = '请填写目的地城市'; err.hidden = false; } return; }
-      if (!app.findCityInList(name)) { if (err) { err.textContent = '未找到「' + raw + '」，请从提示中选择'; err.hidden = false; } return; }
-      if (err) err.hidden = true;
+      if (!name) { app.toast('请先填写目的地城市'); return; }
+      // 城市不拦：直接交给出行清单，没找到由 AI 在生成时提示
       const hit = app.state.destinations.find((d) => app.normCity(d.name) === name);
       const vals = {
         destinationId: hit ? hit.id : 'custom',
