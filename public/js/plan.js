@@ -6,26 +6,6 @@
     restorePlan();
   };
 
-  /* ---------- 城市工具（共用 common.js） ---------- */
-  function showErr(id, msg) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    if (msg) { el.textContent = msg; el.hidden = false; } else { el.hidden = true; el.textContent = ''; }
-  }
-  /* 提交前校验（不通过就不调 AI，节省 token） */
-  function validateForm() {
-    const origin = app.normCity(document.getElementById('pl-origin').value);
-    const destName = app.normCity(document.getElementById('pl-dest').value);
-    let ok = true;
-    if (!origin) { showErr('pl-origin-err', '请填写出发城市'); ok = false; }
-    else if (!app.findCityInList(origin)) { showErr('pl-origin-err', '未找到出发城市「' + document.getElementById('pl-origin').value.trim() + '」，请从提示中选择正确的城市名'); ok = false; }
-    else showErr('pl-origin-err', '');
-    if (!destName) { showErr('pl-dest-err', '请填写目的地城市'); ok = false; }
-    else if (!app.findCityInList(destName)) { showErr('pl-dest-err', '未找到该城市「' + document.getElementById('pl-dest').value.trim() + '」，请从提示中选择正确的城市名'); ok = false; }
-    else showErr('pl-dest-err', '');
-    return ok;
-  }
-
   function chipValue(groupSel) { const el = document.querySelector(`#planForm [${groupSel}] .chip.active`); return el ? el.dataset.value : ''; }
   function chipValues(groupSel) { return [...document.querySelectorAll(`#planForm [${groupSel}] .chip.active`)].map((c) => c.dataset.value); }
   function planFormValues() {
@@ -54,9 +34,6 @@
   }
 
   function bindEvents() {
-    // 目的地 / 出发城市：输入即提示 + 城市自查
-    app.cityAutocomplete('pl-dest', 'pl-dest-sug', 'pl-dest-err', '目的地城市');
-    app.cityAutocomplete('pl-origin', 'pl-origin-sug', 'pl-origin-err', '出发城市');
     // 选项 chips
     document.getElementById('planForm').addEventListener('click', (e) => {
       const chip = e.target.closest('.chip');
@@ -110,11 +87,20 @@
     localStorage.setItem('jyh_last_plan', JSON.stringify({ vals, result, ts: Date.now() }));
   }
   async function generatePlan() {
-    // 先校验，不通过就不调 AI（节省 token）
-    if (!validateForm()) { app.toast('请先完善出发城市和目的地（红色提示处）'); return; }
-    const vals = planFormValues();
     const empty = document.getElementById('planEmpty');
     const bodyEl = document.getElementById('planBody');
+    // 硬性必填：城市 + 日期（缺失就在输出框提示，不调 AI）
+    const problems = [];
+    if (!document.getElementById('pl-origin').value.trim()) problems.push('出发城市没填写');
+    if (!document.getElementById('pl-dest').value.trim()) problems.push('目的地城市没填写');
+    if (!document.getElementById('pl-start').value) problems.push('去程日期没选择');
+    if (!document.getElementById('pl-end').value) problems.push('返程日期没选择');
+    if (problems.length) {
+      empty.hidden = true; bodyEl.hidden = false;
+      bodyEl.innerHTML = `<div class="ai-feedback">🤖 AI 主理人：${problems.map((x) => '「' + x + '」').join('、')}，请补全后再生成。</div>`;
+      return;
+    }
+    const vals = planFormValues();
     empty.hidden = true; bodyEl.hidden = false;
     bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)">⏳ AI 主理人正在后台生成行程…<br/>你可以放心切到别的页面/标签页，回来会自动恢复显示结果</p>';
     try {
@@ -122,12 +108,12 @@
       localStorage.setItem('jyh_last_plan', JSON.stringify({ jobId: st.jobId, vals, result: null, ts: Date.now() }));
       app.pollJob(st.jobId, {
         onDone: (result) => { renderPlan(bodyEl, result, vals); savePlan(vals, result); },
-        onError: (msg) => { bodyEl.innerHTML = `<p style="padding:40px;text-align:center;color:var(--danger)">生成失败：${app.esc(msg)}</p>`; }
+        onError: (msg) => { bodyEl.innerHTML = `<div class="ai-feedback">🤖 AI 主理人：${app.esc(msg)}</div>`; }
       });
     } catch (e) {
-      // 校验类错误（400）直接显示
+      // 校验类错误（400）直接显示在输出框（含 AI 猜城市）
       const msg = (e && e.message) || '生成失败';
-      bodyEl.innerHTML = `<p style="padding:40px;text-align:center;color:var(--danger)">${app.esc(msg)}</p>`;
+      bodyEl.innerHTML = `<div class="ai-feedback">🤖 AI 主理人：${app.esc(msg)}</div>`;
     }
   }
   function restorePlan() {

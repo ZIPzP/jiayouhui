@@ -494,3 +494,6 @@ html.elderly .food-desc { font-size: .95rem; }
 .form-error { display: block; color: var(--danger); font-size: .85rem; margin-top: 6px; }
 html.elderly .ac-item { padding: 14px 16px; font-size: 1.05rem; }
 html.elderly .form-error { font-size: .95rem; }
+/* ---------- AI 主理人反馈（输出框） ---------- */
+.ai-feedback { background: #fff7ed; border: 1px solid #fdba74; border-radius: 14px; padding: 18px 20px; color: #9a3412; line-height: 1.7; }
+html.elderly .ai-feedback { padding: 22px 24px; font-size: 1.05rem; }

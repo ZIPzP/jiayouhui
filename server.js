@@ -69,6 +69,29 @@ const config = ai.loadConfig();
 const destinations = (readJson(path.join(ROOT, 'data', 'destinations.json')) || { destinations: [] }).destinations || [];
 // 中国城市名单（输入提示/城市自查用）
 const cities = (readJson(path.join(ROOT, 'data', 'cities.json')) || { cities: [] }).cities || [];
+function guessCity(raw) {
+  const n = String(raw || '').trim().replace(/[省市]$/, '');
+  if (!n) return null;
+  const all = (cities || []).map((c) => c.name);
+  const hit = all.find((x) => x === n) || all.find((x) => x.includes(n)) || all.find((x) => n.includes(x));
+  if (hit) return hit;
+  const score = (a, b) => {
+    if (a === b) return 1;
+    const sa = new Set(a), sb = new Set(b);
+    let common = 0;
+    for (const ch of sa) if (sb.has(ch)) common++;
+    const charScore = common / Math.max(sa.size, sb.size, 1);
+    const lenScore = 1 - Math.abs(a.length - b.length) / Math.max(a.length, b.length, 1);
+    return charScore * 0.7 + lenScore * 0.3;
+  };
+  let best = null, bestScore = -1;
+  for (const x of all) {
+    let s = score(n, x);
+    if (x[0] === n[0]) s = Math.min(1, s + 0.25);
+    if (s > bestScore) { bestScore = s; best = x; }
+  }
+  return bestScore >= 0.55 ? best : null;
+}
 function findCity(raw) {
   const n = String(raw || '').trim().replace(/[省市]$/, '');
   if (!n) return null;
@@ -186,8 +209,14 @@ async function handleApi(req, res, pathname) {
     // 防浪费：出发城市必填；用户输入的城市须为中国真实城市
     const origin = String(body.origin || '').trim();
     if (!origin) return sendJson(res, 400, { error: '请填写出发城市后再生成行程' });
-    if (!findCity(origin)) return sendJson(res, 400, { error: '未找到出发城市「' + origin + '」，请从提示中选择正确的城市名' });
-    if (body.destinationId === 'custom' && !findCity(customName)) return sendJson(res, 400, { error: '未找到该城市「' + customName + '」，请从提示中选择正确的城市名' });
+    if (!findCity(origin)) {
+      const g = guessCity(origin);
+      return sendJson(res, 400, { error: '未找到出发城市「' + origin + '」' + (g ? '，你是不是想输入「' + g + '」？' : '') + ' 请修改后重新生成' });
+    }
+    if (body.destinationId === 'custom' && !findCity(customName)) {
+      const g = guessCity(customName);
+      return sendJson(res, 400, { error: '未找到该城市「' + customName + '」' + (g ? '，你是不是想输入「' + g + '」？' : '') + ' 请修改后重新生成' });
+    }
     // 必填项：去程/返程日期（减少 AI 猜测、节省 token）
     const startDate = String(body.startDate || '').trim();
     const endDate = String(body.endDate || '').trim();
