@@ -16,6 +16,7 @@ const FAIL_LIMIT = 5;
 
 let child = null;
 let failCount = 0;
+let serverDown = 0;
 
 function log(msg) {
   const line = `[${new Date().toISOString()}] ${msg}`;
@@ -49,7 +50,25 @@ function startTunnel() {
   child.on('exit', (code) => { log('cloudflared 退出 code=' + code); child = null; });
   failCount = 0;
 }
+async function serverAlive() {
+  try {
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 5000);
+    const r = await fetch('http://localhost:3000/api/health', { signal: ctl.signal });
+    clearTimeout(t);
+    return r.ok;
+  } catch { return false; }
+}
 async function tick() {
+  // 确保本机网站服务在跑
+  if (!(await serverAlive())) {
+    serverDown++;
+    log('本机网站服务不可达（serverDown=' + serverDown + '），重启服务…');
+    if (serverDown >= 2) {
+      spawn('node', ['server.js'], { cwd: ROOT, windowsHide: true, stdio: 'ignore' });
+      serverDown = 0;
+    }
+  } else { serverDown = 0; }
   const url = currentUrl();
   if (!url) { failCount++; log('暂无隧道地址（failCount=' + failCount + '）'); }
   else {
