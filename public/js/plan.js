@@ -2,15 +2,84 @@
   'use strict';
   let chatHistory = [];
   window.pageInit = async function () {
-    fillDest();
+    // 加载中国城市名单（输入提示 / 城市自查）
+    try { app.state.cities = (await app.api('/api/cities')).cities || []; } catch (e) { app.state.cities = []; }
     bindEvents();
     restorePlan();
   };
 
-  function fillDest() {
-    const opts = app.state.destinations.map((d) => `<option value="${app.esc(d.id)}">${app.esc(d.name)}（${app.esc(d.province)}）</option>`).join('');
-    document.getElementById('pl-dest').innerHTML = opts + '<option value="__custom__">✍️ 自定义目的地（自己输入城市）</option>';
+  /* ---------- 城市工具 ---------- */
+  function normCity(s) { return String(s || '').trim().replace(/[省市]$/, ''); }
+  function findCityInList(raw) {
+    const n = normCity(raw);
+    if (!n) return null;
+    return (app.state.cities || []).find((c) => normCity(c.name) === n) || null;
   }
+  function showErr(id, msg) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (msg) { el.textContent = msg; el.hidden = false; } else { el.hidden = true; el.textContent = ''; }
+  }
+  /* 输入即提示：输一个字就弹出候选，点击补全 */
+  function setupAutocomplete(inputId, sugId, errId, label) {
+    const input = document.getElementById(inputId);
+    const sug = document.getElementById(sugId);
+    if (!input || !sug) return;
+    let active = -1;
+    function close() { sug.hidden = true; sug.innerHTML = ''; active = -1; }
+    function render(v) {
+      const list = (app.state.cities || []).filter((c) => c.name.startsWith(v)).slice(0, 8);
+      const items = list.length ? list : (app.state.cities || []).filter((c) => c.name.includes(v)).slice(0, 8);
+      if (!items.length) { sug.hidden = true; sug.innerHTML = ''; active = -1; return; }
+      sug.innerHTML = items.map((c, i) => `<div class="ac-item${i === active ? ' active' : ''}" data-name="${app.esc(c.name)}"><span>${app.esc(c.name)}</span><small>${app.esc(c.province)}</small></div>`).join('');
+      sug.hidden = false;
+    }
+    function highlight() { [...sug.querySelectorAll('.ac-item')].forEach((el, i) => el.classList.toggle('active', i === active)); }
+    input.addEventListener('input', () => {
+      showErr(errId, '');
+      const v = normCity(input.value);
+      if (!v) { close(); return; }
+      active = -1;
+      render(v);
+    });
+    sug.addEventListener('mousedown', (e) => {
+      const item = e.target.closest('.ac-item');
+      if (!item) return;
+      e.preventDefault(); // 避免 input 失焦导致列表先关闭
+      input.value = item.dataset.name;
+      showErr(errId, '');
+      close();
+    });
+    input.addEventListener('keydown', (e) => {
+      const items = [...sug.querySelectorAll('.ac-item')];
+      if (!items.length) return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); active = (active + 1) % items.length; highlight(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); active = (active - 1 + items.length) % items.length; highlight(); }
+      else if (e.key === 'Enter') { e.preventDefault(); const it = items[active]; if (it) { input.value = it.dataset.name; showErr(errId, ''); } close(); }
+      else if (e.key === 'Escape') close();
+    });
+    input.addEventListener('blur', () => setTimeout(() => {
+      close();
+      const v = normCity(input.value);
+      if (!v) showErr(errId, '请填写' + label);
+      else if (!findCityInList(v)) showErr(errId, '未找到「' + input.value.trim() + '」，请从提示中选择正确的城市名');
+      else showErr(errId, '');
+    }, 200));
+  }
+  /* 提交前校验（不通过就不调 AI，节省 token） */
+  function validateForm() {
+    const origin = normCity(document.getElementById('pl-origin').value);
+    const destName = normCity(document.getElementById('pl-dest').value);
+    let ok = true;
+    if (!origin) { showErr('pl-origin-err', '请填写出发城市'); ok = false; }
+    else if (!findCityInList(origin)) { showErr('pl-origin-err', '未找到出发城市「' + document.getElementById('pl-origin').value.trim() + '」，请从提示中选择正确的城市名'); ok = false; }
+    else showErr('pl-origin-err', '');
+    if (!destName) { showErr('pl-dest-err', '请填写目的地城市'); ok = false; }
+    else if (!findCityInList(destName)) { showErr('pl-dest-err', '未找到该城市「' + document.getElementById('pl-dest').value.trim() + '」，请从提示中选择正确的城市名'); ok = false; }
+    else showErr('pl-dest-err', '');
+    return ok;
+  }
+
   function chipValue(groupSel) { const el = document.querySelector(`#planForm [${groupSel}] .chip.active`); return el ? el.dataset.value : ''; }
   function chipValues(groupSel) { return [...document.querySelectorAll(`#planForm [${groupSel}] .chip.active`)].map((c) => c.dataset.value); }
   function planFormValues() {
@@ -30,20 +99,18 @@
       interests: chipValues('data-multi="pl-interests"'),
       notes: document.getElementById('pl-notes').value.trim()
     };
-    const destVal = document.getElementById('pl-dest').value;
-    if (destVal === '__custom__') {
-      return Object.assign({}, base, { destinationId: 'custom', customDest: { name: document.getElementById('pl-custom').value.trim(), note: document.getElementById('pl-custom-note').value.trim() } });
-    }
-    return Object.assign({}, base, { destinationId: destVal });
+    const destRaw = document.getElementById('pl-dest').value.trim();
+    const destName = normCity(destRaw);
+    // 输入的城市正好是库内目的地 → 用它的数据（天气/坐标）；否则走自定义
+    const hit = app.state.destinations.find((d) => normCity(d.name) === destName);
+    if (hit) return Object.assign({}, base, { destinationId: hit.id });
+    return Object.assign({}, base, { destinationId: 'custom', customDest: { name: destRaw, note: document.getElementById('pl-custom-note').value.trim() } });
   }
 
   function bindEvents() {
-    // 自定义目的地联动
-    document.getElementById('pl-dest').addEventListener('change', () => {
-      const show = document.getElementById('pl-dest').value === '__custom__';
-      document.getElementById('pl-custom-wrap').hidden = !show;
-      if (show) document.getElementById('pl-custom').focus();
-    });
+    // 目的地 / 出发城市：输入即提示 + 城市自查
+    setupAutocomplete('pl-dest', 'pl-dest-sug', 'pl-dest-err', '目的地城市');
+    setupAutocomplete('pl-origin', 'pl-origin-sug', 'pl-origin-err', '出发城市');
     // 选项 chips
     document.getElementById('planForm').addEventListener('click', (e) => {
       const chip = e.target.closest('.chip');
@@ -97,6 +164,8 @@
     localStorage.setItem('jyh_last_plan', JSON.stringify({ vals, result, ts: Date.now() }));
   }
   async function generatePlan() {
+    // 先校验，不通过就不调 AI（节省 token）
+    if (!validateForm()) { app.toast('请先完善出发城市和目的地（红色提示处）'); return; }
     const vals = planFormValues();
     const empty = document.getElementById('planEmpty');
     const bodyEl = document.getElementById('planBody');
@@ -110,7 +179,9 @@
         onError: (msg) => { bodyEl.innerHTML = `<p style="padding:40px;text-align:center;color:var(--danger)">生成失败：${app.esc(msg)}</p>`; }
       });
     } catch (e) {
-      bodyEl.innerHTML = `<p style="padding:40px;text-align:center;color:var(--danger)">生成失败：${app.esc(e.message)}</p>`;
+      // 校验类错误（400）直接显示
+      const msg = (e && e.message) || '生成失败';
+      bodyEl.innerHTML = `<p style="padding:40px;text-align:center;color:var(--danger)">${app.esc(msg)}</p>`;
     }
   }
   function restorePlan() {

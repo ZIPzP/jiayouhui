@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>家游汇 · 家庭旅游推荐与攻略</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>" />
-  <link rel="stylesheet" href="/css/style.css?v=20260810h" />
+  <link rel="stylesheet" href="/css/style.css?v=20260810i" />
 </head>
 <body>  <header class="nav" id="topnav">
     <div class="nav-inner">
@@ -29,22 +29,27 @@
   </header>  <section id="plan" class="section section-alt">
     <div class="section-head">
       <h2>🤖 AI 主理人 · 行程规划</h2>
-      <p>点选需求即可（不想打字也没关系），AI 自动生成含价格估算、交通安排、忌食提醒的逐日详细行程；页面下方还能直接向 AI 主理人提问</p>
+      <p>输入城市名会自动提示补全；出发城市和目的地必填。AI 自动生成含价格估算、交通安排、忌食提醒的逐日详细行程；页面下方还能直接向 AI 主理人提问</p>
     </div>
     <div class="plan-layout">
       <div class="card form-card" id="planForm">
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label" for="pl-dest">目的地</label>
-            <select id="pl-dest" class="input"></select>
-            <div id="pl-custom-wrap" hidden style="margin-top:8px">
-              <input id="pl-custom" class="input" placeholder="✍️ 输入城市名，如：拉萨、厦门、哈尔滨…" />
-              <input id="pl-custom-note" class="input" style="margin-top:6px" placeholder="补充想玩的（可选），如：想看布达拉宫 / 想吃海鲜" />
+            <label class="form-label" for="pl-dest">目的地 <em class="req">*</em></label>
+            <div class="ac-wrap">
+              <input id="pl-dest" class="input" placeholder="输入城市名，如：杭州、厦门、拉萨…（输入即提示）" autocomplete="off" />
+              <div class="ac-list" id="pl-dest-sug" hidden></div>
             </div>
+            <p class="form-error" id="pl-dest-err" hidden></p>
+            <input id="pl-custom-note" class="input" style="margin-top:8px" placeholder="补充想玩的（可选），如：想看西湖 / 想吃海鲜" />
           </div>
           <div class="form-group">
-            <label class="form-label" for="pl-origin">出发城市</label>
-            <input id="pl-origin" class="input" placeholder="如：北京 / 上海" />
+            <label class="form-label" for="pl-origin">出发城市 <em class="req">*</em></label>
+            <div class="ac-wrap">
+              <input id="pl-origin" class="input" placeholder="如：北京 / 上海（输入即提示）" autocomplete="off" />
+              <div class="ac-list" id="pl-origin-sug" hidden></div>
+            </div>
+            <p class="form-error" id="pl-origin-err" hidden></p>
           </div>
         </div>
         <div class="form-row">
@@ -162,7 +167,7 @@
         <button id="chatSend" class="btn btn-primary" type="button">发送</button>
       </div>
     </div>
-  </section>  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习与演示使用，请以官方信息为准</p></footer>  <script src="/js/common.js?v=20260810h"></script>
-  <script src="/js/plan.js?v=20260810h"></script>
+  </section>  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习与演示使用，请以官方信息为准</p></footer>  <script src="/js/common.js?v=20260810i"></script>
+  <script src="/js/plan.js?v=20260810i"></script>
 </body>
 </html>

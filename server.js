@@ -67,6 +67,13 @@ function readBody(req) {
 
 const config = ai.loadConfig();
 const destinations = (readJson(path.join(ROOT, 'data', 'destinations.json')) || { destinations: [] }).destinations || [];
+// 中国城市名单（输入提示/城市自查用）
+const cities = (readJson(path.join(ROOT, 'data', 'cities.json')) || { cities: [] }).cities || [];
+function findCity(raw) {
+  const n = String(raw || '').trim().replace(/[省市]$/, '');
+  if (!n) return null;
+  return cities.find((c) => c.name === n) || null;
+}
 // 对象存储(OSS/COS)支持：config.imageBase 为空时用本地 /images，设置后自动给所有图片路径加前缀（如 https://cdn.xxx.com）
 const IMAGE_BASE = String((config && config.imageBase) || '').replace(/\/+$/, '');
 function applyImageBase(node) {
@@ -105,6 +112,11 @@ async function handleApi(req, res, pathname) {
       galleryCount: (gallery || []).length
     })));
     return sendJson(res, 200, { count: list.length, destinations: list });
+  }
+
+  // GET /api/cities —— 中国城市名单（输入提示 / 城市自查）
+  if (pathname === '/api/cities' && req.method === 'GET') {
+    return sendJson(res, 200, { count: cities.length, cities });
   }
 
   // GET /api/destinations/:id —— 详情
@@ -161,14 +173,20 @@ async function handleApi(req, res, pathname) {
   if (pathname === '/api/plan' && req.method === 'POST') {
     let body;
     try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
+    const customName = String((body.customDest || {}).name || '').trim();
     const dest = destinations.find((d) => d.id === body.destinationId)
-      || (body.destinationId === 'custom' && String((body.customDest || {}).name || '').trim()
-          ? planner.customDestination(String((body.customDest || {}).name || '').trim(), String((body.customDest || {}).note || '').trim())
+      || (body.destinationId === 'custom' && customName
+          ? planner.customDestination(customName, String((body.customDest || {}).note || '').trim())
           : null);
     if (!dest) return sendJson(res, 400, { error: '请选择目的地，或选择「自定义目的地」并填写城市名' });
+    // 防浪费：出发城市必填；用户输入的城市须为中国真实城市
+    const origin = String(body.origin || '').trim();
+    if (!origin) return sendJson(res, 400, { error: '请填写出发城市后再生成行程' });
+    if (!findCity(origin)) return sendJson(res, 400, { error: '未找到出发城市「' + origin + '」，请从提示中选择正确的城市名' });
+    if (body.destinationId === 'custom' && !findCity(customName)) return sendJson(res, 400, { error: '未找到该城市「' + customName + '」，请从提示中选择正确的城市名' });
     const params = {
       destination: dest,
-      origin: String(body.origin || '').trim(),
+      origin,
       startDate: body.startDate || '',
       endDate: body.endDate || '',
       days: Number(body.days) || 3,
