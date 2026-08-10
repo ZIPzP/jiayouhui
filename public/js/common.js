@@ -401,6 +401,7 @@
       const aboutLink = document.querySelector('.nav-links a[data-nav="about"]');
       if (aboutLink) aboutLink.remove();
       actions.innerHTML = `<div class="settings-wrap">
+        <button class="nav-toggle" id="navToggle" type="button" aria-label="打开菜单" aria-expanded="false" title="菜单">☰</button>
         <button id="settingsBtn" class="btn btn-ghost" type="button">⚙️ 设置</button>
         <div class="settings-menu" id="settingsMenu" hidden>
           <button id="menuElderly" type="button">👴 <span>长辈模式</span></button>
