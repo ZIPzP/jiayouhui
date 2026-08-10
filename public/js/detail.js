@@ -10,9 +10,10 @@
   const lb = { urls: [], titles: [], index: 0 };
 
   function hideModal() {
-    window.speechSynthesis.cancel();
+    // 先隐藏弹窗（保证关闭永远生效），再做副作用；speechSynthesis 部分手机浏览器不支持需保护
     const modal = document.getElementById('detailModal');
     if (modal) modal.hidden = true;
+    try { if (window.speechSynthesis && typeof window.speechSynthesis.cancel === 'function') window.speechSynthesis.cancel(); } catch (e) { /* 忽略 */ }
     if (typeof state.scrollY === 'number') {
       const y = state.scrollY;
       state.scrollY = null;
