@@ -27,6 +27,31 @@
     if (state.filter === '全部') return app.state.destinations;
     return app.state.destinations.filter((d) => (d.tags || []).includes(state.filter));
   }
+  /* 封面懒加载：滚动到卡片附近才加载图片 */
+  const coverLoader = (() => {
+    let io = null;
+    function load(cover) {
+      const u = cover.dataset.cover;
+      if (!u) return;
+      const probe = new Image();
+      probe.onload = () => app.setBg(cover, u);
+      probe.src = u;
+    }
+    return {
+      observe(cover, url) {
+        cover.dataset.cover = url;
+        if (!('IntersectionObserver' in window)) { load(cover); return; }
+        if (!io) {
+          io = new IntersectionObserver((entries) => {
+            entries.forEach((en) => {
+              if (en.isIntersecting) { load(en.target); io.unobserve(en.target); }
+            });
+          }, { rootMargin: '300px' });
+        }
+        io.observe(cover);
+      }
+    };
+  })();
   function renderGrid() {
     const grid = document.getElementById('destGrid');
     if (!grid) return;
@@ -52,7 +77,7 @@
     shown.forEach((d) => {
       const card = grid.querySelector(`[data-id="${d.id}"]`);
       const cover = card && card.querySelector('.dest-cover');
-      if (cover && d.cover) { const probe = new Image(); probe.onload = () => app.setBg(cover, d.cover); probe.src = d.cover; }
+      if (cover && d.cover) coverLoader.observe(cover, d.cover);
     });
   }
   function bindEvents() {

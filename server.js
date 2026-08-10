@@ -6,6 +6,7 @@
  * 启动：node server.js   （默认 http://localhost:3000）
  */
 const http = require('http');
+const zlib = require('zlib');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
@@ -38,7 +39,14 @@ function readJson(file) {
 
 function sendJson(res, status, obj) {
   const body = JSON.stringify(obj);
-  res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+  const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
+  const accept = (res.req && res.req.headers && res.req.headers['accept-encoding']) || '';
+  if (body.length > 512 && /gzip/i.test(accept)) {
+    headers['Content-Encoding'] = 'gzip';
+    res.writeHead(status, headers);
+    return res.end(zlib.gzipSync(body));
+  }
+  res.writeHead(status, headers);
   res.end(body);
 }
 
@@ -319,6 +327,7 @@ async function handleApi(req, res, pathname) {
   return sendJson(res, 404, { error: '接口不存在' });
 }
 
+const gzipCache = new Map(); // 静态文件 gzip 缓存（按 mtime 失效）
 function serveStatic(req, res, pathname) {
   let filePath = pathname === '/' ? path.join(PUBLIC, 'index.html') : path.normalize(path.join(PUBLIC, pathname));
   if (!filePath.startsWith(PUBLIC)) {
@@ -331,7 +340,22 @@ function serveStatic(req, res, pathname) {
       return res.end('404 Not Found');
     }
     const ext = path.extname(filePath).toLowerCase();
-    res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': 'no-cache' });
+    const mime = MIME[ext] || 'application/octet-stream';
+    const cacheCtrl = ext === '.html' ? 'no-cache'
+      : (ext === '.js' || ext === '.css' || ext === '.json' || ext === '.svg') ? 'public, max-age=31536000, immutable'
+      : 'public, max-age=604800';
+    const accept = (req.headers['accept-encoding'] || '');
+    const compressible = ['.html', '.css', '.js', '.json', '.svg', '.txt'].includes(ext);
+    if (compressible && /gzip/i.test(accept)) {
+      let gz = gzipCache.get(filePath);
+      if (!gz || gz.mtime !== st.mtimeMs) {
+        gz = { mtime: st.mtimeMs, data: zlib.gzipSync(fs.readFileSync(filePath)) };
+        gzipCache.set(filePath, gz);
+      }
+      res.writeHead(200, { 'Content-Type': mime, 'Cache-Control': cacheCtrl, 'Content-Encoding': 'gzip', 'Vary': 'Accept-Encoding' });
+      return res.end(gz.data);
+    }
+    res.writeHead(200, { 'Content-Type': mime, 'Cache-Control': cacheCtrl });
     fs.createReadStream(filePath).pipe(res);
   });
 }
