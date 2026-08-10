@@ -50,7 +50,7 @@
     // 输入的城市正好是库内目的地 → 用它的数据（天气/坐标）；否则走自定义
     const hit = app.state.destinations.find((d) => app.normCity(d.name) === destName);
     if (hit) return Object.assign({}, base, { destinationId: hit.id });
-    return Object.assign({}, base, { destinationId: 'custom', customDest: { name: destRaw, note: document.getElementById('pl-custom-note').value.trim() } });
+    return Object.assign({}, base, { destinationId: 'custom', customDest: { name: destRaw, note: document.getElementById('pl-notes').value.trim() } });
   }
 
   function bindEvents() {
