@@ -15,7 +15,7 @@
 node server.js
 ```
 
-打开浏览器访问 **http://localhost:3000** 即可。
+打开浏览器访问 **(https://familytravelhublz.top)** 即可。
 
 > 也可以直接双击 `启动.bat`（可选，见下文）。当前已在后台启动的服务可通过 `Ctrl+C` 或任务管理器结束 `node server.js` 进程。
 
