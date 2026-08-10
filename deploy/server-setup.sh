@@ -2,7 +2,7 @@
 # ============================================================
 # 家游汇 · 阿里云服务器一键部署脚本（Ubuntu 22.04 / Debian 12）
 # 用法（在服务器终端粘贴执行）：
-#   wget -O setup.sh https://raw.githubusercontent.com/你的用户名/你的仓库/main/deploy/server-setup.sh
+#   wget -O setup.sh https://raw.githubusercontent.com/ZIPzP/jiayouhui/main/deploy/server-setup.sh
 #   bash setup.sh
 # 脚本会依次：装 Node -> 装 pm2 -> 克隆代码 -> 填 Key/口令 -> 启动 -> 配 Nginx/HTTPS
 # ============================================================
@@ -21,7 +21,9 @@ echo "================ 2/6 安装 pm2 ================"
 npm i -g pm2
 
 echo "================ 3/6 克隆代码 ================"
-read -p "你的 GitHub 仓库地址（形如 https://github.com/用户名/仓库名.git）: " REPO
+REPO="https://github.com/ZIPzP/jiayouhui.git"
+read -p "GitHub 仓库地址（回车使用默认 $REPO）: " REPO_INPUT
+if [ -n "$REPO_INPUT" ]; then REPO="$REPO_INPUT"; fi
 mkdir -p /opt
 cd /opt
 if [ -d /opt/jiayouhui ]; then
