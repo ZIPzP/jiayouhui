@@ -188,6 +188,12 @@ async function handleApi(req, res, pathname) {
     if (!origin) return sendJson(res, 400, { error: '请填写出发城市后再生成行程' });
     if (!findCity(origin)) return sendJson(res, 400, { error: '未找到出发城市「' + origin + '」，请从提示中选择正确的城市名' });
     if (body.destinationId === 'custom' && !findCity(customName)) return sendJson(res, 400, { error: '未找到该城市「' + customName + '」，请从提示中选择正确的城市名' });
+    // 必填项：去程/返程日期（减少 AI 猜测、节省 token）
+    const startDate = String(body.startDate || '').trim();
+    const endDate = String(body.endDate || '').trim();
+    if (!startDate) return sendJson(res, 400, { error: '请选择去程日期' });
+    if (!endDate) return sendJson(res, 400, { error: '请选择返程日期' });
+    if (endDate < startDate) return sendJson(res, 400, { error: '返程日期不能早于去程日期' });
     const params = {
       destination: dest,
       origin,
