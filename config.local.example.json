@@ -1,0 +1,10 @@
+{
+  "access": {
+    "enabled": true,
+    "passcode": "在这里填你的新邀请码",
+    "tokenTtlDays": 30
+  },
+  "ai": {
+    "apiKey": "sk-你的DeepSeekKey"
+  }
+}
