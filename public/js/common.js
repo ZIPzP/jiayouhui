@@ -460,6 +460,7 @@
     ensureShell();
     applyElderly();
     navActive();
+    bindNav();
     bindSettings();
     bindAuth();
     try {
