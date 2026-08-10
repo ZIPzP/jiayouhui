@@ -413,6 +413,19 @@
   }
 
   /* ---------------- 导航高亮 ---------------- */
+  function bindNav() {
+    const toggle = document.getElementById('navToggle');
+    const drawer = document.getElementById('navDrawer');
+    const backdrop = document.getElementById('navBackdrop');
+    if (!toggle || !drawer) return;
+    function openNav() { drawer.classList.add('open'); drawer.setAttribute('aria-hidden', 'false'); if (backdrop) backdrop.classList.add('show'); toggle.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; }
+    function closeNav() { drawer.classList.remove('open'); drawer.setAttribute('aria-hidden', 'true'); if (backdrop) backdrop.classList.remove('show'); toggle.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; }
+    toggle.addEventListener('click', () => { drawer.classList.contains('open') ? closeNav() : openNav(); });
+    if (backdrop) backdrop.addEventListener('click', closeNav);
+    const links = document.getElementById('navLinks');
+    if (links) links.addEventListener('click', (e) => { if (e.target.closest('a')) closeNav(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeNav(); });
+  }
   function navActive() {
     const p = location.pathname.split('/').pop() || 'index.html';
     const map = { 'index.html': 'home', 'destinations.html': 'destinations', 'plan.html': 'plan', 'packing.html': 'packing', 'hot.html': 'hot', 'about.html': 'about' };

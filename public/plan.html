@@ -5,19 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>家游汇 · 家庭旅游推荐与攻略</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>" />
-  <link rel="stylesheet" href="/css/style.css?v=20260810p" />
+  <link rel="stylesheet" href="/css/style.css?v=20260810q" />
 </head>
-<body>  <header class="nav" id="topnav">
+<body>    <header class="nav" id="topnav">
     <div class="nav-inner">
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="打开菜单" aria-expanded="false" title="菜单">☰</button>
       <a class="brand" href="/">🏡 <span>家游汇</span></a>
-      <nav class="nav-links" id="navLinks">
-        <a href="/" data-nav="home">首页</a>
-        <a href="/destinations.html" data-nav="destinations">目的地</a>
-        <a href="/plan.html" data-nav="plan">行程规划</a>
-        <a href="/packing.html" data-nav="packing">出行清单</a>
-        <a href="/hot.html" data-nav="hot">平台热度</a>
-        <a href="/about.html" data-nav="about">关于</a>
-      </nav>
       <div class="nav-actions">
         <button id="elderlyToggle" class="btn btn-elderly" type="button" title="切换老年人模式">
           <span class="elderly-on">👴 长辈模式已开启</span>
@@ -26,7 +19,19 @@
         <button id="aiSettingsBtn" class="btn btn-ghost" type="button" title="AI 设置">⚙️ AI 设置</button>
       </div>
     </div>
-  </header>  <section id="plan" class="section section-alt">
+  </header>
+  <div class="nav-drawer" id="navDrawer" aria-hidden="true">
+    <div class="nav-drawer-head">🏡 家游汇</div>
+    <nav class="nav-links" id="navLinks">
+      <a href="/" data-nav="home">🏠 首页</a>
+      <a href="/destinations.html" data-nav="destinations">🗺️ 目的地</a>
+      <a href="/plan.html" data-nav="plan">🤖 行程规划</a>
+      <a href="/packing.html" data-nav="packing">🎒 出行清单</a>
+      <a href="/hot.html" data-nav="hot">🔥 平台热度</a>
+      <a href="/about.html" data-nav="about">ℹ️ 关于</a>
+    </nav>
+  </div>
+  <div class="nav-backdrop" id="navBackdrop"></div>  <section id="plan" class="section section-alt">
     <div class="section-head">
       <h2>🤖 AI 主理人 · 行程规划</h2>
       <p>输入城市名会自动提示补全；出发城市和目的地必填。AI 自动生成含价格估算、交通安排、忌食提醒的逐日详细行程；页面下方还能直接向 AI 主理人提问</p>
@@ -158,8 +163,8 @@
         <button id="chatSend" class="btn btn-primary" type="button">发送</button>
       </div>
     </div>
-  </section>  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习与演示使用，请以官方信息为准</p></footer>  <script src="/js/common.js?v=20260810p"></script>
-  <script src="/js/html2canvas.min.js?v=20260810p"></script>
-  <script src="/js/plan.js?v=20260810p"></script>
+  </section>  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习与演示使用，请以官方信息为准</p></footer>  <script src="/js/common.js?v=20260810q"></script>
+  <script src="/js/html2canvas.min.js?v=20260810q"></script>
+  <script src="/js/plan.js?v=20260810q"></script>
 </body>
 </html>

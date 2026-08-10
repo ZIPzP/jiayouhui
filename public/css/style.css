@@ -497,3 +497,18 @@ html.elderly .form-error { font-size: .95rem; }
 /* ---------- AI 主理人反馈（输出框） ---------- */
 .ai-feedback { background: #fff7ed; border: 1px solid #fdba74; border-radius: 14px; padding: 18px 20px; color: #9a3412; line-height: 1.7; }
 html.elderly .ai-feedback { padding: 22px 24px; font-size: 1.05rem; }
+/* ---------- 汉堡菜单（侧边抽屉导航） ---------- */
+.nav-toggle { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: none; border-radius: 10px; background: transparent; color: var(--ink); font-size: 1.5rem; cursor: pointer; line-height: 1; flex: none; }
+.nav-toggle:hover { background: var(--primary-light); }
+.nav-actions { margin-left: auto; }
+.nav-drawer { position: fixed; top: 0; left: 0; bottom: 0; width: min(290px, 82vw); background: #fff; z-index: 90; box-shadow: var(--shadow-lg); padding: 0 0 20px; transform: translateX(-105%); transition: transform .25s ease; overflow-y: auto; }
+.nav-drawer.open { transform: translateX(0); }
+.nav-drawer-head { padding: 20px 20px 14px; font-size: 1.2rem; font-weight: 800; color: var(--primary); border-bottom: 1px solid var(--line); margin-bottom: 10px; }
+.nav-drawer .nav-links { display: flex; flex-direction: column; gap: 4px; }
+.nav-drawer .nav-links a { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-radius: 12px; color: var(--ink-soft); font-weight: 600; font-size: 1.05rem; }
+.nav-drawer .nav-links a:hover { background: var(--primary-light); color: var(--primary-dark); }
+.nav-drawer .nav-links a.active { background: var(--primary-light); color: var(--primary-dark); font-weight: 800; }
+.nav-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 85; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+.nav-backdrop.show { opacity: 1; pointer-events: auto; }
+html.elderly .nav-toggle { width: 52px; height: 52px; font-size: 1.7rem; }
+html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; }
