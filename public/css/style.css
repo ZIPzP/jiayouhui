@@ -491,6 +491,6 @@ html.elderly .food-desc { font-size: .95rem; }
 .ac-item small { color: var(--ink-soft); font-size: .8rem; }
 .ac-item:hover, .ac-item.active { background: #f0fdfa; }
 .ac-item + .ac-item { border-top: 1px solid #f1f5f9; }
-.form-error { color: var(--danger); font-size: .85rem; margin-top: 6px; }
+.form-error { display: block; color: var(--danger); font-size: .85rem; margin-top: 6px; }
 html.elderly .ac-item { padding: 14px 16px; font-size: 1.05rem; }
 html.elderly .form-error { font-size: .95rem; }

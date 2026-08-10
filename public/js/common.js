@@ -430,6 +430,13 @@
         state.destinations = data.destinations || [];
       }
     } catch (e) { /* 由页面自行处理 */ }
+    // 统一加载中国城市名单（输入提示/城市自查）
+    try {
+      if (!state.cities.length) {
+        const data = await api('/api/cities');
+        state.cities = data.cities || [];
+      }
+    } catch (e) { /* 由页面自行处理 */ }
     if (typeof window.pageInit === 'function') {
       try { await window.pageInit(); } catch (e) { console.error('[pageInit]', e); }
     }
@@ -449,8 +456,65 @@
     startPage();
   }
 
+  /* ---------- 城市输入提示（各页面共用） ---------- */
+  function normCity(s) { return String(s || '').trim().replace(/[省市]$/, ''); }
+  function findCityInList(raw) {
+    const n = normCity(raw);
+    if (!n) return null;
+    return (state.cities || []).find((c) => normCity(c.name) === n) || null;
+  }
+  function showFormErr(id, msg) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (msg) { el.textContent = msg; el.hidden = false; } else { el.hidden = true; el.textContent = ''; }
+  }
+  function cityAutocomplete(inputId, sugId, errId, label) {
+    const input = document.getElementById(inputId);
+    const sug = document.getElementById(sugId);
+    if (!input || !sug) return;
+    let active = -1;
+    function close() { sug.hidden = true; sug.innerHTML = ''; active = -1; }
+    function render(v) {
+      const list = (state.cities || []).filter((c) => c.name.startsWith(v)).slice(0, 8);
+      const items = list.length ? list : (state.cities || []).filter((c) => c.name.includes(v)).slice(0, 8);
+      if (!items.length) { sug.hidden = true; sug.innerHTML = ''; active = -1; return; }
+      sug.innerHTML = items.map((c, i) => `<div class="ac-item${i === active ? ' active' : ''}" data-name="${esc(c.name)}"><span>${esc(c.name)}</span><small>${esc(c.province)}</small></div>`).join('');
+      sug.hidden = false;
+    }
+    function highlight() { [...sug.querySelectorAll('.ac-item')].forEach((el, i) => el.classList.toggle('active', i === active)); }
+    input.addEventListener('input', () => {
+      showFormErr(errId, '');
+      const v = normCity(input.value);
+      if (!v) { close(); return; }
+      active = -1;
+      render(v);
+    });
+    sug.addEventListener('mousedown', (e) => {
+      const item = e.target.closest('.ac-item');
+      if (!item) return;
+      e.preventDefault();
+      input.value = item.dataset.name;
+      showFormErr(errId, '');
+      close();
+    });
+    input.addEventListener('keydown', (e) => {
+      const items = [...sug.querySelectorAll('.ac-item')];
+      if (!items.length) return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); active = (active + 1) % items.length; highlight(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); active = (active - 1 + items.length) % items.length; highlight(); }
+      else if (e.key === 'Enter') { e.preventDefault(); const it = items[active]; if (it) { input.value = it.dataset.name; showFormErr(errId, ''); } close(); }
+      else if (e.key === 'Escape') close();
+    });
+    input.addEventListener('blur', () => setTimeout(() => {
+      close();
+      const v = normCity(input.value);
+      if (!v) showFormErr(errId, '请填写' + label);
+      else if (!findCityInList(v)) showFormErr(errId, '未找到「' + input.value.trim() + '」，请从提示中选择');
+      else showFormErr(errId, '');
+    }, 200));
+  }
   window.__jyhImgFallback = imgFallback;
-  window.app = { state, api, esc, toast, speak, $, $$, imgFallback, setBg, updateAiHints, pollJob };
+  window.app = { state, api, esc, toast, speak, $, $$, imgFallback, setBg, updateAiHints, pollJob, normCity, findCityInList, cityAutocomplete };
   if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = () => {};
 
   document.addEventListener('DOMContentLoaded', init);

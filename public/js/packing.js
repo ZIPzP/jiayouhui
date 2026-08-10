@@ -2,13 +2,8 @@
   'use strict';
   window.pageInit = async function () {
     fillMonths();
-    const opts = app.state.destinations.map((d) => `<option value="${app.esc(d.id)}">${app.esc(d.name)}（${app.esc(d.province)}）</option>`).join('');
-    document.getElementById('pf-dest').innerHTML = opts + '<option value="__custom__">✍️ 自定义目的地（自己输入城市）</option>';
-    document.getElementById('pf-dest').addEventListener('change', () => {
-      const show = document.getElementById('pf-dest').value === '__custom__';
-      document.getElementById('pf-custom').hidden = !show;
-      if (show) document.getElementById('pf-custom').focus();
-    });
+    // 目的地：输入即提示 + 城市自查
+    app.cityAutocomplete('pf-dest', 'pf-dest-sug', 'pf-dest-err', '目的地');
     bindEvents();
     // 从首页快捷规划跳转过来时，自动带入选择并生成
     const quick = sessionStorage.getItem('jyh_quick');
@@ -17,18 +12,17 @@
       try {
         const v = JSON.parse(quick);
         if (v.destinationId === 'custom' && v.customDest && v.customDest.name) {
-          document.getElementById('pf-dest').value = '__custom__';
-          document.getElementById('pf-custom').hidden = false;
-          document.getElementById('pf-custom').value = v.customDest.name;
+          document.getElementById('pf-dest').value = v.customDest.name;
         } else if (v.destinationId) {
-          document.getElementById('pf-dest').value = v.destinationId;
+          const d = app.state.destinations.find((x) => x.id === v.destinationId);
+          if (d) document.getElementById('pf-dest').value = d.name;
         }
         if (v.month) document.getElementById('pf-month').value = String(v.month);
         if (v.durationDays) document.getElementById('pf-duration').value = String(v.durationDays);
         if (v.elderly !== undefined) document.getElementById('pf-elderly').value = v.elderly;
         if (v.adults !== undefined) document.getElementById('pf-adults').value = v.adults;
         if (v.children !== undefined) document.getElementById('pf-children').value = v.children;
-        generatePacking(formValues());
+        if (validateForm()) generatePacking(formValues());
       } catch (e) { /* 忽略 */ }
     } else {
       restorePack();
@@ -41,8 +35,18 @@
     const sel = document.getElementById('pf-month');
     sel.innerHTML = labels.map((m, i) => `<option value="${i + 1}" ${i + 1 === now ? 'selected' : ''}>${m}</option>`).join('');
   }
+  function validateForm() {
+    const raw = document.getElementById('pf-dest').value.trim();
+    const name = app.normCity(raw);
+    const err = document.getElementById('pf-dest-err');
+    if (!name) { if (err) { err.textContent = '请填写目的地城市'; err.hidden = false; } return false; }
+    if (!app.findCityInList(name)) { if (err) { err.textContent = '未找到「' + raw + '」，请从提示中选择'; err.hidden = false; } return false; }
+    if (err) err.hidden = true;
+    return true;
+  }
   function formValues() {
-    const dest = document.getElementById('pf-dest').value;
+    const raw = document.getElementById('pf-dest').value.trim();
+    const name = app.normCity(raw);
     const base = {
       month: Number(document.getElementById('pf-month').value),
       durationDays: Number(document.getElementById('pf-duration').value),
@@ -51,13 +55,12 @@
       children: Number(document.getElementById('pf-children').value) || 0,
       interests: [...document.querySelectorAll('#interestChips input:checked')].map((i) => i.value)
     };
-    if (dest === '__custom__') {
-      return Object.assign({}, base, { destinationId: 'custom', customDest: { name: document.getElementById('pf-custom').value.trim(), note: '' } });
-    }
-    return Object.assign({}, base, { destinationId: dest });
+    const hit = app.state.destinations.find((d) => app.normCity(d.name) === name);
+    if (hit) return Object.assign({}, base, { destinationId: hit.id });
+    return Object.assign({}, base, { destinationId: 'custom', customDest: { name: raw, note: '' } });
   }
   function bindEvents() {
-    document.getElementById('pf-submit').addEventListener('click', () => generatePacking(formValues()));
+    document.getElementById('pf-submit').addEventListener('click', () => { if (validateForm()) generatePacking(formValues()); });
     const body = document.getElementById('resultBody');
     body.addEventListener('click', (e) => {
       if (e.target.closest('[data-print]')) { window.print(); return; }

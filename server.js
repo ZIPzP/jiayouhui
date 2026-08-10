@@ -144,6 +144,10 @@ async function handleApi(req, res, pathname) {
           ? planner.customDestination(String((body.customDest || {}).name || '').trim(), String((body.customDest || {}).note || '').trim())
           : null);
     if (!dest) return sendJson(res, 400, { error: '请选择目的地，或选择「自定义目的地」并填写城市名' });
+    if (body.destinationId === 'custom') {
+      const customName = String((body.customDest || {}).name || '').trim();
+      if (!findCity(customName)) return sendJson(res, 400, { error: '未找到该城市「' + customName + '」，请从提示中选择正确的城市名' });
+    }
     const params = {
       destination: dest,
       month: Number(body.month) || new Date().getMonth() + 1,
