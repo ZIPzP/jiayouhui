@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const state = { filter: '全部', destId: null, visible: 12 };
+  const state = { filter: '全部', destId: null, visible: 12, modalOpen: false };
   const lb = { urls: [], titles: [], index: 0 };
   window.pageInit = async function () {
     renderFilters();
@@ -108,6 +108,8 @@
     const modal = document.getElementById('detailModal');
     if (!modal) return;
     state.destId = id;
+    state.modalOpen = true;
+    if (history.pushState) history.pushState({ jyhModal: true }, '');
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
     const wrap = document.getElementById('moreWrap');
@@ -137,12 +139,26 @@
       body.innerHTML = `<p style="padding:40px;text-align:center;color:var(--danger)">加载失败：${app.esc(e.message)}</p>`;
     }
   }
-  function closeDetail() {
+  function hideModal() {
     window.speechSynthesis.cancel();
     const modal = document.getElementById('detailModal');
     if (modal) modal.hidden = true;
     document.body.style.overflow = '';
   }
+  function closeDetail() {
+    if (!state.modalOpen) return;
+    state.modalOpen = false;
+    hideModal();
+    // 消除 pushState 的历史记录，避免返回键多退一层
+    if (history.state && history.state.jyhModal) history.back();
+  }
+  // 手机/浏览器返回键：关闭弹窗
+  window.addEventListener('popstate', () => {
+    if (state.modalOpen) {
+      state.modalOpen = false;
+      hideModal();
+    }
+  });
   function renderDetail(d) {
     const wrap = document.getElementById('moreWrap');
     if (wrap) wrap.addEventListener('click', (e) => { if (e.target.closest('#moreBtn')) { state.visible += 12; renderGrid(); } });

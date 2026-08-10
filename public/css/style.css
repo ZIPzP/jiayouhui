@@ -184,7 +184,9 @@ code { background: #f1f5f9; padding: 2px 6px; border-radius: 6px; font-size: .9e
 .modal-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,.6); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
 .modal { position: relative; background: #fff; border-radius: 20px; max-width: 860px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
 .modal-sm { max-width: 480px; padding: 28px; }
-.modal-close { position: sticky; top: 12px; float: right; z-index: 5; margin-right: 12px; width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(255,255,255,.9); font-size: 1.1rem; cursor: pointer; box-shadow: var(--shadow); }
+.modal-close { position: absolute; top: 12px; right: 12px; z-index: 30; width: 44px; height: 44px; border-radius: 50%; border: none; background: rgba(255,255,255,.92); color: var(--ink); font-size: 1.2rem; cursor: pointer; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center; }
+.modal-close:hover { background: #fff; }
+html.elderly .modal-close { width: 52px; height: 52px; font-size: 1.3rem; }
 .detail-hero { height: 320px; background-size: cover; background-position: center; position: relative; }
 .detail-hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(15,23,42,.75)); }
 .detail-hero h2 { position: absolute; bottom: 18px; left: 24px; color: #fff; font-size: 2rem; text-shadow: 0 3px 12px rgba(0,0,0,.5); }
