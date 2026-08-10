@@ -75,6 +75,7 @@
     // 结果区 打印/朗读
     document.getElementById('planBody').addEventListener('click', (e) => {
       if (e.target.closest('[data-print-plan]')) { window.print(); return; }
+      if (e.target.closest('[data-save-img]')) { app.saveAsImage('planBody', '家游汇-行程规划.png'); return; }
       const r = e.target.closest('[data-read]');
       if (r) { app.speak(r.dataset.read); return; }
     });
@@ -193,7 +194,8 @@
       ${dayHtml}
       ${(data.tips || []).length ? `<div class="tips-box"><strong>💡 出行提醒</strong><ul>${data.tips.map((t) => `<li>${app.esc(t)}</li>`).join('')}</ul></div>` : ''}
       <div class="result-actions">
-        <button class="btn btn-primary" type="button" data-print-plan>🖨️ 打印行程</button>
+        <button class="btn btn-primary" type="button" data-print-plan>🖨️ 打印 / 存为 PDF</button>
+        <button class="btn btn-ghost" type="button" data-save-img>📷 保存为图片</button>
         <button class="btn btn-ghost read-aloud" type="button" data-read="${app.esc(data.title + '。' + (data.summary || '') + (data.days || []).map((d) => '第' + d.day + '天，' + (d.schedule || []).map((s) => s.time + s.activity).join('，')).join('。'))}">🔊 朗读行程</button>
       </div>`;
   }

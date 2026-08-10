@@ -513,8 +513,28 @@
       else showFormErr(errId, '');
     }, 200));
   }
+  /* ---------- 保存为图片（结果区截图，html2canvas） ---------- */
+  async function saveAsImage(elId, filename) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    if (!window.html2canvas) { toast('当前浏览器暂不支持截图，请用「打印 / 存为 PDF」'); return; }
+    try {
+      const actions = el.querySelector('.result-actions');
+      const prev = actions ? actions.style.display : '';
+      if (actions) actions.style.display = 'none'; // 截图时先藏按钮
+      const canvas = await window.html2canvas(el, { backgroundColor: '#ffffff', scale: 2, useCORS: true });
+      if (actions) actions.style.display = prev;
+      const a = document.createElement('a');
+      a.download = filename || '家游汇.png';
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+      toast('✅ 图片已保存');
+    } catch (e) {
+      toast('保存图片失败，请用「打印 / 存为 PDF」');
+    }
+  }
   window.__jyhImgFallback = imgFallback;
-  window.app = { state, api, esc, toast, speak, $, $$, imgFallback, setBg, updateAiHints, pollJob, normCity, findCityInList, cityAutocomplete };
+  window.app = { state, api, esc, toast, speak, $, $$, imgFallback, setBg, updateAiHints, pollJob, normCity, findCityInList, cityAutocomplete, saveAsImage };
   if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = () => {};
 
   document.addEventListener('DOMContentLoaded', init);

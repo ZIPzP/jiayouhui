@@ -64,6 +64,7 @@
     const body = document.getElementById('resultBody');
     body.addEventListener('click', (e) => {
       if (e.target.closest('[data-print]')) { window.print(); return; }
+      if (e.target.closest('[data-save-img]')) { app.saveAsImage('resultBody', '家游汇-出行清单.png'); return; }
       const r = e.target.closest('[data-read]');
       if (r) { app.speak(r.dataset.read); return; }
     });
@@ -145,7 +146,8 @@
       ${groupHtml}
       <div class="tips-box"><strong>💡 出行贴士</strong><ul>${tips}</ul></div>
       <div class="result-actions">
-        <button class="btn btn-primary" type="button" data-print>🖨️ 打印清单</button>
+        <button class="btn btn-primary" type="button" data-print>🖨️ 打印 / 存为 PDF</button>
+        <button class="btn btn-ghost" type="button" data-save-img>📷 保存为图片</button>
         <button class="btn btn-ghost read-aloud" type="button" data-read="${app.esc(destName + '出行清单。' + (data.items || []).map(i => i.name + '，' + (i.reason || '')).join('。') + '。' + (data.tips || []).join('。'))}">🔊 朗读清单</button>
       </div>`;
     [...el.querySelectorAll('.ck')].forEach((ck) => {
