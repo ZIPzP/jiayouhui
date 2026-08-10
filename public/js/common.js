@@ -135,38 +135,19 @@
 
   function updateAiModal() {
     const st = $('#aiServerStatus');
-    if (!st) return;
     const keyGroup = $('#aiKeyGroup');
-    const storeBtn = $('#aiStoreServer');
-    const clearBtn = $('#aiClearServer');
     if (state.serverKey) {
-      st.hidden = false;
+      if (st) st.hidden = false;
       if (keyGroup) keyGroup.hidden = true;
-      if (storeBtn) storeBtn.hidden = true;
-      if (clearBtn) clearBtn.hidden = false;
     } else {
-      st.hidden = true;
+      if (st) st.hidden = true;
       if (keyGroup) keyGroup.hidden = false;
-      if (storeBtn) storeBtn.hidden = false;
-      if (clearBtn) clearBtn.hidden = true;
     }
-    const accStatus = $('#accStatus');
-    if (accStatus) {
-      accStatus.hidden = false;
-      accStatus.textContent = state.accessEnabled ? '🔒 已启用：只有输入邀请码的人才能进入使用' : '🔓 未启用：任何人可直接访问（推荐启用）';
-      const accClear = $('#accClear');
-      if (accClear) accClear.hidden = !state.accessEnabled;
-      const accInput = $('#accInputGroup');
-      if (accInput) accInput.hidden = state.accessEnabled;
-    }
-    const keyBtn = $('#keyToServer');
-    if (keyBtn) keyBtn.hidden = state.serverKey || !state.ai.apiKey;
   }
-
   function updateAiHints() {
     const m = $('#aiModeHint');
     if (m) m.textContent = state.serverKey ? '🔒 服务端已内置 Key（仅服务器持有，浏览器不保存）· ' + (state.ai.model || '默认模型')
-      : (state.ai.apiKey ? '🤖 当前使用浏览器本地 Key：' + (state.ai.model || '默认') + '（可点「内置到服务器」改为服务端保存）'
+      : (state.ai.apiKey ? '🤖 当前使用浏览器本地 Key：' + (state.ai.model || '默认')
       : '📋 演示模式（内置规则引擎）。配置 DeepSeek Key 后启用大模型。');
     const ph = $('#planAiHint');
     if (ph) ph.textContent = state.serverKey ? '🔒 AI 主理人已接入（服务端内置 Key，仅服务器持有）'
@@ -233,62 +214,6 @@
     if (ac) ac.addEventListener('click', closeAiModal);
     const save = $('#ai-save');
     if (save) save.addEventListener('click', saveAi);
-    const store = $('#aiStoreServer');
-    if (store) store.addEventListener('click', async () => {
-      const k = $('#ai-key').value.trim();
-      if (!k) { toast('请先在上方输入 API Key'); return; }
-      try {
-        await api('/api/ai-key', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ apiKey: k }) });
-        localStorage.removeItem('jyh_ai');
-        state.ai = {};
-        state.serverKey = true;
-        updateAiHints(); updateAiModal();
-        toast('🔒 Key 已内置到服务器（仅本机），浏览器中的 Key 已清除');
-      } catch (e) { toast('保存失败：' + e.message); }
-    });
-    const clear = $('#aiClearServer');
-    if (clear) clear.addEventListener('click', async () => {
-      try {
-        await api('/api/ai-key', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ apiKey: '' }) });
-        state.serverKey = false;
-        updateAiHints(); updateAiModal();
-        toast('已清除服务端 Key');
-      } catch (e) { toast('清除失败：' + e.message); }
-    });
-    const accSave = $('#accSave');
-    if (accSave) accSave.addEventListener('click', async () => {
-      const code = $('#accCode').value.trim();
-      if (!code) { toast('请输入邀请码'); return; }
-      try {
-        await api('/api/access', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ passcode: code }) });
-        state.accessEnabled = true;
-        $('#accCode').value = '';
-        updateAiModal();
-        toast('🔑 邀请码已启用：' + code);
-      } catch (e) { toast('设置失败：' + e.message); }
-    });
-    const accClear = $('#accClear');
-    if (accClear) accClear.addEventListener('click', async () => {
-      try {
-        await api('/api/access', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ passcode: '' }) });
-        state.accessEnabled = false;
-        updateAiModal();
-        toast('已关闭邀请码（所有人可访问）');
-      } catch (e) { toast('操作失败：' + e.message); }
-    });
-    const k2s = $('#keyToServer');
-    if (k2s) k2s.addEventListener('click', async () => {
-      const k = state.ai.apiKey;
-      if (!k) { toast('本机没有已保存的 Key'); return; }
-      try {
-        await api('/api/ai-key', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ apiKey: k }) });
-        localStorage.removeItem('jyh_ai');
-        state.ai = {};
-        state.serverKey = true;
-        updateAiHints(); updateAiModal();
-        toast('⬆️ 已把本机 Key 内置到服务器，所有用户共享该 Key');
-      } catch (e) { toast('操作失败：' + e.message); }
-    });
     // 设置菜单
     const closeMenu = () => { const m = $('#settingsMenu'); if (m) m.hidden = true; };
     const sb = $('#settingsBtn');
@@ -354,8 +279,6 @@
             <label class="form-label" for="ai-key">API Key</label>
             <input id="ai-key" type="password" class="input" placeholder="sk-..." autocomplete="off" />
           </div>
-          <button id="aiStoreServer" class="btn btn-ghost btn-block" type="button">🔒 内置到服务器（仅本机保存，浏览器不留 Key）</button>
-          <button id="aiClearServer" class="btn btn-ghost btn-block" type="button" hidden>🗑️ 清除服务端 Key</button>
           <div style="height:10px"></div>
           <div class="form-group">
             <label class="form-label" for="ai-base">接口地址 Base URL</label>
@@ -366,16 +289,6 @@
             <input id="ai-model" type="text" class="input" placeholder="deepseek-chat" />
           </div>
           <button id="ai-save" class="btn btn-primary btn-lg btn-block" type="button">保存设置</button>
-          <div style="border-top:1px solid var(--line);margin:18px 0 12px"></div>
-          <h4 style="margin-bottom:6px">🔑 邀请码（谁可以用你的 API）</h4>
-          <p class="form-hint">把邀请码发给邀请的朋友；他们打开网站输入邀请码后，就能使用你的 DeepSeek API。未输邀请码的人进不来。</p>
-          <div id="accStatus" class="ai-server-status" hidden></div>
-          <div class="form-group" id="accInputGroup">
-            <input id="accCode" type="text" class="input" placeholder="设置你的邀请码，如：888888" autocomplete="off" />
-          </div>
-          <button id="accSave" class="btn btn-primary btn-block" type="button">🔑 保存并启用邀请码</button>
-          <button id="accClear" class="btn btn-ghost btn-block" type="button" hidden>关闭邀请码（所有人可访问）</button>
-          <button id="keyToServer" class="btn btn-ghost btn-block" type="button" hidden>⬆️ 把本机已保存的 Key 内置到服务器（所有用户共享）</button>
         </div>
       </div>`;
     }

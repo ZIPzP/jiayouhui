@@ -305,24 +305,6 @@ async function handleApi(req, res, pathname) {
     });
   }
 
-  // POST /api/access —— 设置/清除邀请码（访问口令），仅本机可操作
-  if (pathname === '/api/access' && req.method === 'POST') {
-    if (!auth.isLoopback(req)) return sendJson(res, 403, { error: '仅限本机设置' });
-    let body;
-    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
-    const code = String(body.passcode || '').trim();
-    auth.savePasscode(code);
-    return sendJson(res, 200, { ok: true, enabled: Boolean(code) });
-  }
-  // POST /api/ai-key —— 保存/清除服务端内置 Key（仅本机可操作，写入 config.local.json，不入 git）
-  if (pathname === '/api/ai-key' && req.method === 'POST') {
-    if (!auth.isLoopback(req)) return sendJson(res, 403, { error: '仅限本机设置' });
-    let body;
-    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
-    const key = String(body.apiKey || '').trim();
-    ai.saveServerKey(key);
-    return sendJson(res, 200, { ok: true, keySource: key ? 'server' : 'none', hasServerKey: ai.hasServerKey() });
-  }
 
   return sendJson(res, 404, { error: '接口不存在' });
 }
@@ -371,7 +353,7 @@ const server = http.createServer(async (req, res) => {
     try {
       // 访问口令门禁：启用时除登录/健康检查外，所有 /api/* 需带有效令牌
       const gate = auth.accessConfig();
-      if (gate.enabled && !['/api/auth', '/api/auth/status', '/api/health', '/api/access'].includes(pathname)) {
+      if (gate.enabled && !['/api/auth', '/api/auth/status', '/api/health'].includes(pathname)) {
         if (!auth.verifyToken(auth.extractBearer(req))) {
           return sendJson(res, 401, { error: 'unauthorized', needAuth: true });
         }
