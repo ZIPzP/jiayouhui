@@ -100,6 +100,14 @@
       bodyEl.innerHTML = `<div class="ai-feedback">🤖 AI 主理人：${problems.map((x) => '「' + x + '」').join('、')}，请补全后再生成。</div>`;
       return;
     }
+    // 出发与目的地不能同城（否则行程无参考价值，不调 AI）
+    const originRaw2 = document.getElementById('pl-origin').value.trim();
+    const destRaw2 = document.getElementById('pl-dest').value.trim();
+    if (originRaw2 && destRaw2 && app.normCity(originRaw2) === app.normCity(destRaw2)) {
+      empty.hidden = true; bodyEl.hidden = false;
+      bodyEl.innerHTML = `<div class="ai-feedback">🤖 AI 主理人：出发城市和目的地是同一个城市「${app.esc(destRaw2)}」，行程没有参考价值，请换个目的地。</div>`;
+      return;
+    }
     const vals = planFormValues();
     empty.hidden = true; bodyEl.hidden = false;
     bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)">⏳ AI 主理人正在后台生成行程…<br/>你可以放心切到别的页面/标签页，回来会自动恢复显示结果</p>';

@@ -217,6 +217,12 @@ async function handleApi(req, res, pathname) {
       const g = guessCity(customName);
       return sendJson(res, 400, { error: '未找到该城市「' + customName + '」' + (g ? '，你是不是想输入「' + g + '」？' : '') + ' 请修改后重新生成' });
     }
+    // 出发城市与目的地不能相同（否则行程无参考价值）
+    const originCity = findCity(origin);
+    const destRealName = body.destinationId === 'custom' ? customName : ((destinations.find((d) => d.id === body.destinationId) || {}).name || '');
+    if (originCity && destRealName && String(originCity.name).replace(/[省市]$/, '') === String(destRealName).replace(/[省市]$/, '')) {
+      return sendJson(res, 400, { error: '出发城市和目的地是同一个城市「' + destRealName + '」，行程没有参考价值，请换个目的地' });
+    }
     // 必填项：去程/返程日期（减少 AI 猜测、节省 token）
     const startDate = String(body.startDate || '').trim();
     const endDate = String(body.endDate || '').trim();
