@@ -35,7 +35,23 @@
     <div style="text-align:center;margin-top:26px">
       <a class="btn btn-primary" href="/plan.html">🤖 去规划行程</a>
     </div>
-  </section>  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习与演示使用，请以官方信息为准</p></footer>  <script src="/js/common.js?v=20260810f"></script>
-  <script src="/js/hot.js?v=20260810f"></script>
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="关闭">✕</button>
+    <button class="lightbox-nav prev" id="lightboxPrev" type="button" aria-label="上一张">‹</button>
+    <img id="lightboxImg" alt="" />
+    <button class="lightbox-nav next" id="lightboxNext" type="button" aria-label="下一张">›</button>
+    <div class="lightbox-caption" id="lightboxCaption"></div>
+  </div>
+
+  <div class="modal-backdrop" id="detailModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-label="目的地详情">
+      <button class="modal-close" id="modalClose" type="button" aria-label="关闭">✕</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  </section>  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习与演示使用，请以官方信息为准</p></footer>  <script src="/js/common.js?v=20260810g"></script>
+  <script src="/js/detail.js?v=20260810g"></script>
+  <script src="/js/hot.js?v=20260810g"></script>
 </body>
 </html>
