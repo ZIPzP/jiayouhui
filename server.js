@@ -13,6 +13,7 @@ const ai = require('./lib/ai');
 const rec = require('./lib/recommend');
 const planner = require('./lib/planner');
 const auth = require('./lib/auth');
+const weather = require('./lib/weather');
 const collector = require('./lib/collector');
 
 const ROOT = __dirname;
@@ -191,6 +192,19 @@ async function handleApi(req, res, pathname) {
     const job = jobs.get(String(q.id || ''));
     if (!job) return sendJson(res, 404, { error: '任务不存在或已过期' });
     return sendJson(res, 200, { jobId: String(q.id || ''), status: job.status, result: job.result || null, error: job.error || null });
+  }
+
+  // GET /api/weather?id=xxx —— 目的地未来 15 天天气预报
+  if (pathname === '/api/weather' && req.method === 'GET') {
+    const q = url.parse(req.url, true).query;
+    const dest = destinations.find((d) => d.id === String(q.id || ''));
+    if (!dest || !dest.lat) return sendJson(res, 400, { error: '目的地不存在或缺少坐标' });
+    try {
+      const data = await weather.getForecast(dest);
+      return sendJson(res, 200, data);
+    } catch (e) {
+      return sendJson(res, 502, { error: '天气获取失败：' + String(e.message || e) });
+    }
   }
 
   // GET /api/health —— 含 AI Key 来源状态（不返回 Key 本身）

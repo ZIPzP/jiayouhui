@@ -46,7 +46,9 @@
       ],
       "elderlyFriendly": "故宫、天坛等核心景区步道平缓、可租轮椅，建议错峰出行并提前在线预约门票。",
       "packingNote": "春秋带薄外套，冬季务必厚羽绒服+帽子手套；市内景点步行多，给老人准备舒适防滑鞋。",
-      "description": "北京是带孩子和父母感受中华文化的首选：故宫的威严、长城的壮阔、胡同里的烟火气，一次旅程收获满满的家族回忆。地铁覆盖广、景点设施完善，对老人非常友好。"
+      "description": "北京是带孩子和父母感受中华文化的首选：故宫的威严、长城的壮阔、胡同里的烟火气，一次旅程收获满满的家族回忆。地铁覆盖广、景点设施完善，对老人非常友好。",
+      "lat": 39.9042,
+      "lon": 116.4074
     },
     {
       "id": "hangzhou",
@@ -94,7 +96,9 @@
       ],
       "elderlyFriendly": "西湖环线平缓、公交地铁便利；推荐避开周末客流高峰，可租公共自行车或坐游船代步。",
       "packingNote": "春夏多雨带雨伞雨衣；湖边早晚温差大，薄外套必备；茶园蚊虫多备驱蚊液。",
-      "description": "“上有天堂，下有苏杭”。杭州的节奏很慢，西湖边推着老人散步、陪孩子喂鸽子，是典型适合全家老小的休闲目的地。"
+      "description": "“上有天堂，下有苏杭”。杭州的节奏很慢，西湖边推着老人散步、陪孩子喂鸽子，是典型适合全家老小的休闲目的地。",
+      "lat": 30.2741,
+      "lon": 120.1551
     },
     {
       "id": "sanya",
@@ -143,7 +147,9 @@
       ],
       "elderlyFriendly": "冬季温暖是最大的适老优势；亚龙湾、南山园区平坦，注意防晒与补水，避免正午暴晒。",
       "packingNote": "泳衣、防晒霜、遮阳帽、沙滩鞋必备；老人备宽松衣物与常用药，温差不大但空调房注意保暖。",
-      "description": "三亚是国内最合适的“避寒”家庭目的地。冬季二十几度的温暖、细腻的沙滩和成熟的服务设施，特别适合带父母过冬或春节全家游。"
+      "description": "三亚是国内最合适的“避寒”家庭目的地。冬季二十几度的温暖、细腻的沙滩和成熟的服务设施，特别适合带父母过冬或春节全家游。",
+      "lat": 18.2528,
+      "lon": 109.5119
     },
     {
       "id": "chengdu",
@@ -192,7 +198,9 @@
       ],
       "elderlyFriendly": "市区景点大多平缓；注意饮食以清淡为主，火锅可选鸳鸯锅，湿冷天气备好保暖衣物。",
       "packingNote": "冬季湿冷需羽绒服，春秋备薄外套；川菜偏辣，肠胃药与润喉糖建议带上。",
-      "description": "成都把“适合全家”写进了骨子里：大熊猫让所有人回归童真，茶馆公园让长辈悠闲自在，火锅串串满足全家人的胃。"
+      "description": "成都把“适合全家”写进了骨子里：大熊猫让所有人回归童真，茶馆公园让长辈悠闲自在，火锅串串满足全家人的胃。",
+      "lat": 30.5728,
+      "lon": 104.0668
     },
     {
       "id": "guilin",
@@ -240,7 +248,9 @@
       ],
       "elderlyFriendly": "以乘船观景为主，步行强度低；山区景区注意台阶与湿滑，雨季备雨具。",
       "packingNote": "全年备雨具，夏季防晒防蚊，穿防滑鞋；山区早晚凉带薄外套。",
-      "description": "桂林的美在山水之间。乘船漓江、骑行遇龙河、夜逛阳朔，节奏舒缓、风景治愈，是很适合带长辈慢慢看的自然目的地。"
+      "description": "桂林的美在山水之间。乘船漓江、骑行遇龙河、夜逛阳朔，节奏舒缓、风景治愈，是很适合带长辈慢慢看的自然目的地。",
+      "lat": 25.2736,
+      "lon": 110.29
     },
     {
       "id": "xian",
@@ -287,7 +297,9 @@
       ],
       "elderlyFriendly": "博物馆、城墙等设施完善，注意行程别太赶；回民街人多，看管好老人小孩。",
       "packingNote": "春秋备外套防风沙，夏季防晒；古都步行多，舒适鞋最重要。",
-      "description": "西安是给全家人上“历史课”的最好课堂。兵马俑的震撼、城墙的厚重、回民街的烟火气，一次旅程看尽十三朝。"
+      "description": "西安是给全家人上“历史课”的最好课堂。兵马俑的震撼、城墙的厚重、回民街的烟火气，一次旅程看尽十三朝。",
+      "lat": 34.3416,
+      "lon": 108.9398
     },
     {
       "id": "zhangjiajie",
@@ -335,7 +347,9 @@
       ],
       "elderlyFriendly": "景区索道/电梯/环保车完善，但山路多台阶，腿脚不便的长辈需评估；建议备登山杖。",
       "packingNote": "山地温差大，薄羽绒/冲锋衣必备；防滑登山鞋、雨衣、驱蚊液。",
-      "description": "张家界把“奇”字写进每一座山峰。带家人坐百龙天梯直上云霄、穿行云雾峰林，是一场震撼的自然洗礼。"
+      "description": "张家界把“奇”字写进每一座山峰。带家人坐百龙天梯直上云霄、穿行云雾峰林，是一场震撼的自然洗礼。",
+      "lat": 29.117,
+      "lon": 110.478
     },
     {
       "id": "qingdao",
@@ -382,7 +396,9 @@
       ],
       "elderlyFriendly": "老城道路平缓适合散步，海风大记得加外套；夏季是全家避暑首选。",
       "packingNote": "夏季防晒+薄外套（海边风大），备创可贴防贝壳划伤；吃海鲜注意肠胃药。",
-      "description": "青岛把德式老城与海洋温柔地叠在一起。陪父母在八大关林荫下散步，带孩子去海边挖沙，晚上吃一顿海鲜大餐——完美的家庭夏日。"
+      "description": "青岛把德式老城与海洋温柔地叠在一起。陪父母在八大关林荫下散步，带孩子去海边挖沙，晚上吃一顿海鲜大餐——完美的家庭夏日。",
+      "lat": 36.0671,
+      "lon": 120.3826
     },
     {
       "id": "lijiang",
@@ -430,7 +446,9 @@
       ],
       "elderlyFriendly": "古城石板路对腿脚不便者略颠簸，注意慢行；高海拔地区老人先适应 1-2 天，备好常用药。",
       "packingNote": "高原温差大：白天防晒、早晚厚外套；备氧气瓶/红景天，防高反。",
-      "description": "丽江适合放慢脚步。在古城客栈的院子里晒太阳、去雪山脚下看云海，是逃离城市、陪伴家人的温柔选择。"
+      "description": "丽江适合放慢脚步。在古城客栈的院子里晒太阳、去雪山脚下看云海，是逃离城市、陪伴家人的温柔选择。",
+      "lat": 26.8721,
+      "lon": 100.23
     },
     {
       "id": "shanghai",
@@ -478,7 +496,9 @@
       ],
       "elderlyFriendly": "地铁无障碍完善，博物馆/商场室内空调舒适；夏季注意室内外温差防感冒。",
       "packingNote": "春秋备薄外套，夏季防晒+雨伞；地铁步行多，舒适鞋必备。",
-      "description": "上海把繁华与烟火气收进同一条街：外滩看世界、豫园尝小吃、博物馆长知识，三代人的上海之旅各有各的精彩。"
+      "description": "上海把繁华与烟火气收进同一条街：外滩看世界、豫园尝小吃、博物馆长知识，三代人的上海之旅各有各的精彩。",
+      "lat": 31.2304,
+      "lon": 121.4737
     },
     {
       "id": "dali",
@@ -526,7 +546,9 @@
       ],
       "elderlyFriendly": "洱海环线坐车观光为主，几乎无强度；注意紫外线与高反，节奏放慢。",
       "packingNote": "防晒霜/墨镜/帽子必备，早晚厚外套；环海风大备披肩。",
-      "description": "大理的“慢”是治愈的。环洱海看云、逛古镇晒太阳、吃一顿白族酸辣鱼，全家人都能在苍山洱海间放松下来。"
+      "description": "大理的“慢”是治愈的。环洱海看云、逛古镇晒太阳、吃一顿白族酸辣鱼，全家人都能在苍山洱海间放松下来。",
+      "lat": 25.6065,
+      "lon": 100.2676
     },
     {
       "id": "chongqing",
@@ -573,7 +595,9 @@
       ],
       "elderlyFriendly": "山城坡坎多、台阶多，带长辈建议多打车/轻轨；夏季酷热避免正午外出。",
       "packingNote": "春秋舒适带薄外套；夏季避暑装备（小风扇/防晒）；爬坡多备舒适鞋。",
-      "description": "重庆是立体的：轻轨穿楼、索道过江、火锅沸腾、夜景璀璨。带全家人体验 8D 魔幻城市的震撼，白天吃、晚上看，处处是惊喜。"
+      "description": "重庆是立体的：轻轨穿楼、索道过江、火锅沸腾、夜景璀璨。带全家人体验 8D 魔幻城市的震撼，白天吃、晚上看，处处是惊喜。",
+      "lat": 29.563,
+      "lon": 106.5516
     },
     {
       "id": "quanzhou",
@@ -622,7 +646,9 @@
           "text": "簪花围、蚵壳厝，体验\"头上花园\"的渔村浪漫。",
           "image": "/images/quanzhou/hl-3.jpg"
         }
-      ]
+      ],
+      "lat": 24.8741,
+      "lon": 118.6757
     },
     {
       "id": "weihai",
@@ -669,7 +695,9 @@
           "text": "沙细水清，傍晚看落日，孩子挖沙玩水正合适。",
           "image": "/images/weihai/hl-3.jpg"
         }
-      ]
+      ],
+      "lat": 37.5128,
+      "lon": 122.1203
     },
     {
       "id": "datong",
@@ -716,7 +744,9 @@
           "text": "可骑行或电瓶车环城，傍晚看古城灯火。",
           "image": "/images/datong/hl-3.jpg"
         }
-      ]
+      ],
+      "lat": 40.0768,
+      "lon": 113.3001
     },
     {
       "id": "enshi",
@@ -764,7 +794,9 @@
           "text": "土家风情街市，晚上有民俗表演，老少皆宜。",
           "image": "/images/enshi/hl-3.jpg"
         }
-      ]
+      ],
+      "lat": 30.2721,
+      "lon": 109.487
     },
     {
       "id": "tengchong",
@@ -813,7 +845,9 @@
           "text": "图书馆、洗衣亭、老宅水田，田园牧歌般清净。",
           "image": "/images/tengchong/hl-3.jpg"
         }
-      ]
+      ],
+      "lat": 25.0201,
+      "lon": 98.49
     },
     {
       "id": "jingdezhen",
@@ -860,7 +894,9 @@
           "text": "明清皇家瓷厂遗址，博物馆里藏着历代瓷器精品。",
           "image": "/images/jingdezhen/hl-3.jpg"
         }
-      ]
+      ],
+      "lat": 29.2686,
+      "lon": 117.1783
     },
     {
       "id": "liuzhou",
@@ -908,7 +944,9 @@
           "text": "侗族风雨桥与鼓楼，山水田园间的民族风情。",
           "image": "/images/liuzhou/hl-3.jpg"
         }
-      ]
+      ],
+      "lat": 24.3264,
+      "lon": 109.4117
     },
     {
       "id": "pingyao",
@@ -955,7 +993,9 @@
           "text": "城外彩塑艺术宝库，两千余尊造像栩栩如生。",
           "image": "/images/pingyao/hl-3.jpg"
         }
-      ]
+      ],
+      "lat": 37.1925,
+      "lon": 112.178
     },
     {
       "id": "huzhou",
@@ -1003,7 +1043,9 @@
           "text": "竹林民宿与山间绿道，亲子骑行正合适。",
           "image": "/images/huzhou/hl-3.jpg"
         }
-      ]
+      ],
+      "lat": 30.8924,
+      "lon": 120.0882
     },
     {
       "id": "leshan",
@@ -1050,7 +1092,9 @@
           "text": "蒸汽小火车穿越油菜花田，童趣满满。",
           "image": "/images/leshan/hl-3.jpg"
         }
-      ]
+      ],
+      "lat": 29.5523,
+      "lon": 103.7657
     },
     {
       "id": "zhangzhou",
@@ -1098,7 +1142,9 @@
           "text": "骑楼老街与闽南小吃，烟火气十足。",
           "image": "/images/zhangzhou/hl-3.jpg"
         }
-      ]
+      ],
+      "lat": 24.5129,
+      "lon": 117.6473
     },
     {
       "id": "beihai",
@@ -1146,7 +1192,9 @@
           "text": "百年骑楼老街，虾饼与糖水的老城味道。",
           "image": "/images/beihai/hl-3.jpg"
         }
-      ]
+      ],
+      "lat": 21.4813,
+      "lon": 109.12
     },
     {
       "id": "xiamen",
@@ -1195,7 +1243,9 @@
         "/images/xiamen/gallery-2.jpg",
         "/images/xiamen/gallery-3.jpg",
         "/images/xiamen/gallery-4.jpg"
-      ]
+      ],
+      "lat": 24.4798,
+      "lon": 118.0894
     },
     {
       "id": "dalian",
@@ -1243,7 +1293,9 @@
         "/images/dalian/gallery-2.jpg",
         "/images/dalian/gallery-3.jpg",
         "/images/dalian/gallery-4.jpg"
-      ]
+      ],
+      "lat": 38.914,
+      "lon": 121.6147
     },
     {
       "id": "guangzhou",
@@ -1292,7 +1344,9 @@
         "/images/guangzhou/gallery-2.jpg",
         "/images/guangzhou/gallery-3.jpg",
         "/images/guangzhou/gallery-4.jpg"
-      ]
+      ],
+      "lat": 23.1291,
+      "lon": 113.2644
     },
     {
       "id": "nanjing",
@@ -1340,7 +1394,9 @@
         "/images/nanjing/gallery-2.jpg",
         "/images/nanjing/gallery-3.jpg",
         "/images/nanjing/gallery-4.jpg"
-      ]
+      ],
+      "lat": 32.0603,
+      "lon": 118.7969
     },
     {
       "id": "suzhou",
@@ -1388,7 +1444,9 @@
         "/images/suzhou/gallery-3.jpg",
         "/images/suzhou/gallery-4.jpg"
       ],
-      "cover": "/images/suzhou/cover.jpg"
+      "cover": "/images/suzhou/cover.jpg",
+      "lat": 31.2989,
+      "lon": 120.5853
     },
     {
       "id": "tianjin",
@@ -1436,7 +1494,9 @@
         "/images/tianjin/gallery-2.jpg",
         "/images/tianjin/gallery-3.jpg",
         "/images/tianjin/gallery-4.jpg"
-      ]
+      ],
+      "lat": 39.3434,
+      "lon": 117.3616
     },
     {
       "id": "haerbin",
@@ -1484,7 +1544,9 @@
         "/images/haerbin/gallery-2.jpg",
         "/images/haerbin/gallery-3.jpg",
         "/images/haerbin/gallery-4.jpg"
-      ]
+      ],
+      "lat": 45.8038,
+      "lon": 126.535
     },
     {
       "id": "changsha",
@@ -1532,7 +1594,9 @@
         "/images/changsha/gallery-2.jpg",
         "/images/changsha/gallery-3.jpg",
         "/images/changsha/gallery-4.jpg"
-      ]
+      ],
+      "lat": 28.2282,
+      "lon": 112.9388
     },
     {
       "id": "wuhan",
@@ -1579,7 +1643,9 @@
         "/images/wuhan/gallery-2.jpg",
         "/images/wuhan/gallery-3.jpg",
         "/images/wuhan/gallery-4.jpg"
-      ]
+      ],
+      "lat": 30.5928,
+      "lon": 114.3055
     },
     {
       "id": "fuzhou",
@@ -1628,7 +1694,9 @@
         "/images/fuzhou/gallery-2.jpg",
         "/images/fuzhou/gallery-3.jpg",
         "/images/fuzhou/gallery-4.jpg"
-      ]
+      ],
+      "lat": 26.0745,
+      "lon": 119.2965
     },
     {
       "id": "zhoushan",
@@ -1676,7 +1744,9 @@
         "/images/zhoushan/gallery-2.jpg",
         "/images/zhoushan/gallery-3.jpg",
         "/images/zhoushan/gallery-4.jpg"
-      ]
+      ],
+      "lat": 29.9854,
+      "lon": 122.2047
     },
     {
       "id": "shantou",
@@ -1725,7 +1795,9 @@
         "/images/shantou/gallery-2.jpg",
         "/images/shantou/gallery-3.jpg",
         "/images/shantou/gallery-4.jpg"
-      ]
+      ],
+      "lat": 23.3535,
+      "lon": 116.682
     },
     {
       "id": "yantai",
@@ -1772,7 +1844,9 @@
         "/images/yantai/gallery-2.jpg",
         "/images/yantai/gallery-3.jpg",
         "/images/yantai/gallery-4.jpg"
-      ]
+      ],
+      "lat": 37.4638,
+      "lon": 121.4479
     },
     {
       "id": "wanning",
@@ -1820,7 +1894,9 @@
         "/images/wanning/gallery-2.jpg",
         "/images/wanning/gallery-3.jpg",
         "/images/wanning/gallery-4.jpg"
-      ]
+      ],
+      "lat": 18.796,
+      "lon": 110.388
     },
     {
       "id": "qinhuangdao",
@@ -1867,7 +1943,9 @@
         "/images/qinhuangdao/gallery-2.jpg",
         "/images/qinhuangdao/gallery-3.jpg",
         "/images/qinhuangdao/gallery-4.jpg"
-      ]
+      ],
+      "lat": 39.9354,
+      "lon": 119.6
     },
     {
       "id": "yangzhou",
@@ -1915,7 +1993,9 @@
         "/images/yangzhou/gallery-2.jpg",
         "/images/yangzhou/gallery-3.jpg",
         "/images/yangzhou/gallery-4.jpg"
-      ]
+      ],
+      "lat": 32.393,
+      "lon": 119.413
     },
     {
       "id": "shaoxing",
@@ -1964,7 +2044,9 @@
         "/images/shaoxing/gallery-2.jpg",
         "/images/shaoxing/gallery-3.jpg",
         "/images/shaoxing/gallery-4.jpg"
-      ]
+      ],
+      "lat": 29.997,
+      "lon": 120.582
     },
     {
       "id": "fenghuang",
@@ -2012,7 +2094,9 @@
         "/images/fenghuang/gallery-2.jpg",
         "/images/fenghuang/gallery-3.jpg",
         "/images/fenghuang/gallery-4.jpg"
-      ]
+      ],
+      "lat": 27.948,
+      "lon": 109.599
     },
     {
       "id": "shangrila",
@@ -2060,7 +2144,9 @@
         "/images/shangrila/gallery-2.jpg",
         "/images/shangrila/gallery-3.jpg",
         "/images/shangrila/gallery-4.jpg"
-      ]
+      ],
+      "lat": 27.825,
+      "lon": 99.703
     }
   ]
 }

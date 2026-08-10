@@ -199,6 +199,10 @@
           <div class="meta-cell"><div class="k">建议天数</div><div class="v">${app.esc(d.suggestDays || '-')}</div></div>
           <div class="meta-cell"><div class="k">气候特点</div><div class="v">${app.esc(d.climate || '-')}</div></div>
         </div>
+        <div class="weather-forecast">
+          <h3>🌤️ 未来 15 天天气（${d.name}）</h3>
+          <div class="wf-body" id="weatherBody">加载中…</div>
+        </div>
         <div class="elderly-note">
           <strong>👴 适老提示：</strong>${app.esc(d.elderlyFriendly || '')}
           <button class="read-aloud" data-read="${app.esc(d.elderlyFriendly || '')}" type="button">🔊 朗读</button>
@@ -241,6 +245,25 @@
       img.style.cursor = 'zoom-in';
       img.addEventListener('click', () => openLightbox((d.cover ? 1 : 0) + galleryImgs.length + i));
     });
+    loadWeather(d);
+  }
+  async function loadWeather(d) {
+    const box = document.getElementById('weatherBody');
+    if (!box) return;
+    box.innerHTML = '加载中…';
+    try {
+      const data = await app.api('/api/weather?id=' + encodeURIComponent(d.id));
+      box.innerHTML = `<div class="wf-scroll">${(data.days || []).map((x) => `
+        <div class="wf-day">
+          <div class="wf-week">${app.esc(x.weekday)}</div>
+          <div class="wf-date">${app.esc(x.date.slice(5))}</div>
+          <div class="wf-icon">${x.icon}</div>
+          <div class="wf-label">${app.esc(x.label)}</div>
+          <div class="wf-temp">${x.tmin}° ~ ${x.tmax}°</div>
+        </div>`).join('')}</div>`;
+    } catch (e) {
+      box.innerHTML = '<p class="form-hint">天气获取失败，请稍后重试</p>';
+    }
   }
   function openLightbox(i) {
     const box = document.getElementById('lightbox');

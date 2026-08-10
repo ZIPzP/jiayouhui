@@ -448,3 +448,16 @@ html.elderly .lightbox-nav { width: 64px; height: 64px; font-size: 2.2rem; }
 
 .modal { overscroll-behavior: contain; }
 .modal-backdrop { overscroll-behavior: contain; }
+
+/* 15 天天气预报 */
+.weather-forecast { margin: 6px 0 18px; }
+.weather-forecast h3 { font-size: 1.05rem; color: var(--primary-dark); margin-bottom: 10px; }
+.wf-body { min-height: 60px; }
+.wf-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
+.wf-day { flex: 0 0 84px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 10px 6px; text-align: center; }
+.wf-week { font-weight: 800; font-size: .9rem; color: var(--primary-dark); }
+.wf-date { font-size: .75rem; color: var(--ink-soft); margin: 2px 0 6px; }
+.wf-icon { font-size: 1.6rem; }
+.wf-label { font-size: .78rem; color: var(--ink-soft); margin: 4px 0; }
+.wf-temp { font-size: .82rem; font-weight: 700; }
+html.elderly .wf-day { flex-basis: 104px; }
