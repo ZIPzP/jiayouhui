@@ -435,6 +435,8 @@
     }
   }
   async function init() {
+    // 关闭浏览器自动滚动恢复（返回键关闭弹窗时不跳回顶部）
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     ensureShell();
     applyElderly();
     navActive();

@@ -109,9 +109,9 @@
     if (!modal) return;
     state.destId = id;
     state.modalOpen = true;
+    state.scrollY = window.scrollY;
     if (history.pushState) history.pushState({ jyhModal: true }, '');
     modal.hidden = false;
-    document.body.style.overflow = 'hidden';
     const wrap = document.getElementById('moreWrap');
     if (wrap) wrap.addEventListener('click', (e) => { if (e.target.closest('#moreBtn')) { state.visible += 12; renderGrid(); } });
     const lc = document.getElementById('lightboxClose');
@@ -143,7 +143,12 @@
     window.speechSynthesis.cancel();
     const modal = document.getElementById('detailModal');
     if (modal) modal.hidden = true;
-    document.body.style.overflow = '';
+    if (typeof state.scrollY === 'number') {
+      const y = state.scrollY;
+      state.scrollY = null;
+      // 等浏览器返回后的滚动恢复执行完，再恢复我们的位置（双 rAF）
+      requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, y)));
+    }
   }
   function closeDetail() {
     if (!state.modalOpen) return;
