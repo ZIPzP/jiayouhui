@@ -67,6 +67,19 @@ function readBody(req) {
 
 const config = ai.loadConfig();
 const destinations = (readJson(path.join(ROOT, 'data', 'destinations.json')) || { destinations: [] }).destinations || [];
+// 对象存储(OSS/COS)支持：config.imageBase 为空时用本地 /images，设置后自动给所有图片路径加前缀（如 https://cdn.xxx.com）
+const IMAGE_BASE = String((config && config.imageBase) || '').replace(/\/+$/, '');
+function applyImageBase(node) {
+  if (!IMAGE_BASE) return node;
+  if (typeof node === 'string') return node.startsWith('/images/') ? IMAGE_BASE + node : node;
+  if (Array.isArray(node)) return node.map(applyImageBase);
+  if (node && typeof node === 'object') {
+    const out = {};
+    for (const k of Object.keys(node)) out[k] = applyImageBase(node[k]);
+    return out;
+  }
+  return node;
+}
 
 async function handleApi(req, res, pathname) {
   // 访问口令：登录与状态
@@ -86,11 +99,11 @@ async function handleApi(req, res, pathname) {
 
   // GET /api/destinations —— 列表（不含超大字段）
   if (pathname === '/api/destinations' && req.method === 'GET') {
-    const list = destinations.map(({ gallery, highlights, description, ...rest }) => ({
+    const list = applyImageBase(destinations.map(({ gallery, highlights, description, ...rest }) => ({
       ...rest,
       highlightCount: (highlights || []).length,
       galleryCount: (gallery || []).length
-    }));
+    })));
     return sendJson(res, 200, { count: list.length, destinations: list });
   }
 
@@ -99,7 +112,7 @@ async function handleApi(req, res, pathname) {
   if (dm && req.method === 'GET') {
     const d = destinations.find((x) => x.id === decodeURIComponent(dm[1]));
     if (!d) return sendJson(res, 404, { error: '未找到该目的地' });
-    return sendJson(res, 200, { destination: d });
+    return sendJson(res, 200, { destination: applyImageBase(d) });
   }
 
   // GET /api/hot-data —— 平台热门数据
