@@ -216,6 +216,19 @@
             <img src="${app.esc(h.image)}" alt="${app.esc(h.title)}" onerror="window.__jyhImgFallback(this,'${app.esc(d.emoji || '🏡')}','${app.esc(h.title)}','${app.esc(d.accent || '#0f766e')}')" />
             <div><h4>${app.esc(h.title)}</h4><p>${app.esc(h.text)}</p></div>
           </div>`).join('')}
+        ${(d.foods || []).length ? `
+          <h3>🍜 当地美食</h3>
+          <div class="food-list">
+            ${d.foods.map((f) => `
+              <div class="food-item">
+                <div class="food-top">
+                  <span class="food-name">${app.esc(f.name)}</span>
+                  <span class="spicy spicy-${app.esc(f.spicy || '不辣')}">${app.esc(f.spicy || '不辣')}</span>
+                </div>
+                <p class="food-desc">${app.esc(f.desc || '')}</p>
+                <div class="food-tags">${(f.tags || []).map((t) => `<span class="food-tag">${app.esc(t)}</span>`).join('')}</div>
+              </div>`).join('')}
+          </div>` : ''}
         <div class="detail-actions">
           <button class="btn btn-primary" type="button" data-open-pack="${app.esc(d.id)}">🎒 生成这份目的地的出行清单</button>
           <button class="btn btn-ghost" type="button" data-guide="${app.esc(d.id)}">🤖 AI 生成攻略</button>

@@ -461,3 +461,20 @@ html.elderly .lightbox-nav { width: 64px; height: 64px; font-size: 2.2rem; }
 .wf-label { font-size: .78rem; color: var(--ink-soft); margin: 4px 0; }
 .wf-temp { font-size: .82rem; font-weight: 700; }
 html.elderly .wf-day { flex-basis: 104px; }
+
+/* 当地美食 */
+.food-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 6px 0 18px; }
+.food-item { background: #fffdf7; border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+.food-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.food-name { font-weight: 800; font-size: 1.02rem; color: var(--ink); }
+.spicy { font-size: .78rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.spicy-不辣 { background: #dcfce7; color: #166534; }
+.spicy-微辣 { background: #fef9c3; color: #854d0e; }
+.spicy-中辣 { background: #ffedd5; color: #c2410c; }
+.spicy-辣 { background: #fee2e2; color: #b91c1c; }
+.spicy-重辣 { background: #f3e8ff; color: #7e22ce; }
+.food-desc { font-size: .88rem; color: var(--ink-soft); margin-bottom: 8px; }
+.food-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.food-tag { background: #f1f5f9; color: var(--ink-soft); font-size: .75rem; padding: 3px 9px; border-radius: 999px; }
+html.elderly .food-name { font-size: 1.1rem; }
+html.elderly .food-desc { font-size: .95rem; }
