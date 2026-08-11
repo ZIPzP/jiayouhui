@@ -322,7 +322,20 @@
           <button id="menuMobile" type="button">📱 手机预览</button>
           <a href="/about.html">📖 关于</a>
         </div>
-      </div>`;
+      </div>
+      <a class="btn btn-primary btn-start-desktop" href="/plan.html">开始规划</a>`;
+      // 电脑端专属：顶部一排导航（仅 ≥901px 显示，手机端不受影响）
+      const inner = document.querySelector('.nav-inner');
+      if (inner && !document.querySelector('.nav-links-inline')) {
+        const inlineNav = document.createElement('nav');
+        inlineNav.className = 'nav-links-inline';
+        inlineNav.innerHTML = [
+          ['/', 'home', '首页'], ['/destinations.html', 'destinations', '目的地'],
+          ['/plan.html', 'plan', '行程规划'], ['/packing.html', 'packing', '出行清单'],
+          ['/hot.html', 'hot', '平台热度']
+        ].map(([href, k, label]) => '<a href="' + href + '" data-nav="' + k + '">' + label + '</a>').join('');
+        inner.insertBefore(inlineNav, actions);
+      }
     }
   }
 
@@ -344,7 +357,7 @@
     const p = location.pathname.split('/').pop() || 'index.html';
     const map = { 'index.html': 'home', 'destinations.html': 'destinations', 'plan.html': 'plan', 'packing.html': 'packing', 'hot.html': 'hot', 'about.html': 'about' };
     const key = map[p] || 'home';
-    $$('#navLinks a').forEach((a) => a.classList.toggle('active', a.dataset.nav === key));
+    $$('#navLinks a, .nav-links-inline a').forEach((a) => a.classList.toggle('active', a.dataset.nav === key));
   }
 
   /* ---------------- 启动 ---------------- */

@@ -589,3 +589,19 @@ html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; 
   .home-page .footer { background: #1E293B; color: #94A3B8; padding: 48px 20px; }
   .home-page .footer .footer-slogan { display: block; color: #E2E8F0; font-size: 15px; font-weight: 600; margin-bottom: 8px; }
 }
+/* ===== 电脑端 Header（≥901px）按设计稿：72px / 圆形山形Logo / 一排导航 / 开始规划 ===== */
+.brand-svg { display: none; }
+.nav-links-inline, .btn-start-desktop { display: none; }
+@media (min-width: 901px) {
+  .nav { height: 72px; }
+  .brand { font-size: 22px; gap: 10px; }
+  .brand-svg { display: block; flex: none; }
+  .brand-emoji { display: none; }
+  .nav-links-inline { display: flex; align-items: center; gap: 4px; margin-left: 26px; }
+  .nav-links-inline a { padding: 8px 14px; border-radius: 10px; color: #64748B; font-weight: 600; font-size: 14px; text-decoration: none; }
+  .nav-links-inline a:hover { background: rgba(13,148,136,.08); color: #0D9488; }
+  .nav-links-inline a.active { color: #0D9488; background: rgba(13,148,136,.1); font-weight: 700; }
+  .nav-toggle { display: none !important; }
+  .btn-start-desktop { display: inline-flex; border-radius: 8px; box-shadow: 0 6px 18px rgba(13,148,136,.35); }
+  #settingsBtn { font-size: 14px; padding: 8px 14px; }
+}
