@@ -512,3 +512,13 @@ html.elderly .ai-feedback { padding: 22px 24px; font-size: 1.05rem; }
 .nav-backdrop.show { opacity: 1; pointer-events: auto; }
 html.elderly .nav-toggle { width: 52px; height: 52px; font-size: 1.7rem; }
 html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; }
+/* 首页快捷规划：手机端紧凑 + 人数一行 */
+@media (max-width: 900px) {
+  .quick-planner { padding: 16px; margin-top: 24px; }
+  .quick-title { font-size: 1.05rem; margin-bottom: 10px; }
+  .quick-planner .form-row { gap: 8px; margin-bottom: 8px; }
+  .form-row.nums-row { flex-direction: row; flex-wrap: nowrap; align-items: flex-end; }
+  .form-row.nums-row label { min-width: 0; gap: 4px; font-size: .85rem; }
+  .form-row.nums-row .input.num { width: 100%; padding: 9px 6px; font-size: .95rem; }
+  .form-row.nums-row .btn { padding: 10px 12px; font-size: .92rem; white-space: nowrap; }
+}
