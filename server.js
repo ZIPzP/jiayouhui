@@ -338,7 +338,7 @@ function serveStatic(req, res, pathname) {
     const mime = MIME[ext] || 'application/octet-stream';
     const cacheCtrl = ext === '.html' ? 'no-cache'
       : (ext === '.js' || ext === '.css' || ext === '.json' || ext === '.svg') ? 'public, max-age=31536000, immutable'
-      : 'public, max-age=604800';
+      : 'public, max-age=3600';
     const accept = (req.headers['accept-encoding'] || '');
     const compressible = ['.html', '.css', '.js', '.json', '.svg', '.txt'].includes(ext);
     if (compressible && /gzip/i.test(accept)) {
