@@ -565,7 +565,9 @@ html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; 
   .hd-cta .btn { padding: 14px 30px; font-size: 16px; border-radius: 10px; }
   .hd-cta .btn-primary { box-shadow: 0 8px 24px rgba(13,148,136,.35); }
   .hd-trust { margin-top: 24px; color: #94A3B8; font-size: 14px; }
-  .hd-right img { width: 560px; height: 480px; object-fit: cover; border-radius: 20px; box-shadow: 0 20px 40px rgba(15,23,42,.12), 0 4px 16px rgba(15,23,42,.06); }
+  .hd-carousel { position: relative; width: 560px; height: 480px; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(15,23,42,.12), 0 4px 16px rgba(15,23,42,.06); }
+.hd-slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1s ease; }
+.hd-slide.active { opacity: 1; }
 
   .features-desktop {
     display: grid; grid-template-columns: repeat(3, 1fr);
@@ -604,5 +606,20 @@ html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; 
   .nav-toggle { display: none !important; }
   .btn-start-desktop { display: inline-flex; border-radius: 8px; box-shadow: 0 6px 18px rgba(13,148,136,.35); }
   #settingsBtn { font-size: 14px; padding: 8px 14px; }
-}.hd-slide { opacity: 0; transition: opacity .8s ease; }
-.hd-slide.show { opacity: 1; }
+}
+/* 桌面 Hero 响应式：窗口较窄时自动缩小，避免左列被大图挤压错位 */
+@media (min-width: 901px) and (max-width: 1200px) {
+  .hero-desktop { padding: 72px 32px 60px; }
+  .hd-inner { gap: 40px; flex-wrap: wrap; }
+  .hd-left { max-width: 460px; }
+  .hd-title { font-size: 40px; margin: 20px 0; }
+  .hd-sub { font-size: 16px; margin-bottom: 26px; }
+  .hd-carousel { width: 440px; height: 380px; }
+}
+@media (min-width: 901px) and (max-width: 1020px) {
+  .hero-desktop { padding: 56px 24px 48px; }
+  .hd-left { max-width: 100%; }
+  .hd-inner { justify-content: center; }
+  .hd-carousel { width: 400px; height: 340px; }
+  .hd-title { font-size: 34px; }
+}
