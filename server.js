@@ -150,6 +150,18 @@ async function handleApi(req, res, pathname) {
     return sendJson(res, 200, { count: cities.length, cities });
   }
 
+  // GET /api/images —— 全部实景照片（封面/画廊/亮点，去重，供首页轮播使用）
+  if (pathname === '/api/images' && req.method === 'GET') {
+    const seen = new Set();
+    const images = [];
+    destinations.forEach((d) => {
+      [d.cover].concat(d.gallery || []).concat((d.highlights || []).map((h) => h.image)).forEach((u) => {
+        if (u && !seen.has(u)) { seen.add(u); images.push(u); }
+      });
+    });
+    return sendJson(res, 200, { count: images.length, images });
+  }
+
   // GET /api/destinations/:id —— 详情
   const dm = pathname.match(/^\/api\/destinations\/([^/]+)$/);
   if (dm && req.method === 'GET') {

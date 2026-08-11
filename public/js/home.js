@@ -8,7 +8,8 @@
     bindQuick();
   };
   /* 电脑端 Hero 风景轮播：43城几百张照片随机，5秒一换，双图层交叉淡入淡出（提前预载，切换更顺滑） */
-  function initHeroSlide() {
+  /* 电脑端 Hero 风景轮播：先出兜底图，再后台加载全部几百张照片补充，5秒一换、随机开头 */
+  async function initHeroSlide() {
     const imgs = [document.getElementById('heroSlide'), document.getElementById('heroSlide2')];
     if (!imgs[0] || !imgs[1]) return;
     if (window.innerWidth <= 900) return;
@@ -17,15 +18,8 @@
     const fallback = ['/images/beihai/cover.jpg', '/images/shanghai/cover.jpg', '/images/sanya/cover.jpg', '/images/hangzhou/cover.jpg', '/images/guilin/cover.jpg', '/images/lijiang/cover.jpg'];
     const urls = [];
     fallback.forEach((u) => { if (!seen.has(u)) { seen.add(u); urls.push(u); } });
-    (app.state.destinations || []).forEach((d) => {
-      const list = [d.cover].concat(d.gallery || []).concat((d.highlights || []).map((h) => h.image));
-      list.forEach((u) => { if (u && !seen.has(u)) { seen.add(u); urls.push(u); } });
-    });
-    if (urls.length < 2) return;
-    // 随机洗牌：兜底组（前6张确定可用）与其余风景图分别打乱，保证首图每次不同且立即可用
-    const fbLen = Math.min(6, urls.length);
-    for (let i = fbLen - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = urls[i]; urls[i] = urls[j]; urls[j] = t; }
-    for (let i = urls.length - 1; i > fbLen; i--) { const j = fbLen + Math.floor(Math.random() * (i - fbLen + 1)); const t = urls[i]; urls[i] = urls[j]; urls[j] = t; }
+    // 兜底组随机：首图每次不同且确定可用
+    for (let i = urls.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = urls[i]; urls[i] = urls[j]; urls[j] = t; }
     const cache = {};
     function preload(url) { if (!cache[url]) { const p = new Image(); p.src = url; cache[url] = p; } }
     let idx = 0, cur = 0;
@@ -48,6 +42,13 @@
       }
     }
     setInterval(swap, 5000);
+    // 后台加载全部几百张照片（封面/画廊/亮点，去重），补充进轮播
+    try {
+      const d = await app.api('/api/images');
+      const extra = (d.images || []).filter((u) => u && !seen.has(u));
+      for (let i = extra.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = extra[i]; extra[i] = extra[j]; extra[j] = t; }
+      extra.forEach((u) => { seen.add(u); urls.push(u); });
+    } catch (e) { /* 接口失败就只用兜底+封面 */ }
   }
 
   function fillMonths() {
