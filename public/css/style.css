@@ -540,3 +540,52 @@ html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; 
   .entry-icon { font-size: 1.6rem; margin-bottom: 4px; }
   .entry-card h3 { font-size: .95rem; margin-bottom: 0; }
 }
+
+/* ===== 家游汇首页 · 桌面版专属新设计（仅 ≥901px，手机端不变） ===== */
+.hero-desktop { display: none; }
+.features-desktop { display: none; }
+.footer-slogan { display: none; }
+@media (min-width: 901px) {
+  /* 手机版 hero（含快速清单）与「从这里开始」在电脑端隐藏，由新设计替代 */
+  .home-page .hero { display: none; }
+  .home-page #entry { display: none; }
+
+  .hero-desktop {
+    display: block;
+    background: linear-gradient(180deg, #FFFBF5 0%, #E6F7F5 100%);
+    padding: 110px 40px 90px;
+  }
+  .hd-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 70px; }
+  .hd-left { flex: 1; max-width: 580px; }
+  .hd-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(13,148,136,.1); color: #0D9488; font-weight: 600; font-size: 14px; padding: 7px 16px; border-radius: 20px; }
+  .hd-dot { width: 8px; height: 8px; border-radius: 50%; background: #0D9488; }
+  .hd-title { font-size: 52px; font-weight: 800; line-height: 1.25; color: #1E293B; margin: 26px 0; }
+  .hd-sub { font-size: 17px; color: #64748B; line-height: 1.8; margin-bottom: 34px; }
+  .hd-cta { display: flex; gap: 16px; }
+  .hd-cta .btn { padding: 14px 30px; font-size: 16px; border-radius: 10px; }
+  .hd-cta .btn-primary { box-shadow: 0 8px 24px rgba(13,148,136,.35); }
+  .hd-trust { margin-top: 24px; color: #94A3B8; font-size: 14px; }
+  .hd-right img { width: 560px; height: 480px; object-fit: cover; border-radius: 20px; box-shadow: 0 20px 40px rgba(15,23,42,.12), 0 4px 16px rgba(15,23,42,.06); }
+
+  .features-desktop {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    background: #fff; border-bottom: 1px solid #E2E8F0; padding: 40px 40px;
+  }
+  .ft-item { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 0 24px; }
+  .ft-item + .ft-item { border-left: 1px solid #E2E8F0; }
+  .ft-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex: none; }
+  .ft-plan { background: rgba(13,148,136,.1); }
+  .ft-pack { background: rgba(249,115,22,.1); }
+  .ft-elder { background: rgba(139,92,246,.12); }
+  .ft-item h3 { font-size: 15px; color: #1E293B; margin-bottom: 5px; font-weight: 700; }
+  .ft-item p { font-size: 13px; color: #64748B; }
+
+  /* 精选目的地：标题加大 + 副标题 */
+  .home-page #featured .section-head { text-align: center; }
+  .home-page #featured .section-head h2 { font-size: 36px; }
+  .home-page #featured .section-head p { font-size: 16px; }
+
+  /* 深色页脚（仅首页电脑端） */
+  .home-page .footer { background: #1E293B; color: #94A3B8; padding: 48px 20px; }
+  .home-page .footer .footer-slogan { display: block; color: #E2E8F0; font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+}
