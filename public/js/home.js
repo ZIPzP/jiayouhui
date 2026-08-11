@@ -3,9 +3,33 @@
   window.pageInit = async function () {
     fillMonths();
     setHero();
+    initHeroSlide();
     renderFeatured();
     bindQuick();
   };
+  /* 电脑端 Hero 风景轮播：从 43 城几百张照片随机轮播，5 秒一换（仅 ≥901px） */
+  function initHeroSlide() {
+    const img = document.getElementById('heroSlide');
+    if (!img) return;
+    if (window.innerWidth <= 900) return;
+    const seen = new Set();
+    const urls = [];
+    (app.state.destinations || []).forEach((d) => {
+      const list = [d.cover].concat(d.gallery || []).concat((d.highlights || []).map((h) => h.image));
+      list.forEach((u) => { if (u && !seen.has(u)) { seen.add(u); urls.push(u); } });
+    });
+    if (!urls.length) return;
+    for (let i = urls.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = urls[i]; urls[i] = urls[j]; urls[j] = t; }
+    let idx = 0;
+    function show(i) {
+      const u = urls[i % urls.length];
+      const probe = new Image();
+      probe.onload = () => { img.src = u; img.classList.add('show'); };
+      probe.src = u;
+    }
+    show(0);
+    setInterval(() => { img.classList.remove('show'); idx++; setTimeout(() => show(idx), 400); }, 5000);
+  }
 
   function fillMonths() {
     const labels = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];

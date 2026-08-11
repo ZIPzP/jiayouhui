@@ -604,4 +604,5 @@ html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; 
   .nav-toggle { display: none !important; }
   .btn-start-desktop { display: inline-flex; border-radius: 8px; box-shadow: 0 6px 18px rgba(13,148,136,.35); }
   #settingsBtn { font-size: 14px; padding: 8px 14px; }
-}
+}.hd-slide { opacity: 0; transition: opacity .8s ease; }
+.hd-slide.show { opacity: 1; }
