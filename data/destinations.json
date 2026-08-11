@@ -1420,7 +1420,7 @@
       "cover": "/images/liuzhou/cover.jpg",
       "gallery": [
         "/images/liuzhou/gallery-1.jpg",
-        "/images/liuzhou/gallery-2.jpg",
+        "/images/liuzhou/gallery-2-v2.jpg",
         "/images/liuzhou/gallery-3.jpg",
         "/images/liuzhou/gallery-4.jpg"
       ],
@@ -1497,7 +1497,7 @@
       "gallery": [
         "/images/pingyao/gallery-1.jpg",
         "/images/pingyao/gallery-2.jpg",
-        "/images/pingyao/gallery-3.jpg",
+        "/images/pingyao/gallery-3-v2.jpg",
         "/images/pingyao/gallery-4.jpg"
       ],
       "elderlyFriendly": "古城以平缓步行为主，可坐电瓶车代步；石板路注意防滑。",
@@ -1813,7 +1813,7 @@
         {
           "title": "银滩",
           "text": "平缓细腻的\"天下第一滩\"，挖沙玩水一整天。",
-          "image": "/images/beihai/hl-1.jpg"
+          "image": "/images/beihai/hl-1-v2.jpg"
         },
         {
           "title": "涠洲岛",
@@ -2364,7 +2364,7 @@
           "image": "/images/haerbin/hl-3.jpg"
         }
       ],
-      "cover": "/images/haerbin/cover.jpg",
+      "cover": "/images/haerbin/cover-v2.jpg",
       "gallery": [
         "/images/haerbin/gallery-1.jpg",
         "/images/haerbin/gallery-2.jpg",
@@ -2674,8 +2674,8 @@
       ],
       "cover": "/images/zhoushan/cover.jpg",
       "gallery": [
-        "/images/zhoushan/gallery-1.jpg",
-        "/images/zhoushan/gallery-2.jpg",
+        "/images/zhoushan/gallery-1-v2.jpg",
+        "/images/zhoushan/gallery-2-v2.jpg",
         "/images/zhoushan/gallery-3.jpg",
         "/images/zhoushan/gallery-4.jpg"
       ],
@@ -2827,10 +2827,10 @@
       ],
       "cover": "/images/yantai/cover.jpg",
       "gallery": [
-        "/images/yantai/gallery-1.jpg",
-        "/images/yantai/gallery-2.jpg",
+        "/images/yantai/gallery-1-v2.jpg",
+        "/images/yantai/gallery-2-v2.jpg",
         "/images/yantai/gallery-3.jpg",
-        "/images/yantai/gallery-4.jpg"
+        "/images/yantai/gallery-4-v2.jpg"
       ],
       "lat": 37.4638,
       "lon": 121.4479,
@@ -2905,8 +2905,8 @@
       "gallery": [
         "/images/wanning/gallery-1.jpg",
         "/images/wanning/gallery-2.jpg",
-        "/images/wanning/gallery-3.jpg",
-        "/images/wanning/gallery-4.jpg"
+        "/images/wanning/gallery-3-v2.jpg",
+        "/images/wanning/gallery-4-v2.jpg"
       ],
       "lat": 18.796,
       "lon": 110.388,
@@ -3134,7 +3134,7 @@
       ],
       "cover": "/images/shaoxing/cover.jpg",
       "gallery": [
-        "/images/shaoxing/gallery-1.jpg",
+        "/images/shaoxing/gallery-1-v2.jpg",
         "/images/shaoxing/gallery-2.jpg",
         "/images/shaoxing/gallery-3.jpg",
         "/images/shaoxing/gallery-4.jpg"
