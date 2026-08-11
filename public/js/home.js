@@ -7,28 +7,45 @@
     renderFeatured();
     bindQuick();
   };
-  /* 电脑端 Hero 风景轮播：从 43 城几百张照片随机轮播，5 秒一换（仅 ≥901px） */
+  /* 电脑端 Hero 风景轮播：43城几百张照片随机，5秒一换，双图层交叉淡入淡出（提前预载，切换更顺滑） */
   function initHeroSlide() {
-    const img = document.getElementById('heroSlide');
-    if (!img) return;
+    const imgs = [document.getElementById('heroSlide'), document.getElementById('heroSlide2')];
+    if (!imgs[0] || !imgs[1]) return;
     if (window.innerWidth <= 900) return;
     const seen = new Set();
+    // 内置兜底风景图（保证首图确定存在、立即可用）
+    const fallback = ['/images/beihai/cover.jpg', '/images/shanghai/cover.jpg', '/images/sanya/cover.jpg', '/images/hangzhou/cover.jpg', '/images/guilin/cover.jpg', '/images/lijiang/cover.jpg'];
     const urls = [];
+    fallback.forEach((u) => { if (!seen.has(u)) { seen.add(u); urls.push(u); } });
     (app.state.destinations || []).forEach((d) => {
       const list = [d.cover].concat(d.gallery || []).concat((d.highlights || []).map((h) => h.image));
       list.forEach((u) => { if (u && !seen.has(u)) { seen.add(u); urls.push(u); } });
     });
-    if (!urls.length) return;
-    for (let i = urls.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = urls[i]; urls[i] = urls[j]; urls[j] = t; }
-    let idx = 0;
-    function show(i) {
-      const u = urls[i % urls.length];
-      const probe = new Image();
-      probe.onload = () => { img.src = u; img.classList.add('show'); };
-      probe.src = u;
+    if (urls.length < 2) return;
+    // 洗牌（保持前几张兜底图在开头，首屏立即出图）
+    for (let i = urls.length - 1; i > 1; i--) { const j = 1 + Math.floor(Math.random() * i); const t = urls[i]; urls[i] = urls[j]; urls[j] = t; }
+    const cache = {};
+    function preload(url) { if (!cache[url]) { const p = new Image(); p.src = url; cache[url] = p; } }
+    let idx = 0, cur = 0;
+    imgs[0].src = urls[0]; imgs[0].classList.add('active'); imgs[1].classList.remove('active');
+    imgs[0].onerror = () => { idx = (idx + 1) % urls.length; imgs[0].src = urls[idx]; }; // 首图失败自动换下一张
+    preload(urls[1]); preload(urls[2 % urls.length]);
+    function swap() {
+      idx = (idx + 1) % urls.length;
+      const nextUrl = urls[idx];
+      preload(urls[(idx + 1) % urls.length]); // 提前预载下一张
+      const shown = imgs[cur], hidden = imgs[1 - cur];
+      hidden.src = nextUrl;
+      let done = false;
+      const fade = () => { if (done) return; done = true; shown.classList.remove('active'); hidden.classList.add('active'); cur = 1 - cur; };
+      if (hidden.complete && hidden.naturalWidth > 0) { fade(); }
+      else {
+        hidden.onload = fade;
+        hidden.onerror = () => { idx = (idx + 1) % urls.length; swap(); }; // 加载失败就跳过
+        setTimeout(fade, 1600); // 兜底：1.6s 内没加载也切换，避免卡住
+      }
     }
-    show(0);
-    setInterval(() => { img.classList.remove('show'); idx++; setTimeout(() => show(idx), 400); }, 5000);
+    setInterval(swap, 5000);
   }
 
   function fillMonths() {
