@@ -370,13 +370,6 @@
         state.destinations = data.destinations || [];
       }
     } catch (e) { /* 由页面自行处理 */ }
-    // 统一加载中国城市名单（输入提示/城市自查）
-    try {
-      if (!state.cities.length) {
-        const data = await api('/api/cities');
-        state.cities = data.cities || [];
-      }
-    } catch (e) { /* 由页面自行处理 */ }
     if (typeof window.pageInit === 'function') {
       try { await window.pageInit(); } catch (e) { console.error('[pageInit]', e); }
     }
