@@ -533,3 +533,10 @@ html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; 
   .dest-grid.featured .dest-name { font-size: 1.4rem; }
   .dest-grid.featured .dest-tagline { font-size: .98rem; min-height: 50px; }
 }
+@media (max-width: 900px) {
+  .entry-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .entry-card { padding: 14px 6px; }
+  .entry-card p { display: none; }
+  .entry-icon { font-size: 1.6rem; margin-bottom: 4px; }
+  .entry-card h3 { font-size: .95rem; margin-bottom: 0; }
+}
