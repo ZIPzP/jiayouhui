@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>家游汇 · 家庭旅游推荐与攻略</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>" />
-  <link rel="stylesheet" href="/css/style.css?v=20260810y" />
+  <link rel="stylesheet" href="/css/style.css?v=20260810z" />
 </head>
 <body>    <header class="nav" id="topnav">
     <div class="nav-inner">
@@ -72,6 +72,17 @@
             <label><input type="checkbox" value="海滨玩水" /> 海滨玩水</label>
             <label><input type="checkbox" value="古城老街" /> 古城老街</label>
           </div>
+        <div class="form-group">
+          <label class="form-label" for="pf-mode">详细程度</label>
+          <select id="pf-mode" class="input">
+            <option value="简略" selected>📦 简略（精选必备）</option>
+            <option value="超详细">🧳 超详细（懒人攻略：防晒会补清洁乳、湿巾配纸巾…）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pf-notes">用户要求（可选，会结合需求生成）</label>
+          <textarea id="pf-notes" class="input" rows="2" placeholder="如：带老人要多带膏药；给孩子多带零食；我要拍照带三脚架……"></textarea>
+        </div>
         </div>
         <button id="pf-submit" class="btn btn-primary btn-lg btn-block" type="button">🤖 生成打包清单</button>
         <p class="form-hint" id="aiModeHint"></p>
@@ -84,8 +95,8 @@
         <div id="resultBody" hidden></div>
       </div>
     </div>
-  </section>  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习与演示使用，请以官方信息为准</p></footer>  <script src="/js/common.js?v=20260810y"></script>
-  <script src="/js/html2canvas.min.js?v=20260810y"></script>
-  <script src="/js/packing.js?v=20260810y"></script>
+  </section>  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习与演示使用，请以官方信息为准</p></footer>  <script src="/js/common.js?v=20260810z"></script>
+  <script src="/js/html2canvas.min.js?v=20260810z"></script>
+  <script src="/js/packing.js?v=20260810z"></script>
 </body>
 </html>

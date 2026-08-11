@@ -186,7 +186,9 @@ async function handleApi(req, res, pathname) {
       elderly: Number(body.elderly) || 0,
       adults: Number(body.adults) || 2,
       children: Number(body.children) || 0,
-      interests: Array.isArray(body.interests) ? body.interests : []
+      interests: Array.isArray(body.interests) ? body.interests : [],
+      mode: String(body.mode || '简略').trim(),
+      notes: String(body.notes || '').trim(),
     };
     const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model };
     const jobId = runJob(() => rec.recommend(params, overrides));
@@ -252,7 +254,6 @@ async function handleApi(req, res, pathname) {
       pace: String(body.pace || '标准'),
       accommodation: String(body.accommodation || '').trim(),
       interests: Array.isArray(body.interests) ? body.interests : [],
-      notes: String(body.notes || '').trim()
     };
     const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model };
     const jobId = runJob(() => planner.buildPlan(params, overrides));

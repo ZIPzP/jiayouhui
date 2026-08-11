@@ -42,7 +42,9 @@
       elderly: Number(document.getElementById('pf-elderly').value) || 0,
       adults: Number(document.getElementById('pf-adults').value) || 0,
       children: Number(document.getElementById('pf-children').value) || 0,
-      interests: [...document.querySelectorAll('#interestChips input:checked')].map((i) => i.value)
+      interests: [...document.querySelectorAll('#interestChips input:checked')].map((i) => i.value),
+      mode: document.getElementById('pf-mode').value || '简略',
+      notes: document.getElementById('pf-notes').value.trim()
     };
     const hit = app.state.destinations.find((d) => app.normCity(d.name) === name);
     if (hit) return Object.assign({}, base, { destinationId: hit.id });
@@ -127,7 +129,7 @@
     const tips = (data.tips || []).map((t) => `<li>${app.esc(t)}</li>`).join('');
     el.innerHTML = `
       <div class="result-head">
-        <h3>🎒 ${app.esc(destName)} · ${app.esc(data.monthLabel || '')}出行清单</h3>
+    <h3>\u{1F392} ${app.esc(destName)} · ${app.esc(data.monthLabel || '')}出行清单${vals.mode === '超详细' ? ' · \u{1F9F3}超详细' : ''}</h3>
         <span class="provider-tag">${data.provider === 'ai' ? '🤖 AI 生成 · ' + app.esc(data.model || '') : '📋 内置规则引擎'}</span>
       </div>
       ${data.aiError ? `<p class="form-hint" style="color:var(--danger)">AI 调用失败，已自动使用内置清单：${app.esc(data.aiError)}</p>` : ''}
