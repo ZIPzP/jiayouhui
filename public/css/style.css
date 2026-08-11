@@ -369,6 +369,10 @@ html.elderly .auth-card { padding: 40px 32px; }
   .dest-body { padding: 12px 12px 14px; }
   .dest-tagline { min-height: 0; font-size: .86rem; margin: 4px 0 8px; }
   .dest-name { font-size: 1.05rem; }
+  .dest-grid.featured { grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 12px; }
+  .dest-grid.featured .dest-cover { height: 128px; }
+  .dest-grid.featured .dest-name { font-size: 1.05rem; }
+  .dest-grid.featured .dest-tagline { font-size: .86rem; min-height: 0; }
   .dest-meta { font-size: .76rem; }
   .hot-item { flex-wrap: wrap; padding: 12px 14px; gap: 6px 10px; }
   .hot-rank { width: 36px; font-size: 1.2rem; }
@@ -521,4 +525,11 @@ html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; 
   .form-row.nums-row label { min-width: 0; gap: 4px; font-size: .85rem; }
   .form-row.nums-row .input.num { width: 100%; padding: 9px 6px; font-size: .95rem; }
   .form-row.nums-row .btn { padding: 10px 12px; font-size: .92rem; white-space: nowrap; }
+}
+/* 首页精选：电脑端 3上3下 等比例放大（仅宽屏生效，手机端保持原样） */
+@media (min-width: 901px) {
+  .dest-grid.featured { grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  .dest-grid.featured .dest-cover { height: 250px; }
+  .dest-grid.featured .dest-name { font-size: 1.4rem; }
+  .dest-grid.featured .dest-tagline { font-size: .98rem; min-height: 50px; }
 }
