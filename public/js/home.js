@@ -22,8 +22,10 @@
       list.forEach((u) => { if (u && !seen.has(u)) { seen.add(u); urls.push(u); } });
     });
     if (urls.length < 2) return;
-    // 洗牌（保持前几张兜底图在开头，首屏立即出图）
-    for (let i = urls.length - 1; i > 1; i--) { const j = 1 + Math.floor(Math.random() * i); const t = urls[i]; urls[i] = urls[j]; urls[j] = t; }
+    // 随机洗牌：兜底组（前6张确定可用）与其余风景图分别打乱，保证首图每次不同且立即可用
+    const fbLen = Math.min(6, urls.length);
+    for (let i = fbLen - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = urls[i]; urls[i] = urls[j]; urls[j] = t; }
+    for (let i = urls.length - 1; i > fbLen; i--) { const j = fbLen + Math.floor(Math.random() * (i - fbLen + 1)); const t = urls[i]; urls[i] = urls[j]; urls[j] = t; }
     const cache = {};
     function preload(url) { if (!cache[url]) { const p = new Image(); p.src = url; cache[url] = p; } }
     let idx = 0, cur = 0;
