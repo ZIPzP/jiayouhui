@@ -623,3 +623,9 @@ html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; 
   .hd-carousel { width: 400px; height: 340px; }
   .hd-title { font-size: 34px; }
 }
+/* 行程规划·电脑端：左右两栏各自独立滚动，互不影响（手机端不变） */
+@media (min-width: 901px) {
+  .plan-layout { height: calc(100vh - var(--nav-h) - 48px); overflow: hidden; align-items: stretch; }
+  .plan-layout > .card { overflow-y: auto; min-height: 0; }
+  .plan-layout .form-card { position: static; }
+}
