@@ -130,7 +130,7 @@
     el.innerHTML = `
       <div class="result-head">
     <h3>\u{1F392} ${app.esc(destName)} · ${app.esc(data.monthLabel || '')}出行清单${vals.mode === '超详细' ? ' · \u{1F9F3}超详细' : ''}</h3>
-        <span class="provider-tag">${data.provider === 'ai' ? '🤖 AI 生成 · ' + app.esc(data.model || '') : '📋 内置规则引擎'}</span>
+        <span class="provider-tag">${data.provider === 'ai' ? '🐱 AI 生成 · ' + app.esc(data.model || '') : '📋 内置规则引擎'}</span>
       </div>
       ${data.aiError ? `<p class="form-hint" style="color:var(--danger)">AI 调用失败，已自动使用内置清单：${app.esc(data.aiError)}</p>` : ''}
       <div class="weather-box">🌤️ ${app.esc(data.weatherAdvice || '')}</div>

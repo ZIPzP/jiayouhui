@@ -99,7 +99,7 @@
     if (!document.getElementById('pl-end').value) problems.push('返程日期没选择');
     if (problems.length) {
       empty.hidden = true; bodyEl.hidden = false;
-      bodyEl.innerHTML = `<div class="ai-feedback">🤖 AI 主理人：${problems.map((x) => '「' + x + '」').join('、')}，请补全后再生成。</div>`;
+      bodyEl.innerHTML = `<div class="ai-feedback">🐱 AI 主理人：${problems.map((x) => '「' + x + '」').join('、')}，请补全后再生成。</div>`;
       return;
     }
     // 出发与目的地不能同城（否则行程无参考价值，不调 AI）
@@ -107,7 +107,7 @@
     const destRaw2 = document.getElementById('pl-dest').value.trim();
     if (originRaw2 && destRaw2 && app.normCity(originRaw2) === app.normCity(destRaw2)) {
       empty.hidden = true; bodyEl.hidden = false;
-      bodyEl.innerHTML = `<div class="ai-feedback">🤖 AI 主理人：出发城市和目的地是同一个城市「${app.esc(destRaw2)}」，行程没有参考价值，请换个目的地。</div>`;
+      bodyEl.innerHTML = `<div class="ai-feedback">🐱 AI 主理人：出发城市和目的地是同一个城市「${app.esc(destRaw2)}」，行程没有参考价值，请换个目的地。</div>`;
       return;
     }
     const vals = planFormValues();
@@ -118,12 +118,12 @@
       localStorage.setItem('jyh_last_plan', JSON.stringify({ jobId: st.jobId, vals, result: null, ts: Date.now() }));
       app.pollJob(st.jobId, {
         onDone: (result) => { renderPlan(bodyEl, result, vals); savePlan(vals, result); },
-        onError: (msg) => { bodyEl.innerHTML = `<div class="ai-feedback">🤖 AI 主理人：${app.esc(msg)}</div>`; }
+        onError: (msg) => { bodyEl.innerHTML = `<div class="ai-feedback">🐱 AI 主理人：${app.esc(msg)}</div>`; }
       });
     } catch (e) {
       // 校验类错误（400）直接显示在输出框（含 AI 猜城市）
       const msg = (e && e.message) || '生成失败';
-      bodyEl.innerHTML = `<div class="ai-feedback">🤖 AI 主理人：${app.esc(msg)}</div>`;
+      bodyEl.innerHTML = `<div class="ai-feedback">🐱 AI 主理人：${app.esc(msg)}</div>`;
     }
   }
   function restorePlan() {
@@ -174,7 +174,7 @@
     el.innerHTML = `
       <div class="result-head">
         <h3>🗺️ ${app.esc(data.title || '行程规划')}</h3>
-        <span class="provider-tag">${data.provider === 'ai' ? '🤖 AI 主理人生成 · ' + app.esc(data.model || '') : '📋 内置规划引擎'}</span>
+        <span class="provider-tag">${data.provider === 'ai' ? '🐱 AI 主理人生成 · ' + app.esc(data.model || '') : '📋 内置规划引擎'}</span>
       </div>
       ${data.aiError ? `<p class="form-hint" style="color:var(--danger)">AI 调用失败，已自动使用内置方案：${app.esc(data.aiError)}</p>` : ''}
       ${data.summary ? `<p style="color:var(--ink-soft);margin-bottom:14px">${app.esc(data.summary)}</p>` : ''}

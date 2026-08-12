@@ -147,11 +147,11 @@
   function updateAiHints() {
     const m = $('#aiModeHint');
     if (m) m.textContent = state.serverKey ? '🔒 服务端已内置 Key（仅服务器持有，浏览器不保存）· ' + (state.ai.model || '默认模型')
-      : (state.ai.apiKey ? '🤖 当前使用浏览器本地 Key：' + (state.ai.model || '默认')
+      : (state.ai.apiKey ? '🐱 当前使用浏览器本地 Key：' + (state.ai.model || '默认')
       : '📋 演示模式（内置规则引擎）。配置 DeepSeek Key 后启用大模型。');
     const ph = $('#planAiHint');
     if (ph) ph.textContent = state.serverKey ? '🔒 AI 主理人已接入（服务端内置 Key，仅服务器持有）'
-      : (state.ai.apiKey ? '🤖 AI 主理人已接入（浏览器本地 Key：' + (state.ai.model || '已配置') + '）'
+      : (state.ai.apiKey ? '🐱 AI 主理人已接入（浏览器本地 Key：' + (state.ai.model || '已配置') + '）'
       : '📋 演示模式：未配置 AI Key，将使用内置规划引擎（点右上角 ⚙️ AI 设置 接入 DeepSeek）');
     const ct = $('#chatModeTag');
     if (ct) ct.textContent = state.serverKey ? '🔒 AI 模式' : (state.ai.apiKey ? 'AI 模式 · ' + (state.ai.model || '') : '演示模式');
@@ -189,7 +189,7 @@
     localStorage.setItem('jyh_ai', JSON.stringify(state.ai));
     updateAiHints();
     closeAiModal();
-    toast(state.ai.apiKey ? '🤖 AI 设置已保存，开始使用大模型' : '已切换为演示模式（内置规则引擎）');
+    toast(state.ai.apiKey ? '🐱 AI 设置已保存，开始使用大模型' : '已切换为演示模式（内置规则引擎）');
   }
 
   function openMobilePreview() {
@@ -266,7 +266,7 @@
       html += `<div class="modal-backdrop" id="aiModal" hidden>
         <div class="modal modal-sm" role="dialog" aria-modal="true" aria-label="AI 设置">
           <button class="modal-close" id="aiModalClose" type="button" aria-label="关闭">✕</button>
-          <h3>🤖 AI 大模型设置</h3>
+          <h3>🐱 AI 大模型设置</h3>
           <p class="form-hint">推荐 DeepSeek：点「🚀 DeepSeek」一键填入接口与模型，再粘贴你的 API Key。Key 仅保存在本地。</p>
           <div class="provider-presets" id="providerPresets">
             <button class="chip active" data-provider="deepseek" type="button">🚀 DeepSeek</button>
@@ -318,7 +318,7 @@
         <button id="settingsBtn" class="btn btn-ghost" type="button">⚙️ 设置</button>
         <div class="settings-menu" id="settingsMenu" hidden>
           <button id="menuElderly" type="button">👴 <span>长辈模式</span></button>
-          <button id="menuAi" type="button">🤖 AI 设置</button>
+          <button id="menuAi" type="button">🐱 AI 设置</button>
           <button id="menuMobile" type="button">📱 手机预览</button>
           <a href="/about.html">📖 关于</a>
         </div>

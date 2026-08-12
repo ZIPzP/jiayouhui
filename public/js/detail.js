@@ -94,7 +94,7 @@
           </div>` : ''}
         <div class="detail-actions">
           <button class="btn btn-primary" type="button" data-open-pack="${app.esc(d.id)}">🎒 生成这份目的地的出行清单</button>
-          <button class="btn btn-ghost" type="button" data-guide="${app.esc(d.id)}">🤖 AI 生成攻略</button>
+          <button class="btn btn-ghost" type="button" data-guide="${app.esc(d.id)}">🐱 AI 生成攻略</button>
         </div>
         <div class="guide-box" id="guideBox"></div>
         <h3 style="margin-top:22px">📷 更多照片</h3>
@@ -163,7 +163,7 @@
     const box = document.getElementById('guideBox');
     const d = (app.state.destinations || []).find((x) => x.id === id);
     if (!box) return;
-    box.innerHTML = '<p class="form-hint">🤖 AI 正在为' + app.esc(d ? d.name : '') + '撰写攻略，请稍候…</p>';
+    box.innerHTML = '<p class="form-hint">🐱 AI 正在为' + app.esc(d ? d.name : '') + '撰写攻略，请稍候…</p>';
     try {
       const data = await app.api('/api/ai-guide', {
         method: 'POST',
@@ -183,7 +183,7 @@
       <div class="card" style="padding:20px">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
           <h3 style="color:var(--primary-dark)">${app.esc(data.title || '旅行攻略')}</h3>
-          <span class="provider-tag">${data.provider === 'ai' ? '🤖 AI 生成 · ' + app.esc(data.model || '') : '📋 内置攻略'}</span>
+          <span class="provider-tag">${data.provider === 'ai' ? '🐱 AI 生成 · ' + app.esc(data.model || '') : '📋 内置攻略'}</span>
         </div>
         ${data.aiError ? `<p class="form-hint" style="color:var(--danger)">AI 调用失败，已使用内置攻略：${app.esc(data.aiError)}</p>` : ''}
         <p style="color:var(--ink-soft);margin-bottom:14px">${app.esc(data.summary || '')}</p>
