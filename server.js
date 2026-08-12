@@ -285,9 +285,27 @@ async function handleApi(req, res, pathname) {
         const ret = params.returnDest || params.origin;
         const od = await train.queryTrainsWithPrices(params.origin, params.destination.name, String(params.startDate || '').slice(0, 10));
         const id2 = await train.queryTrainsWithPrices(params.destination.name, ret, String(params.endDate || '').slice(0, 10));
-        params.realTrains = { outbound: od.ok ? od.trains : [], inbound: id2.ok ? id2.trains : [] };
+        const fmtRT = (ts) => (ts || []).slice(0, 6).map((t) => {
+          let s = t.no + ' ' + t.fromTime + '-' + t.toTime + ' 历时' + t.duration;
+          if (t.second) s += ' 二等座有';
+          if (t.first) s += ' 一等座有';
+          for (const k of ['二等座', '一等座', '商务座']) if (t.prices && t.prices[k]) s += ' ' + k + '¥' + t.prices[k];
+          return s;
+        }).join('；') || '暂无直达';
+        params.realTrains = {
+          outbound: od.ok ? od.trains : [],
+          inbound: id2.ok ? id2.trains : [],
+          display: {
+            outboundLabel: (params.origin || '') + ' → ' + params.destination.name,
+            outbound: fmtRT(od.ok ? od.trains : []),
+            inboundLabel: params.destination.name + ' → ' + ret,
+            inbound: fmtRT(id2.ok ? id2.trains : [])
+          }
+        };
       }
-      return planner.buildPlan(params, overrides);
+      const result = await planner.buildPlan(params, overrides);
+      result.realTrains = params.realTrains;
+      return result;
     });
     return sendJson(res, 200, { jobId, status: 'running' });
   }

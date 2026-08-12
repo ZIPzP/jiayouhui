@@ -300,6 +300,14 @@
       </div>`).join('');
     const tp = data.transportPlan || {};
     const bg = data.budget || {};
+    const rt = data.realTrains || {};
+    const rtDisp = rt.display || {};
+    const rtHtml = (rtDisp.outbound || rtDisp.inbound) ? `
+      <div class="transport-box"><h4>🚄 12306 实时车次与票价</h4>
+        ${rtDisp.outbound ? '<p><b>去程（' + app.esc(rtDisp.outboundLabel || '') + '）：</b>' + app.esc(rtDisp.outbound) + '</p>' : ''}
+        ${rtDisp.inbound ? '<p><b>返程（' + app.esc(rtDisp.inboundLabel || '') + '）：</b>' + app.esc(rtDisp.inbound) + '</p>' : ''}
+        <p style="font-size:.85rem;opacity:.7">数据来自 12306 实时官方查询，请以 12306 实际为准</p>
+      </div>` : '';
     el.innerHTML = `
       <div class="result-head">
         <h3>🗺️ ${app.esc(data.title || '行程规划')}</h3>
@@ -307,6 +315,7 @@
       </div>
       ${data.aiError ? `<p class="form-hint" style="color:var(--danger)">AI 调用失败，已自动使用内置方案：${app.esc(data.aiError)}</p>` : ''}
       ${data.summary ? `<p style="color:var(--ink-soft);margin-bottom:14px">${app.esc(data.summary)}</p>` : ''}
+      ${rtHtml}
       <div class="transport-box"><h4>🚄 交通安排</h4>
         ${tp.outbound ? `<p><b>去程：</b>${app.esc(tp.outbound)}</p>` : ''}
         ${tp.inbound ? `<p><b>返程：</b>${app.esc(tp.inbound)}</p>` : ''}
