@@ -16,6 +16,7 @@ const planner = require('./lib/planner');
 const auth = require('./lib/auth');
 const weather = require('./lib/weather');
 const collector = require('./lib/collector');
+const train = require('./lib/train');
 
 const ROOT = __dirname;
 const PUBLIC = path.join(ROOT, 'public');
@@ -277,7 +278,17 @@ async function handleApi(req, res, pathname) {
       notes: String(body.notes || '').trim(),
     };
     const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model };
-    const jobId = runJob(() => planner.buildPlan(params, overrides));
+    const jobId = runJob(async () => {
+      // 高铁/火车：从 12306 拉取当天真实车次，供 AI 直接采用
+      const tr = String(params.transport || '');
+      if (['高铁', '火车', '未定', ''].includes(tr) && params.origin && params.destination) {
+        const ret = params.returnDest || params.origin;
+        const od = await train.queryTrains(params.origin, params.destination.name, String(params.startDate || '').slice(0, 10));
+        const id2 = await train.queryTrains(params.destination.name, ret, String(params.endDate || '').slice(0, 10));
+        params.realTrains = { outbound: od.ok ? od.trains : [], inbound: id2.ok ? id2.trains : [] };
+      }
+      return planner.buildPlan(params, overrides);
+    });
     return sendJson(res, 200, { jobId, status: 'running' });
   }
 
