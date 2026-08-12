@@ -5,6 +5,8 @@
     bindEvents();
     restoreDraft();
     restorePlan();
+    renderHistory();
+    bindHistory();
   };
 
   function chipValue(groupSel) { const el = document.querySelector(`#planForm [${groupSel}] .chip.active`); return el ? el.dataset.value : ''; }
@@ -116,29 +118,83 @@
     clearTimeout(draftTimer);
     draftTimer = setTimeout(() => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraft())); } catch (e) {} }, 300);
   }
-  function restoreDraft() {
-    try {
-      const d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
-      if (!d) return;
-      document.getElementById('pl-dest').value = d.dest || '';
-      document.getElementById('pl-origin').value = d.origin || '';
-      if (document.getElementById('pl-return')) document.getElementById('pl-return').value = d.returnDest || '';
-      document.getElementById('pl-start').value = d.start || '';
-      document.getElementById('pl-end').value = d.end || '';
-      if (d.days) document.getElementById('pl-days').value = d.days;
-      document.getElementById('pl-elderly').value = d.elderly || 2;
-      document.getElementById('pl-adults').value = d.adults || 2;
-      document.getElementById('pl-children').value = d.children || 1;
-      document.getElementById('pl-notes').value = d.notes || '';
-      const setChips = (sel, arr) => { [...document.querySelectorAll(`#planForm [${sel}] .chip`)].forEach((c) => c.classList.toggle('active', (arr || []).includes(c.dataset.value))); };
-      if (d.transport) setChips('data-single="pl-transport"', [d.transport]);
-      if (d.dietary && d.dietary.length) setChips('data-multi="pl-dietary"', d.dietary);
-      if (d.budget) setChips('data-single="pl-budget"', [d.budget]);
-      if (d.pace) setChips('data-single="pl-pace"', [d.pace]);
-      if (d.accommodation) setChips('data-single="pl-stay"', [d.accommodation]);
-      if (d.interests && d.interests.length) setChips('data-multi="pl-interests"', d.interests);
-    } catch (e) { /* 忽略 */ }
+  function restoreFormData(d) {
+    if (!d) return;
+    document.getElementById('pl-dest').value = d.dest || '';
+    document.getElementById('pl-origin').value = d.origin || '';
+    if (document.getElementById('pl-return')) document.getElementById('pl-return').value = d.returnDest || '';
+    document.getElementById('pl-start').value = d.start || '';
+    document.getElementById('pl-end').value = d.end || '';
+    if (d.days) document.getElementById('pl-days').value = d.days;
+    document.getElementById('pl-elderly').value = d.elderly || 2;
+    document.getElementById('pl-adults').value = d.adults || 2;
+    document.getElementById('pl-children').value = d.children || 1;
+    document.getElementById('pl-notes').value = d.notes || '';
+    const setChips = (sel, arr) => { [...document.querySelectorAll(`#planForm [${sel}] .chip`)].forEach((c) => c.classList.toggle('active', (arr || []).includes(c.dataset.value))); };
+    if (d.transport) setChips('data-single="pl-transport"', [d.transport]);
+    if (d.dietary && d.dietary.length) setChips('data-multi="pl-dietary"', d.dietary);
+    if (d.budget) setChips('data-single="pl-budget"', [d.budget]);
+    if (d.pace) setChips('data-single="pl-pace"', [d.pace]);
+    if (d.accommodation) setChips('data-single="pl-stay"', [d.accommodation]);
+    if (d.interests && d.interests.length) setChips('data-multi="pl-interests"', d.interests);
   }
+  function restoreDraft() {
+    try { const d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); if (d) restoreFormData(d); } catch (e) { /* 忽略 */ }
+  }
+  /* ---------- 历史生成记录（小内存，仅存问题概要） ---------- */
+  const HIST_KEY = 'jyh_plan_history';
+  const HIST_MAX = 20;
+  function loadHistory() { try { const a = JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function saveHistory(arr) { try { localStorage.setItem(HIST_KEY, JSON.stringify(arr.slice(0, HIST_MAX))); } catch (e) {} }
+  function saveHistoryEntry(d) {
+    const arr = loadHistory();
+    arr.unshift({ ts: Date.now(), ...d });
+    saveHistory(arr);
+    renderHistory();
+  }
+  function histLabel(d) {
+    const dt = d.ts ? new Date(d.ts) : null;
+    const when = dt ? (dt.getMonth() + 1) + '-' + dt.getDate() + ' ' + String(dt.getHours()).padStart(2, '0') + ':' + String(dt.getMinutes()).padStart(2, '0') : '';
+    const dest = d.dest || '目的地';
+    const from = d.origin || '未知';
+    const days = d.days || '?';
+    const ret = d.returnDest ? ('·返' + d.returnDest) : '';
+    const note = d.notes ? ('·' + d.notes) : '';
+    return (when ? when + ' ' : '') + from + '→' + dest + ' ' + days + '天' + ret + note;
+  }
+  function renderHistory() {
+    const box = document.getElementById('planHistory');
+    const list = document.getElementById('planHistoryList');
+    if (!box || !list) return;
+    const arr = loadHistory();
+    box.hidden = !arr.length;
+    list.innerHTML = arr.map((d, i) => `
+      <div class="hist-item" data-i="${i}" role="button" tabindex="0" title="点击恢复此前的填写">
+        <span class="hist-text">${app.esc(histLabel(d))}</span>
+        <button class="hist-del" data-del="${i}" type="button" aria-label="删除">✕</button>
+      </div>`).join('') || '';
+  }
+  function bindHistory() {
+    const clear = document.getElementById('plHistClear');
+    if (clear) clear.addEventListener('click', () => { saveHistory([]); renderHistory(); });
+    const list = document.getElementById('planHistoryList');
+    if (list) list.addEventListener('click', (e) => {
+      const del = e.target.closest('[data-del]');
+      if (del) {
+        const arr = loadHistory();
+        arr.splice(Number(del.dataset.del), 1);
+        saveHistory(arr);
+        renderHistory();
+        return;
+      }
+      const item = e.target.closest('.hist-item[data-i]');
+      if (item) {
+        const d = loadHistory()[Number(item.dataset.i)];
+        if (d) { restoreFormData(d); app.toast('已恢复该次填写，可重新生成'); }
+      }
+    });
+  }
+
 
   function savePlan(vals, result) {
     localStorage.setItem('jyh_last_plan', JSON.stringify({ vals, result, ts: Date.now() }));
@@ -171,6 +227,7 @@
     try {
       const st = await app.api('/api/plan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({}, vals, app.state.ai)) });
       localStorage.setItem('jyh_last_plan', JSON.stringify({ jobId: st.jobId, vals, result: null, ts: Date.now() }));
+      saveHistoryEntry(collectDraft()); // 记录本次问题到历史
       app.pollJob(st.jobId, {
         onDone: (result) => { renderPlan(bodyEl, result, vals); savePlan(vals, result); },
         onError: (msg) => { bodyEl.innerHTML = `<div class="ai-feedback">🐱 AI 主理人：${app.esc(msg)}</div>`; }

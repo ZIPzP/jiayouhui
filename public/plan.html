@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>家游汇 · 家庭旅游推荐与攻略</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>" />
-  <link rel="stylesheet" href="/css/style.css?v=20260811q" />
+  <link rel="stylesheet" href="/css/style.css?v=20260811r" />
 </head>
 <body>    <header class="nav" id="topnav">
     <div class="nav-inner">
@@ -160,6 +160,10 @@
         </div>
         <button id="pl-submit" class="btn btn-primary btn-lg btn-block" type="button">🐱 生成完整行程规划</button>
         <p class="form-hint" id="planAiHint"></p>
+        <div class="plan-history" id="planHistory" hidden>
+          <div class="plan-history-head">🗂️ 历史生成记录 <button id="plHistClear" class="btn btn-ghost btn-sm" type="button">清空</button></div>
+          <div id="planHistoryList"></div>
+        </div>
       </div>
       <div class="card result-card" id="planResult">
         <div class="result-empty" id="planEmpty">
@@ -180,8 +184,8 @@
         <button id="chatSend" class="btn btn-primary" type="button">发送</button>
       </div>
     </div>
-  </section>  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习与演示使用，请以官方信息为准</p></footer>  <script src="/js/common.js?v=20260811q"></script>
-  <script src="/js/html2canvas.min.js?v=20260811q"></script>
-  <script src="/js/plan.js?v=20260811q"></script>
+  </section>  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习与演示使用，请以官方信息为准</p></footer>  <script src="/js/common.js?v=20260811r"></script>
+  <script src="/js/html2canvas.min.js?v=20260811r"></script>
+  <script src="/js/plan.js?v=20260811r"></script>
 </body>
 </html>
