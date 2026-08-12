@@ -292,14 +292,21 @@ async function handleApi(req, res, pathname) {
           for (const k of ['二等座', '一等座', '商务座']) if (t.prices && t.prices[k]) s += ' ' + k + '¥' + t.prices[k];
           return s;
         }).join('；') || '暂无直达';
+        const rtText = (res) => {
+          if (!res || !res.ok) return '12306 查询失败（' + ((res && res.error) || '未知') + '），请到 12306 官网确认实际车次';
+          if (!res.trains || !res.trains.length) return '暂无直达，需中转（可到 12306 查询中转方案）';
+          let s = fmtRT(res.trains);
+          if (res.refNote) s += '（出行日期超出预售期，以上为近期参考班次，车次基本每日固定，请以出行日 12306 实际为准）';
+          return s;
+        };
         params.realTrains = {
           outbound: od.ok ? od.trains : [],
           inbound: id2.ok ? id2.trains : [],
           display: {
-            outboundLabel: (params.origin || '') + ' → ' + params.destination.name,
-            outbound: fmtRT(od.ok ? od.trains : []),
-            inboundLabel: params.destination.name + ' → ' + ret,
-            inbound: fmtRT(id2.ok ? id2.trains : [])
+            outboundLabel: '去程（' + (params.origin || '') + ' → ' + params.destination.name + '）',
+            outbound: rtText(od),
+            inboundLabel: '返程（' + params.destination.name + ' → ' + ret + '）',
+            inbound: rtText(id2)
           }
         };
       }
