@@ -304,6 +304,13 @@ html.elderly .nav-links, html.elderly .quick-planner, html.elderly .packing-layo
 .day-meta span { background: #f8fafc; border-radius: 8px; padding: 4px 10px; }
 .transport-box { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a; border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; font-size: .92rem; }
 .transport-box h4 { margin-bottom: 6px; }
+.rt-list { list-style: none; margin: 4px 0 8px; padding: 0; }
+.rt-list li { background: #fff; border: 1px solid #dbeafe; border-left: 3px solid var(--accent); border-radius: 8px; padding: 7px 10px; margin-bottom: 6px; line-height: 1.5; }
+.rt-list li b { color: var(--primary-dark); font-size: 1rem; }
+.rt-label { margin: 10px 0 4px; }
+.rt-price { font-size: .84rem; color: #b45309; margin-top: 2px; }
+.rt-note { font-size: .82rem; color: #92400e; opacity: .9; margin: 4px 0 8px; }
+.rt-foot { font-size: .8rem; opacity: .65; margin-top: 6px; }
 .budget-box { background: #fffbeb; border: 1px solid #fde68a; color: #78350f; border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; font-size: .92rem; }
 .budget-box .total { font-size: 1.05rem; font-weight: 800; color: #b45309; }
 .dietary-box { background: #fef2f2; border: 1px solid #fecaca; color: #7f1d1d; border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; font-size: .92rem; }

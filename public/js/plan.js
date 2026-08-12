@@ -302,11 +302,24 @@
     const bg = data.budget || {};
     const rt = data.realTrains || {};
     const rtDisp = rt.display || {};
-    const rtHtml = (rtDisp.outbound || rtDisp.inbound) ? `
+    const rtRow = (tr) => {
+      const p = tr.prices || {};
+      const pStr = ['二等座', '一等座', '商务座', '硬座', '硬卧', '软卧', '无座'].filter((k) => p[k]).map((k) => `${k}¥${p[k]}`).join(' ');
+      const seats = [['二等座', tr.second], ['一等座', tr.first]].filter((x) => x[1] && x[1] !== '无').map((x) => (x[1] === '有' ? x[0] + '有票' : x[0] + '余' + x[1])).join(' ');
+      return `<li><b>${app.esc(tr.no)}</b> ${app.esc(tr.fromTime)}-${app.esc(tr.toTime)} 历时${app.esc(tr.duration)}${seats ? ' · ' + app.esc(seats) : ''}${pStr ? '<div class="rt-price">' + app.esc(pStr) + '</div>' : ''}</li>`;
+    };
+    const rtSection = (label, trains, note) => {
+      const list = (trains && trains.length) ? `<ul class="rt-list">${trains.slice(0, 6).map(rtRow).join('')}</ul>` : '';
+      const noteHtml = note ? `<p class="rt-note">${app.esc(note)}</p>` : '';
+      return (list || noteHtml) ? `<p class="rt-label"><b>${app.esc(label)}</b></p>${list}${noteHtml}` : '';
+    };
+    const rtOut = rtSection(rtDisp.outboundLabel || '去程', rt.outbound, rtDisp.outboundNote);
+    const rtIn = rtSection(rtDisp.inboundLabel || '返程', rt.inbound, rtDisp.inboundNote);
+    const rtHtml = (rtOut || rtIn) ? `
       <div class="transport-box"><h4>🚄 12306 实时车次与票价</h4>
-        ${rtDisp.outbound ? '<p><b>去程（' + app.esc(rtDisp.outboundLabel || '') + '）：</b>' + app.esc(rtDisp.outbound) + '</p>' : ''}
-        ${rtDisp.inbound ? '<p><b>返程（' + app.esc(rtDisp.inboundLabel || '') + '）：</b>' + app.esc(rtDisp.inbound) + '</p>' : ''}
-        <p style="font-size:.85rem;opacity:.7">数据来自 12306 实时官方查询，请以 12306 实际为准</p>
+        ${rtOut}
+        ${rtIn}
+        <p class="rt-foot">数据来自 12306 实时官方查询，请以 12306 实际为准</p>
       </div>` : '';
     el.innerHTML = `
       <div class="result-head">

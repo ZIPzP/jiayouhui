@@ -285,28 +285,20 @@ async function handleApi(req, res, pathname) {
         const ret = params.returnDest || params.origin;
         const od = await train.queryTrainsWithPrices(params.origin, params.destination.name, String(params.startDate || '').slice(0, 10));
         const id2 = await train.queryTrainsWithPrices(params.destination.name, ret, String(params.endDate || '').slice(0, 10));
-        const fmtRT = (ts) => (ts || []).slice(0, 6).map((t) => {
-          let s = t.no + ' ' + t.fromTime + '-' + t.toTime + ' 历时' + t.duration;
-          if (t.second) s += ' 二等座有';
-          if (t.first) s += ' 一等座有';
-          for (const k of ['二等座', '一等座', '商务座']) if (t.prices && t.prices[k]) s += ' ' + k + '¥' + t.prices[k];
-          return s;
-        }).join('；') || '暂无直达';
-        const rtText = (res) => {
+        const rtNote = (res) => {
           if (!res || !res.ok) return '12306 查询失败（' + ((res && res.error) || '未知') + '），请到 12306 官网确认实际车次';
           if (!res.trains || !res.trains.length) return '暂无直达，需中转（可到 12306 查询中转方案）';
-          let s = fmtRT(res.trains);
-          if (res.refNote) s += '（出行日期超出预售期，以上为近期参考班次，车次基本每日固定，请以出行日 12306 实际为准）';
-          return s;
+          if (res.refNote) return '出行日期超出预售期，以上为近期参考班次，车次基本每日固定，请以出行日 12306 实际为准';
+          return '';
         };
         params.realTrains = {
           outbound: od.ok ? od.trains : [],
           inbound: id2.ok ? id2.trains : [],
           display: {
             outboundLabel: '去程（' + (params.origin || '') + ' → ' + params.destination.name + '）',
-            outbound: rtText(od),
+            outboundNote: rtNote(od),
             inboundLabel: '返程（' + params.destination.name + ' → ' + ret + '）',
-            inbound: rtText(id2)
+            inboundNote: rtNote(id2)
           }
         };
       }
