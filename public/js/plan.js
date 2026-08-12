@@ -3,6 +3,7 @@
   let chatHistory = [];
   window.pageInit = async function () {
     bindEvents();
+    restoreDraft();
     restorePlan();
   };
 
@@ -83,6 +84,60 @@
     // 问答
     document.getElementById('chatSend').addEventListener('click', sendChat);
     document.getElementById('chatInput').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); } });
+    const planForm = document.getElementById('planForm');
+    if (planForm) { planForm.addEventListener('input', scheduleDraftSave); planForm.addEventListener('change', scheduleDraftSave); }
+  }
+
+  /* ---------- 表单草稿自动保存（切页不丢） ---------- */
+  const DRAFT_KEY = 'jyh_plan_draft';
+  let draftTimer = null;
+  function collectDraft() {
+    const chips = (sel) => [...document.querySelectorAll(`#planForm [${sel}] .chip.active`)].map((c) => c.dataset.value);
+    return {
+      dest: document.getElementById('pl-dest').value,
+      origin: document.getElementById('pl-origin').value,
+      returnDest: document.getElementById('pl-return') ? document.getElementById('pl-return').value : '',
+      start: document.getElementById('pl-start').value,
+      end: document.getElementById('pl-end').value,
+      days: document.getElementById('pl-days').value,
+      transport: chips('data-single="pl-transport"')[0] || '',
+      elderly: document.getElementById('pl-elderly').value,
+      adults: document.getElementById('pl-adults').value,
+      children: document.getElementById('pl-children').value,
+      dietary: chips('data-multi="pl-dietary"'),
+      budget: chips('data-single="pl-budget"')[0] || '',
+      pace: chips('data-single="pl-pace"')[0] || '',
+      accommodation: chips('data-single="pl-stay"')[0] || '',
+      interests: chips('data-multi="pl-interests"'),
+      notes: document.getElementById('pl-notes').value
+    };
+  }
+  function scheduleDraftSave() {
+    clearTimeout(draftTimer);
+    draftTimer = setTimeout(() => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraft())); } catch (e) {} }, 300);
+  }
+  function restoreDraft() {
+    try {
+      const d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+      if (!d) return;
+      document.getElementById('pl-dest').value = d.dest || '';
+      document.getElementById('pl-origin').value = d.origin || '';
+      if (document.getElementById('pl-return')) document.getElementById('pl-return').value = d.returnDest || '';
+      document.getElementById('pl-start').value = d.start || '';
+      document.getElementById('pl-end').value = d.end || '';
+      if (d.days) document.getElementById('pl-days').value = d.days;
+      document.getElementById('pl-elderly').value = d.elderly || 2;
+      document.getElementById('pl-adults').value = d.adults || 2;
+      document.getElementById('pl-children').value = d.children || 1;
+      document.getElementById('pl-notes').value = d.notes || '';
+      const setChips = (sel, arr) => { [...document.querySelectorAll(`#planForm [${sel}] .chip`)].forEach((c) => c.classList.toggle('active', (arr || []).includes(c.dataset.value))); };
+      if (d.transport) setChips('data-single="pl-transport"', [d.transport]);
+      if (d.dietary && d.dietary.length) setChips('data-multi="pl-dietary"', d.dietary);
+      if (d.budget) setChips('data-single="pl-budget"', [d.budget]);
+      if (d.pace) setChips('data-single="pl-pace"', [d.pace]);
+      if (d.accommodation) setChips('data-single="pl-stay"', [d.accommodation]);
+      if (d.interests && d.interests.length) setChips('data-multi="pl-interests"', d.interests);
+    } catch (e) { /* 忽略 */ }
   }
 
   function savePlan(vals, result) {
