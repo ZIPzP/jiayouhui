@@ -4,6 +4,7 @@
   window.pageInit = async function () {
     bindEvents();
     restoreDraft();
+    restorePlan();
   };
 
   function chipValue(groupSel) { const el = document.querySelector(`#planForm [${groupSel}] .chip.active`); return el ? el.dataset.value : ''; }
@@ -162,7 +163,7 @@
   function migrateLastPlan() {
     try {
       if (loadHistory().length) return;
-      const p = JSON.parse(localStorage.getItem('jyh_last_plan') || 'null');
+      const p = JSON.parse(sessionStorage.getItem('jyh_last_plan') || 'null');
       if (!p || !p.vals) return;
       const v = p.vals;
       const dest = v.destinationId === 'custom' ? (v.customDest && v.customDest.name) || '' : ((app.state.destinations.find((x) => x.id === v.destinationId) || {}).name || '');
@@ -215,7 +216,7 @@
 
 
   function savePlan(vals, result) {
-    localStorage.setItem('jyh_last_plan', JSON.stringify({ vals, result, ts: Date.now() }));
+    sessionStorage.setItem('jyh_last_plan', JSON.stringify({ vals, result, ts: Date.now() }));
   }
   async function generatePlan() {
     const empty = document.getElementById('planEmpty');
@@ -244,7 +245,7 @@
     bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)">⏳ AI 主理人正在后台生成行程…<br/>你可以放心切到别的页面/标签页，回来会自动恢复显示结果</p>';
     try {
       const st = await app.api('/api/plan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({}, vals, app.state.ai)) });
-      localStorage.setItem('jyh_last_plan', JSON.stringify({ jobId: st.jobId, vals, result: null, ts: Date.now() }));
+      sessionStorage.setItem('jyh_last_plan', JSON.stringify({ jobId: st.jobId, vals, result: null, ts: Date.now() }));
       app.pollJob(st.jobId, {
         onDone: (result) => { renderPlan(bodyEl, result, vals); savePlan(vals, result); },
         onError: (msg) => { bodyEl.innerHTML = `<div class="ai-feedback">🐱 AI 主理人：${app.esc(msg)}</div>`; }
