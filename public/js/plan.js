@@ -11,6 +11,7 @@
   function planFormValues() {
     const base = {
       origin: document.getElementById('pl-origin').value.trim(),
+      returnDest: document.getElementById('pl-return').value.trim(),
       startDate: document.getElementById('pl-start').value,
       endDate: document.getElementById('pl-end').value,
       days: Number(document.getElementById('pl-days').value) || 3,

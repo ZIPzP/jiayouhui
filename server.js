@@ -245,6 +245,13 @@ async function handleApi(req, res, pathname) {
     if (originCity && destRealName && String(originCity.name).replace(/[省市]$/, '') === String(destRealName).replace(/[省市]$/, '')) {
       return sendJson(res, 400, { error: '出发城市和目的地是同一个城市「' + destRealName + '」，行程没有参考价值，请换个目的地' });
     }
+    const returnDest = String(body.returnDest || '').trim();
+    if (returnDest) {
+      if (!findCity(returnDest)) return sendJson(res, 400, { error: '未找到返回目的地「' + returnDest + '」，请从提示中选择正确的城市名' });
+      if (String(findCity(returnDest).name).replace(/[省市]$/, '') === String(destRealName).replace(/[省市]$/, '')) {
+        return sendJson(res, 400, { error: '返回目的地不能和目的地相同' });
+      }
+    }
     // 必填项：去程/返程日期（减少 AI 猜测、节省 token）
     const startDate = String(body.startDate || '').trim();
     const endDate = String(body.endDate || '').trim();
@@ -254,6 +261,7 @@ async function handleApi(req, res, pathname) {
     const params = {
       destination: dest,
       origin,
+      returnDest,
       startDate: body.startDate || '',
       endDate: body.endDate || '',
       days: Number(body.days) || 3,
