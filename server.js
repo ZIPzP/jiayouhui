@@ -283,8 +283,8 @@ async function handleApi(req, res, pathname) {
       const tr = String(params.transport || '');
       if (['高铁', '火车', '未定', ''].includes(tr) && params.origin && params.destination) {
         const ret = params.returnDest || params.origin;
-        const od = await train.queryTrains(params.origin, params.destination.name, String(params.startDate || '').slice(0, 10));
-        const id2 = await train.queryTrains(params.destination.name, ret, String(params.endDate || '').slice(0, 10));
+        const od = await train.queryTrainsWithPrices(params.origin, params.destination.name, String(params.startDate || '').slice(0, 10));
+        const id2 = await train.queryTrainsWithPrices(params.destination.name, ret, String(params.endDate || '').slice(0, 10));
         params.realTrains = { outbound: od.ok ? od.trains : [], inbound: id2.ok ? id2.trains : [] };
       }
       return planner.buildPlan(params, overrides);
