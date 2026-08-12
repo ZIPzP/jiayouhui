@@ -4,7 +4,6 @@
   window.pageInit = async function () {
     bindEvents();
     restoreDraft();
-    restorePlan();
     renderHistory();
     bindHistory();
   };
