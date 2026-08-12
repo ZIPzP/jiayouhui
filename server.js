@@ -274,6 +274,7 @@ async function handleApi(req, res, pathname) {
       pace: String(body.pace || '标准'),
       accommodation: String(body.accommodation || '').trim(),
       interests: Array.isArray(body.interests) ? body.interests : [],
+      notes: String(body.notes || '').trim(),
     };
     const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model };
     const jobId = runJob(() => planner.buildPlan(params, overrides));
