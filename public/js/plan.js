@@ -4,6 +4,7 @@
   window.pageInit = async function () {
     bindEvents();
     restoreDraft();
+    migrateLastPlan();
     renderHistory();
     bindHistory();
   };
@@ -161,6 +162,29 @@
     const note = d.notes ? ('·' + d.notes) : '';
     return (when ? when + ' ' : '') + from + '→' + dest + ' ' + days + '天' + ret + note;
   }
+  /* 把历史功能上线前的最后一条生成补进历史（一次性迁移） */
+  function migrateLastPlan() {
+    try {
+      if (loadHistory().length) return;
+      const p = JSON.parse(localStorage.getItem('jyh_last_plan') || 'null');
+      if (!p || !p.vals) return;
+      const v = p.vals;
+      const dest = v.destinationId === 'custom' ? (v.customDest && v.customDest.name) || '' : ((app.state.destinations.find((x) => x.id === v.destinationId) || {}).name || '');
+      const d = {
+        ts: p.ts || Date.now(),
+        dest: dest || '',
+        origin: v.origin || '',
+        returnDest: v.returnDest || '',
+        start: v.startDate || '',
+        end: v.endDate || '',
+        days: String(v.days || ''),
+        transport: v.transport || '',
+        notes: v.notes || ''
+      };
+      if (d.dest || d.origin) saveHistory([d]);
+    } catch (e) { /* 忽略 */ }
+  }
+
   function renderHistory() {
     const box = document.getElementById('planHistory');
     const list = document.getElementById('planHistoryList');
