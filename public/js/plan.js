@@ -4,9 +4,6 @@
   window.pageInit = async function () {
     bindEvents();
     restoreDraft();
-    migrateLastPlan();
-    renderHistory();
-    bindHistory();
   };
 
   function chipValue(groupSel) { const el = document.querySelector(`#planForm [${groupSel}] .chip.active`); return el ? el.dataset.value : ''; }
@@ -150,7 +147,6 @@
     const arr = loadHistory();
     arr.unshift({ ts: Date.now(), ...d });
     saveHistory(arr);
-    renderHistory();
   }
   function histLabel(d) {
     const dt = d.ts ? new Date(d.ts) : null;
@@ -207,7 +203,6 @@
         const arr = loadHistory();
         arr.splice(Number(del.dataset.del), 1);
         saveHistory(arr);
-        renderHistory();
         return;
       }
       const item = e.target.closest('.hist-item[data-i]');
@@ -250,7 +245,6 @@
     try {
       const st = await app.api('/api/plan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({}, vals, app.state.ai)) });
       localStorage.setItem('jyh_last_plan', JSON.stringify({ jobId: st.jobId, vals, result: null, ts: Date.now() }));
-      saveHistoryEntry(collectDraft()); // 记录本次问题到历史
       app.pollJob(st.jobId, {
         onDone: (result) => { renderPlan(bodyEl, result, vals); savePlan(vals, result); },
         onError: (msg) => { bodyEl.innerHTML = `<div class="ai-feedback">🐱 AI 主理人：${app.esc(msg)}</div>`; }

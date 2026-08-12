@@ -629,14 +629,3 @@ html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; 
   .plan-layout > .card { overflow-y: auto; min-height: 0; }
   .plan-layout .form-card { position: static; }
 }
-/* 行程规划·历史生成记录 */
-.plan-history { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 12px; }
-.plan-history-head { display: flex; align-items: center; justify-content: space-between; font-weight: 700; color: var(--ink); margin-bottom: 8px; font-size: .95rem; }
-.btn-sm { padding: 6px 12px; font-size: .85rem; border-radius: 8px; }
-.hist-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 6px; cursor: pointer; background: #fff; }
-.hist-item:hover { border-color: var(--primary); background: var(--primary-light); }
-.hist-text { font-size: .85rem; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.hist-del { border: none; background: none; color: var(--ink-soft); cursor: pointer; font-size: .9rem; padding: 2px 6px; border-radius: 6px; flex: none; }
-.hist-del:hover { background: rgba(220,38,38,.1); color: #dc2626; }
-html.elderly .hist-item { padding: 12px 12px; }
-html.elderly .hist-text { font-size: .95rem; }
