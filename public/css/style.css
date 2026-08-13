@@ -661,4 +661,10 @@ html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; 
 .draw-card-sec b { color: var(--primary-dark); }
 .draw-card-sec ul { margin: 6px 0 0 18px; padding: 0; color: var(--ink-soft); font-size: .9rem; line-height: 1.7; }
 .draw-card-sec p { color: var(--ink-soft); font-size: .9rem; }
-.draw-result-actions { display: flex; gap: 10px; justify-content: center; padding: 0 18px 20px; }
+.draw-result-actions { display: flex; gap: 10px; justify-content: center; padding: 0 18px 20px; }@media (max-width: 900px) {
+  .draw-wrap { padding: 28px 14px 40px; }
+  .draw-screen { width: 100%; max-width: 340px; min-height: 180px; }
+  .draw-btn { width: 100%; max-width: 340px; }
+  .draw-name { font-size: 1.4rem; }
+  .draw-emoji { font-size: 2.8rem; }
+}

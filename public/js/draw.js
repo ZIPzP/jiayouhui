@@ -3,14 +3,6 @@
   const state = { currentId: null };
 
   window.pageInit = async function () {
-    const wrap = document.getElementById('drawWrap');
-    const tip = document.getElementById('drawMobileTip');
-    // 仅电脑端使用：手机端提示并隐藏抽奖界面
-    if (window.innerWidth <= 900) {
-      if (wrap) wrap.hidden = true;
-      if (tip) tip.hidden = false;
-      return;
-    }
     bindDraw();
     bindModal();
   };
