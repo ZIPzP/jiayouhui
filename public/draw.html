@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>家游汇 · 家庭旅游推荐与攻略</title>
+  <title>家游汇 · 抽取热门家庭目的地</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>" />
   <link rel="stylesheet" href="/css/style.css?v=20260813c" />
 </head>
@@ -43,15 +43,22 @@
       <a href="/hot.html" data-nav="hot">🔥 平台热度</a>
     </nav>
   </div>
-  <div class="nav-backdrop" id="navBackdrop"></div>  <section id="destinations" class="section">
-    <div class="section-head">
-      <h2>🏞️ 热门家庭目的地</h2>
-      <p>真实地点照片 · 精选适合全家出行的目的地</p>
+  <div class="nav-backdrop" id="navBackdrop"></div>
+
+  <main class="draw-wrap" id="drawWrap">
+    <div class="draw-box">
+      <div class="draw-title">🎲 抽取热门家庭目的地</div>
+      <p class="draw-sub">不知道去哪玩？点一下，让缘分帮你决定下一站全家之旅</p>
+      <div class="draw-machine">
+        <div class="draw-screen" id="drawScreen">
+          <span class="draw-emoji" id="drawEmoji">🏡</span>
+          <span class="draw-name" id="drawName">点击下方按钮开始抽取</span>
+        </div>
+      </div>
+      <button class="btn btn-primary draw-btn" id="drawBtn" type="button">🎲 开始抽取</button>
     </div>
-    <div class="filter-chips" id="tagFilters"></div>
-    <div class="dest-grid" id="destGrid"></div>
-    <div id="moreWrap" class="more-wrap"></div>
-  </section>
+    <p class="draw-mobile-tip" id="drawMobileTip" hidden>⚠️ 本功能仅限电脑端使用，请在电脑上打开体验</p>
+  </main>
 
   <div class="lightbox" id="lightbox" hidden>
     <button class="lightbox-close" id="lightboxClose" type="button" aria-label="关闭">✕</button>
@@ -66,8 +73,20 @@
       <button class="modal-close" id="modalClose" type="button" aria-label="关闭">✕</button>
       <div id="modalBody"></div>
     </div>
-  </div>  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习研究与技术交流，严禁商业用途；请遵守中国法律法规及 12306 官方相关规定，合理合规使用</p></footer>  <script src="/js/common.js?v=20260813c"></script>
+  </div>
+
+  <div class="modal-backdrop" id="drawModal" hidden>
+    <div class="modal draw-result" role="dialog" aria-modal="true" aria-label="抽取结果">
+      <button class="modal-close" id="drawModalClose" type="button" aria-label="关闭">✕</button>
+      <div id="drawResultBody"></div>
+      <div class="draw-result-actions">
+        <button class="btn btn-ghost" id="drawAgain" type="button">🎲 再抽一次</button>
+        <button class="btn btn-primary" id="drawDetail" type="button">📖 查看完整攻略</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习研究与技术交流，严禁商业用途；请遵守中国法律法规及 12306 官方相关规定，合理合规使用</p></footer>  <script src="/js/common.js?v=20260813c"></script>
   <script src="/js/detail.js?v=20260813c"></script>
-  <script src="/js/destinations.js?v=20260813c"></script>
+  <script src="/js/draw.js?v=20260813c"></script>
 </body>
 </html>

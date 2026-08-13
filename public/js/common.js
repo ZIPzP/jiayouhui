@@ -332,7 +332,7 @@
         inlineNav.innerHTML = [
           ['/', 'home', '首页'], ['/destinations.html', 'destinations', '目的地'],
           ['/plan.html', 'plan', '行程规划'], ['/packing.html', 'packing', '出行清单'],
-          ['/hot.html', 'hot', '平台热度']
+          ['/hot.html', 'hot', '平台热度'], ['/draw.html', 'draw', '🎲 抽取']
         ].map(([href, k, label]) => '<a href="' + href + '" data-nav="' + k + '">' + label + '</a>').join('');
         inner.insertBefore(inlineNav, actions);
       }
@@ -355,7 +355,7 @@
   }
   function navActive() {
     const p = location.pathname.split('/').pop() || 'index.html';
-    const map = { 'index.html': 'home', 'destinations.html': 'destinations', 'plan.html': 'plan', 'packing.html': 'packing', 'hot.html': 'hot', 'about.html': 'about' };
+    const map = { 'index.html': 'home', 'destinations.html': 'destinations', 'plan.html': 'plan', 'packing.html': 'packing', 'hot.html': 'hot', 'draw.html': 'draw', 'about.html': 'about' };
     const key = map[p] || 'home';
     $$('#navLinks a, .nav-links-inline a').forEach((a) => a.classList.toggle('active', a.dataset.nav === key));
   }

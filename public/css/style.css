@@ -636,3 +636,29 @@ html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; 
   .plan-layout > .card { overflow-y: auto; min-height: 0; }
   .plan-layout .form-card { position: static; }
 }
+
+/* ================= 抽取热门家庭目的地（仅电脑端） ================= */
+.draw-wrap { max-width: 720px; margin: 0 auto; padding: 48px 20px 60px; }
+.draw-box { text-align: center; }
+.draw-title { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 900; color: var(--primary-dark); }
+.draw-sub { color: var(--ink-soft); margin: 10px 0 26px; }
+.draw-machine { display: flex; justify-content: center; margin-bottom: 28px; }
+.draw-screen { width: 340px; min-height: 210px; background: linear-gradient(160deg, #f0fdfa, #ccfbf1); border: 2px dashed var(--primary); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 20px; box-shadow: var(--shadow-lg); }
+.draw-emoji { font-size: 3.4rem; line-height: 1; }
+.draw-name { font-size: 1.7rem; font-weight: 800; color: var(--primary-dark); }
+.draw-btn { font-size: 1.1rem; padding: 12px 34px; border-radius: 12px; }
+.draw-mobile-tip { text-align: center; color: var(--danger); padding: 48px 20px; font-size: 1rem; }
+.modal.draw-result { max-width: 540px; }
+.draw-card-cover { position: relative; height: 190px; border-radius: 14px 14px 0 0; background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: flex-end; padding: 14px 18px; color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,.35); }
+.draw-card-emoji { position: absolute; top: 12px; right: 14px; font-size: 2.4rem; text-shadow: none; }
+.draw-card-name { font-size: 1.9rem; font-weight: 900; }
+.draw-card-meta { font-size: .85rem; opacity: .92; }
+.draw-card-body { padding: 16px 18px 18px; }
+.draw-card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.draw-card-tagline { font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+.draw-card-desc { color: var(--ink-soft); font-size: .92rem; line-height: 1.7; }
+.draw-card-sec { margin-top: 12px; }
+.draw-card-sec b { color: var(--primary-dark); }
+.draw-card-sec ul { margin: 6px 0 0 18px; padding: 0; color: var(--ink-soft); font-size: .9rem; line-height: 1.7; }
+.draw-card-sec p { color: var(--ink-soft); font-size: .9rem; }
+.draw-result-actions { display: flex; gap: 10px; justify-content: center; padding: 0 18px 20px; }
