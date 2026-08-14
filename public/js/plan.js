@@ -151,7 +151,7 @@
   }
   function histLabel(d) {
     const dt = d.ts ? new Date(d.ts) : null;
-    const when = dt ? (dt.getMonth() + 1) + '-' + dt.getDate() + ' ' + String(dt.getHours()).padStart(2, '0') + ':' + String(dt.getMinutes()).padStart(2, '0') : '';
+    const when = dt ? (dt.getMonth() + 1) + '-' + dt.getDate() + ' ' + ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2) : '';
     const dest = d.dest || '目的地';
     const from = d.origin || '未知';
     const days = d.days || '?';
