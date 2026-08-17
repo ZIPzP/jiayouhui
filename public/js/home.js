@@ -7,6 +7,89 @@
     renderFeatured();
     bindQuick();
   };
+
+  /* ============================================================
+     动效：Hero 入场 / 数字滚动 / 滚动 reveal（零依赖，渐进增强）
+     —— 立即执行，不等目的地数据，保证首屏动效不被网络拖慢
+     ============================================================ */
+  const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isElderly = () => document.documentElement.classList.contains('elderly');
+
+  /* Hero 元素依次入场：移动端 .hero 与桌面端 .hero-desktop 两套都挂类，
+     各断点只渲染可见的一套（display:none 元素动画不播放），互不干扰 */
+  function initHeroMotion() {
+    if (reduceMotion() || isElderly()) return; // 降级：内容直出
+    const groups = [
+      '.hero-eyebrow, .hd-badge',
+      '.hero-title, .hd-title',
+      '.hero-sub, .hd-sub',
+      '.quick-planner, .hd-cta',
+      '.hd-trust, .hd-carousel'
+    ];
+    groups.forEach((sel, i) => {
+      document.querySelectorAll(sel).forEach((el) => {
+        if (i) el.dataset.delay = String(i);
+        el.classList.add('anim');
+        el.addEventListener('animationend', () => el.classList.remove('anim'), { once: true });
+        // 兜底：后台标签页可能不派发 animationend，到点强制摘除，恢复静态态
+        setTimeout(() => el.classList.remove('anim'), 1200 + i * 80);
+      });
+    });
+  }
+
+  /* 数字滚动：easeOutQuart 400ms，rAF 驱动，只改 textContent（无布局、无重排） */
+  function animateCount(el) {
+    const target = Number(el.dataset.count || 0);
+    const suffix = el.dataset.suffix || '';
+    const dur = 400;
+    const t0 = performance.now();
+    const ease = (t) => 1 - Math.pow(1 - t, 4);
+    const step = (now) => {
+      const t = Math.min((now - t0) / dur, 1);
+      el.textContent = Math.round(target * ease(t)).toLocaleString('zh-CN') + suffix;
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+  function initCount() {
+    const el = document.querySelector('.hd-count');
+    if (!el) return;
+    if (reduceMotion() || isElderly()) {
+      // 降级：直接显示终值（HTML 本来就写着终值，此处仅保险）
+      el.textContent = Number(el.dataset.count || 0).toLocaleString('zh-CN') + (el.dataset.suffix || '');
+      return;
+    }
+    setTimeout(() => animateCount(el), 360); // 等 .hd-trust 入场就位后再滚动
+  }
+
+  /* 滚动 reveal：进入视口淡入上移，每列错峰 90ms；播完摘除类，恢复 hover 常态 */
+  function bindReveal(els) {
+    if (!els.length || reduceMotion() || isElderly()) return;
+    if (!('IntersectionObserver' in window)) { return; } // 老浏览器：保持直出
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        const col = Number(el.dataset.ri || 0) % 3;
+        el.style.animationDelay = col * 90 + 'ms';
+        el.classList.add('reveal-in');
+        const done = () => { el.classList.remove('reveal', 'reveal-in'); el.style.animationDelay = ''; };
+        el.addEventListener('animationend', done, { once: true });
+        setTimeout(done, 1600); // 兜底摘除
+        io.unobserve(el);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    els.forEach((el, i) => {
+      el.dataset.ri = String(i);
+      el.classList.add('reveal');
+      io.observe(el);
+    });
+  }
+
+  // 首屏动效：不等目的地数据立即触发
+  initHeroMotion();
+  initCount();
+  bindReveal([...document.querySelectorAll('.ft-item, .entry-card')]);
   /* 电脑端 Hero 风景轮播：43城几百张照片随机，5秒一换，双图层交叉淡入淡出（提前预载，切换更顺滑） */
   /* 电脑端 Hero 风景轮播：先出兜底图，再后台加载全部几百张照片补充，5秒一换、随机开头 */
   async function initHeroSlide() {
@@ -86,6 +169,8 @@
       const cover = card && card.querySelector('.dest-cover');
       if (cover && d.cover) { const probe = new Image(); probe.onload = () => app.setBg(cover, d.cover); probe.src = d.cover; }
     });
+    // 动态渲染完成后绑定滚动入场（首页精选网格）
+    bindReveal([...grid.querySelectorAll('.dest-card')]);
   }
   function bindQuick() {
     const btn = document.getElementById('hf-submit');

@@ -1,6 +1,9 @@
 (() => {
   'use strict';
 
+  // 动效钩子：JS 可用时挂 html.js，入场/滚动动画类只在此时生效（无 JS 时内容直出）
+  document.documentElement.classList.add('js');
+
   const $ = (sel, el = document) => el.querySelector(sel);
   const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
 
@@ -360,6 +363,21 @@
     $$('#navLinks a, .nav-links-inline a').forEach((a) => a.classList.toggle('active', a.dataset.nav === key));
   }
 
+  /* ---------------- 导航毛玻璃两态：滚动后加深 + 阴影 ---------------- */
+  function bindNavScroll() {
+    const nav = document.querySelector('.nav');
+    if (!nav) return;
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      nav.classList.toggle('scrolled', window.scrollY > 8); // 状态翻转时才改 DOM，其余滚动零开销
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    update(); // 初始状态（锚点直达/页面中部刷新时立即正确）
+  }
+
   /* ---------------- 启动 ---------------- */
   async function startPage() {
     refreshAiStatus();
@@ -381,6 +399,7 @@
     applyElderly();
     navActive();
     bindNav();
+    bindNavScroll();
     bindSettings();
     bindAuth();
     try {

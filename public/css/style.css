@@ -249,7 +249,7 @@ html.elderly {
   --nav-h: 76px;
 }
 html.elderly body { background: #fffdf7; color: #111827; }
-html.elderly .nav { background: #ffffff; }
+html.elderly .nav { background: #ffffff; -webkit-backdrop-filter: none; backdrop-filter: none; }
 html.elderly .btn { min-height: 52px; padding: 14px 24px; font-size: 1.08rem; border-width: 2px; }
 html.elderly .input { font-size: 1.12rem; padding: 14px 16px; }
 html.elderly .chip, html.elderly .chip-group label { font-size: 1.05rem; padding: 12px 20px; }
@@ -266,7 +266,12 @@ html.elderly .hero-title { font-size: clamp(2.6rem, 7vw, 4.6rem); }
 html.elderly .hero-sub { font-size: 1.25rem; }
 html.elderly .quick-planner { font-size: 1.1rem; }
 html.elderly .modal { font-size: 1.1rem; }
-html.elderly * { transition-duration: 0s !important; }
+/* 长辈模式运行时：关闭装饰动画与 hover 上浮（保留模式切换瞬间的字体/间距平滑过渡） */
+html.elderly *, html.elderly *::before, html.elderly *::after { animation: none !important; }
+html.elderly .anim, html.elderly .reveal { opacity: 1 !important; }
+html.elderly .btn:hover, html.elderly .btn:active, html.elderly .entry-card:hover,
+html.elderly .dest-card:hover, html.elderly .hot-item.clickable:hover,
+html.elderly .ft-item:hover .ft-icon { transform: none !important; }
 html.elderly .nav-links, html.elderly .quick-planner, html.elderly .packing-layout, html.elderly .about-grid, html.elderly .dest-grid, html.elderly .hot-list { font-size: inherit; }
 
 /* ---------- 打印 ---------- */
@@ -667,4 +672,83 @@ html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; 
   .draw-btn { width: 100%; max-width: 340px; }
   .draw-name { font-size: 1.4rem; }
   .draw-emoji { font-size: 2.8rem; }
+}
+
+/* =====================================================================
+   动效系统 · 家游汇体验升级
+   原则：只用 transform / opacity 做动画；入场 450ms、滚动 500ms；
+        移动端优先；prefers-reduced-motion 与长辈模式自动降级；零依赖。
+   ===================================================================== */
+
+@keyframes jyh-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ① Hero 入场：JS 挂 .anim 触发，backwards 让延迟期保持初始态，播完由 JS 摘除 */
+html.js .anim { animation: jyh-rise .45s cubic-bezier(.22, .61, .36, 1) backwards; }
+html.js .anim[data-delay="1"] { animation-delay: .08s; }
+html.js .anim[data-delay="2"] { animation-delay: .16s; }
+html.js .anim[data-delay="3"] { animation-delay: .24s; }
+html.js .anim[data-delay="4"] { animation-delay: .32s; }
+
+/* ② 滚动入场：JS 挂 .reveal → 进入视口挂 .reveal-in → 播完摘除，恢复 hover 常态 */
+html.js .reveal { opacity: 0; }
+html.js .reveal.reveal-in { animation: jyh-rise .5s cubic-bezier(.22, .61, .36, 1) both; }
+
+/* ③ 导航两态：顶部轻盈 → 滚动后毛玻璃加深 + 阴影。
+      border 用透明占位不删除，避免状态切换时高度跳动；不过渡 backdrop-filter，省 paint */
+.nav {
+  background: rgba(255, 255, 255, .62);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-bottom-color: transparent;
+  transition: background .3s ease, box-shadow .3s ease, border-color .3s ease;
+}
+.nav.scrolled {
+  background: rgba(255, 255, 255, .9);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  border-bottom-color: var(--line);
+  box-shadow: 0 6px 24px rgba(31, 41, 55, .08);
+}
+
+/* ④ CTA 按钮微交互：hover 上浮回弹 / 按压下沉（按压反馈对所有设备生效，hover 仅精确指针） */
+.btn {
+  transition: transform .18s cubic-bezier(.34, 1.56, .64, 1), box-shadow .18s ease,
+              background .2s ease, font-size .3s ease, padding .3s ease, min-height .3s ease;
+}
+.btn:active { transform: translateY(0) scale(.97); transition-duration: .08s; }
+@media (hover: hover) {
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary:hover { box-shadow: 0 10px 24px rgba(15, 118, 110, .4); }
+  .btn-ghost:hover { box-shadow: 0 8px 20px rgba(31, 41, 55, .1); }
+}
+
+/* ⑤ 三列功能卡片：hover 图标轻浮（桌面三列）/ 卡片上浮（移动入口卡），仅精确指针设备 */
+@media (hover: hover) {
+  .ft-icon { transition: transform .25s ease; }
+  .ft-item:hover .ft-icon { transform: translateY(-3px) scale(1.05); }
+  .entry-card:hover { transform: translateY(-6px); }
+}
+
+/* 信任数字强调（数字滚动目标） */
+.hd-count { color: var(--primary-dark); font-weight: 800; }
+
+/* ⑥ 长辈模式切换：字体/间距平滑过渡（一次性布局过渡，仅切换瞬间约 300ms） */
+.brand, .hero-title, .hero-sub, .quick-planner, .quick-title, .section-head h2,
+.dest-name, .dest-tagline, .badge, .food-name, .food-desc, .modal,
+.settings-menu button, .settings-menu a, .ac-item, .form-error,
+.nav-links a, .nav-links-inline a, .nav-drawer .nav-links a { transition: font-size .3s ease; }
+.chip, .chip-group label { transition: all .15s ease, font-size .3s ease, padding .3s ease; }
+.input { transition: border-color .15s ease, box-shadow .15s ease, font-size .3s ease, padding .3s ease; }
+
+/* ⑦ 无障碍：偏好减少动效时全部直出 */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  html.js .anim, html.js .reveal { animation: none !important; opacity: 1 !important; }
+  .hero-scroll { animation: none !important; }
+  .btn, .btn:hover, .btn:active,
+  .ft-item:hover .ft-icon, .entry-card:hover, .dest-card:hover, .hot-item.clickable:hover { transform: none !important; }
+  .nav { transition: none; }
 }
