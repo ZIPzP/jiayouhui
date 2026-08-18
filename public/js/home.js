@@ -177,10 +177,9 @@
     app.state.destinations.slice(0, 6).forEach((d) => {
       const card = grid.querySelector(`a[href="/destinations.html?id=${d.id}"]`);
       const cover = card && card.querySelector('.dest-cover');
-      if (cover && d.cover) { const probe = new Image(); probe.onload = () => { cover.style.backgroundImage = "url('" + d.cover + "')"; }; probe.src = d.cover; }
+      if (cover && d.cover) { const probe = new Image(); probe.onload = () => app.setBg(cover, d.cover); probe.src = d.cover; }
     });
-    // 动态渲染完成后绑定滚动入场（首页精选网格）
-    bindReveal([...grid.querySelectorAll('.dest-card')]);
+    // 首页精选与目的地页一致：走级联 cardIn 入场（不再单独挂滚动入场）
   }
   function bindQuick() {
     const btn = document.getElementById('hf-submit');

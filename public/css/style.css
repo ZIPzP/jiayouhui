@@ -827,8 +827,7 @@ html.js [data-reveal].in { opacity: 1; transform: none; }
 .dest-grid > .dest-card, .entry-grid > .entry-card, .about-grid > .card, #hotList > .hot-item, .ft-item, .draw-card {
   animation: cardIn .55s ease backwards;
 }
-/* 首页精选：只保留滚动入场一次，去掉与 reveal 冲突的级联 cardIn */
-#featuredGrid > .dest-card { animation: none; }
+
 .dest-grid > .dest-card:nth-child(1) { animation-delay: 0.00s; }
 .dest-grid > .dest-card:nth-child(2) { animation-delay: 0.06s; }
 .dest-grid > .dest-card:nth-child(3) { animation-delay: 0.12s; }
