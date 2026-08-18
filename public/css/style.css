@@ -878,3 +878,62 @@ html.js [data-reveal].in { opacity: 1; transform: none; }
 
 /* 桌面 Hero 相对定位（供山形剪影定位） */
 .hero-desktop { position: relative; overflow: hidden; }
+
+
+/* ================= 🚀 动态高级感 · 增强层（不改变功能） ================= */
+/* 旋转极光：青绿/暖橙光带缓慢扫过（贴合主题） */
+body::after {
+  content: '';
+  position: fixed; inset: -25%; z-index: -3;
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(13,148,136,.10) 70deg, transparent 140deg, rgba(249,115,22,.08) 220deg, transparent 300deg);
+  animation: aurora 46s linear infinite;
+  pointer-events: none;
+}
+@keyframes aurora { to { transform: rotate(360deg); } }
+
+/* 顶部滚动进度条 */
+.scroll-progress {
+  position: fixed; top: 0; left: 0; height: 3px; width: 100%;
+  transform-origin: 0 50%; transform: scaleX(0);
+  background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
+  background-size: 200% auto; animation: gradFlow 5s linear infinite;
+  z-index: 300; pointer-events: none;
+}
+
+/* 标题逐字浮现 */
+html.js .ch { display: inline-block; opacity: 0; transform: translateY(16px) rotate(2deg); animation: chIn .55s cubic-bezier(.22,.61,.36,1) forwards; }
+@keyframes chIn { to { opacity: 1; transform: none; } }
+
+/* 卡片悬停：渐变光晕描边（高级感） */
+.dest-card, .entry-card { position: relative; }
+.dest-card::before, .entry-card::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px;
+  background: linear-gradient(135deg, rgba(13,148,136,.75), rgba(249,115,22,.7));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  opacity: 0; transition: opacity .3s ease; pointer-events: none;
+}
+.dest-card:hover::before, .entry-card:hover::before { opacity: 1; }
+
+/* 区块标题：渐变流光文字 */
+.section-head h2, .draw-title {
+  background: linear-gradient(90deg, var(--primary-dark), var(--accent), var(--primary-dark));
+  background-size: 200% auto;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  animation: gradFlow 6s linear infinite;
+}
+@keyframes gradFlow { to { background-position: 200% center; } }
+
+/* 滚动入场更高级：加上轻微模糊 + 弹性曲线 */
+html.js [data-reveal] {
+  opacity: 0; transform: translateY(26px);
+  filter: blur(4px);
+  transition: opacity .7s ease, transform .7s cubic-bezier(.22,.61,.36,1), filter .7s ease;
+}
+html.js [data-reveal].in { opacity: 1; transform: none; filter: none; }
+
+/* 减少动态时，渐变文字恢复纯色可读 */
+@media (prefers-reduced-motion: reduce) {
+  .section-head h2, .draw-title { -webkit-text-fill-color: var(--primary-dark); color: var(--primary-dark); background: none; }
+}

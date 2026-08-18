@@ -400,6 +400,13 @@
     fx.setAttribute('aria-hidden', 'true');
     fx.innerHTML = '<span class="orb orb-1"></span><span class="orb orb-2"></span><span class="orb orb-3"></span>';
     document.body.insertBefore(fx, document.body.firstChild);
+    // 顶部滚动进度条
+    if (!document.querySelector('.scroll-progress')) {
+      const bar = document.createElement('div');
+      bar.className = 'scroll-progress';
+      bar.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(bar);
+    }
   }
 
   /* ---------- 滚动入场：元素进入视口时淡入上浮（尊重系统"减少动态"） ---------- */
@@ -426,11 +433,54 @@
     mo.observe(document.body, { childList: true, subtree: true });
   }
 
+  /* ---------- 顶部滚动进度条 ---------- */
+  function bindScrollProgress() {
+    const bar = document.querySelector('.scroll-progress');
+    if (!bar) return;
+    let ticking = false;
+    const update = () => {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, h.scrollTop / max) : 0) + ')';
+      ticking = false;
+    };
+    window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    update();
+  }
+
+  /* ---------- 首页标题逐字浮现（保留 <br>，尊重减少动态） ---------- */
+  function animateHeroTitles() {
+    const els = document.querySelectorAll('.hero-title, .hd-title');
+    if (!els.length) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    els.forEach((el) => {
+      if (el.querySelector('.ch')) return;
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      let idx = 0;
+      nodes.forEach((node) => {
+        const frag = document.createDocumentFragment();
+        for (const ch of node.nodeValue) {
+          const span = document.createElement('span');
+          span.className = 'ch';
+          span.textContent = ch === ' ' ? '\u00A0' : ch;
+          span.style.animationDelay = (idx * 0.028) + 's';
+          frag.appendChild(span);
+          idx++;
+        }
+        node.parentNode.replaceChild(frag, node);
+      });
+    });
+  }
+
   async function init() {
     injectBgFx();
     observeReveal();
     // 老浏览器没有 IntersectionObserver 时，直接显示所有入场元素
     if (!revealIO) document.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('in'));
+    bindScrollProgress();
+    animateHeroTitles();
     // 关闭浏览器自动滚动恢复（返回键关闭弹窗时不跳回顶部）
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     ensureShell();
