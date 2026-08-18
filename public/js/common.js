@@ -43,7 +43,7 @@
     const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='500'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='${accent}'/><stop offset='1' stop-color='${accent}' stop-opacity='.6'/></linearGradient></defs><rect width='800' height='500' fill='url(#g)'/><text x='400' y='250' font-size='130' text-anchor='middle'>${emoji}</text><text x='400' y='370' font-size='52' fill='rgba(255,255,255,.95)' text-anchor='middle' font-family='PingFang SC, Microsoft YaHei, sans-serif'>${name}</text></svg>`;
     img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   }
-  function setBg(el, url) { if (url) el.style.backgroundImage = `url('${url}')`; }
+  function setBg(el, url) { if (url) { el.style.backgroundImage = `url('${url}')`; el.classList.remove('bg-in'); void el.offsetWidth; el.classList.add('bg-in'); } }
   function speak(text) {
     if (!('speechSynthesis' in window)) { toast('当前浏览器不支持语音朗读'); return; }
     window.speechSynthesis.cancel();
@@ -408,6 +408,11 @@
       document.body.appendChild(bar);
     }
     makeParticles(fx);
+    if (!document.querySelector('.to-top')) {
+      const t = document.createElement('button');
+      t.className = 'to-top'; t.type = 'button'; t.setAttribute('aria-label', '回到顶部'); t.innerHTML = '↑';
+      document.body.appendChild(t);
+    }
   }
 
   /* ---------- 滚动入场：元素进入视口时淡入上浮（尊重系统"减少动态"） ---------- */
@@ -494,12 +499,24 @@
     wrap.appendChild(frag);
   }
 
+  /* ---------- 回到顶部按钮 ---------- */
+  function bindToTop() {
+    const btn = document.querySelector('.to-top');
+    if (!btn) return;
+    let ticking = false;
+    const update = () => { btn.classList.toggle('show', (document.documentElement.scrollTop || document.body.scrollTop) > 420); ticking = false; };
+    window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    update();
+  }
+
   async function init() {
     injectBgFx();
     observeReveal();
     // 老浏览器没有 IntersectionObserver 时，直接显示所有入场元素
     if (!revealIO) document.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('in'));
     bindScrollProgress();
+    bindToTop();
     animateHeroTitles();
     // 关闭浏览器自动滚动恢复（返回键关闭弹窗时不跳回顶部）
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
