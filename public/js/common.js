@@ -398,7 +398,7 @@
     const fx = document.createElement('div');
     fx.className = 'bg-fx';
     fx.setAttribute('aria-hidden', 'true');
-    fx.innerHTML = '<span class="orb orb-1"></span><span class="orb orb-2"></span><span class="orb orb-3"></span>';
+    fx.innerHTML = '<span class="aurora"></span><span class="orb orb-1"></span><span class="orb orb-2"></span><span class="orb orb-3"></span>';
     document.body.insertBefore(fx, document.body.firstChild);
     // 顶部滚动进度条
     if (!document.querySelector('.scroll-progress')) {

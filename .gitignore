@@ -16,3 +16,7 @@ Thumbs.db
 tools/cloudflared.exe
 tools/tunnel.log
 查看公网地址.bat
+
+# 测试/调试残留
+_live/
+_live_*

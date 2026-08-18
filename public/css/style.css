@@ -882,14 +882,7 @@ html.js [data-reveal].in { opacity: 1; transform: none; }
 
 /* ================= 🚀 动态高级感 · 增强层（不改变功能） ================= */
 /* 旋转极光：青绿/暖橙光带缓慢扫过（贴合主题） */
-body::after {
-  content: '';
-  position: fixed; inset: -25%; z-index: -3;
-  background: conic-gradient(from 0deg, transparent 0deg, rgba(13,148,136,.10) 70deg, transparent 140deg, rgba(249,115,22,.08) 220deg, transparent 300deg);
-  animation: aurora 46s linear infinite;
-  pointer-events: none;
-}
-@keyframes aurora { to { transform: rotate(360deg); } }
+
 
 /* 顶部滚动进度条 */
 .scroll-progress {
@@ -982,10 +975,6 @@ html.js [data-reveal].in { opacity: 1; transform: none; filter: none; }
 
 
 /* ================= 修复：手机端禁止横向溢出（右侧空白） ================= */
-html { overflow-x: hidden; }
-/* 极光层改为在视口内旋转放大（不再用负 inset 撑大，避免移动端横向溢出） */
-body::after { inset: 0; }
-@keyframes aurora { from { transform: rotate(0deg) scale(1.5); } to { transform: rotate(360deg) scale(1.5); } }
 
 
 /* ================= 💎 美化收尾层（不改变功能） ================= */
@@ -1048,3 +1037,7 @@ body::after { inset: 0; }
 @media (max-width: 900px) {
   #menuMobile { display: none; }
 }
+
+
+/* 极光：移入 bg-fx（overflow:hidden 裁剪，不再撑出底部空白） */
+.bg-fx .aurora { position: absolute; inset: -45%; background: conic-gradient(from 0deg, transparent 0deg, rgba(13,148,136,.10) 70deg, transparent 140deg, rgba(249,115,22,.08) 220deg, transparent 300deg); animation: aurora 46s linear infinite; pointer-events: none; }
