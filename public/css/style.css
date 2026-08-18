@@ -119,6 +119,10 @@ code { background: #f1f5f9; padding: 2px 6px; border-radius: 6px; font-size: .9e
 .form-row label { flex: 1; min-width: 120px; font-size: .9rem; font-weight: 600; color: var(--ink-soft); display: flex; flex-direction: column; gap: 6px; }
 .form-group { margin-bottom: 16px; }
 .form-label { display: block; font-weight: 700; margin-bottom: 6px; color: var(--ink); }
+/* 行程规划：必填 * 放在文字后面，城市字段间距收紧 */
+#planForm .form-row label { flex-direction: row; align-items: baseline; gap: 2px; }
+#planForm .form-row { margin-bottom: 8px; }
+#planForm .form-group { margin-bottom: 10px; }
 .input {
   width: 100%; padding: 11px 14px; border: 1.5px solid var(--line); border-radius: 12px;
   font-family: inherit; font-size: 1rem; background: #fff; color: var(--ink); transition: border-color .15s ease, box-shadow .15s ease;
