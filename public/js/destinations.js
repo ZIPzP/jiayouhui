@@ -52,17 +52,8 @@
       }
     };
   })();
-  function renderGrid() {
-    const grid = document.getElementById('destGrid');
-    if (!grid) return;
-    const items = filtered();
-    if (!items.length) { grid.innerHTML = '<p style="text-align:center;color:var(--ink-soft)">没有符合条件的目的地</p>'; return; }
-    const shown = items.slice(0, state.visible);
-    const wrap = document.getElementById('moreWrap');
-    if (wrap) wrap.innerHTML = items.length > state.visible
-      ? `<button id="moreBtn" class="btn btn-ghost" type="button">查看更多目的地（还有 ${items.length - state.visible} 个）</button>`
-      : '';
-    grid.innerHTML = shown.map((d) => `
+  function cardHtml(d) {
+    return `
       <article class="dest-card" data-id="${app.esc(d.id)}" role="button" tabindex="0" aria-label="查看 ${app.esc(d.name)} 详情">
         <div class="dest-cover" style="background-color:${app.esc(d.accent || '#0f766e')}">
           <div class="dest-emoji">${app.esc(d.emoji || '🏡')}</div>
@@ -73,12 +64,49 @@
           <p class="dest-tagline">${app.esc(d.tagline || '')}</p>
           <div class="dest-meta"><span>${app.esc((d.tags || []).slice(0, 3).join(' · '))}</span><span class="dest-more">查看详情 →</span></div>
         </div>
-      </article>`).join('');
-    shown.forEach((d) => {
-      const card = grid.querySelector(`[data-id="${d.id}"]`);
-      const cover = card && card.querySelector('.dest-cover');
-      if (cover && d.cover) coverLoader.observe(cover, d.cover);
+      </article>`;
+  }
+  function bindCover(d) {
+    const grid = document.getElementById('destGrid');
+    if (!grid) return;
+    const card = grid.querySelector(`[data-id="${d.id}"]`);
+    const cover = card && card.querySelector('.dest-cover');
+    if (cover && d.cover) coverLoader.observe(cover, d.cover);
+  }
+  function updateMoreBtn(items) {
+    const wrap = document.getElementById('moreWrap');
+    if (!wrap) return;
+    wrap.innerHTML = items.length > state.visible
+      ? `<button id="moreBtn" class="btn btn-ghost" type="button">查看更多目的地（还有 ${items.length - state.visible} 个）</button>`
+      : '';
+  }
+  function renderGrid() {
+    const grid = document.getElementById('destGrid');
+    if (!grid) return;
+    const items = filtered();
+    if (!items.length) { grid.innerHTML = '<p style="text-align:center;color:var(--ink-soft)">没有符合条件的目的地</p>'; return; }
+    const shown = items.slice(0, state.visible);
+    updateMoreBtn(items);
+    grid.innerHTML = shown.map(cardHtml).join('');
+    shown.forEach(bindCover);
+  }
+  /* 查看更多：只追加新卡片，不重建已显示的卡片（已显示的不会再重播动画） */
+  function loadMore() {
+    const grid = document.getElementById('destGrid');
+    if (!grid) return;
+    const items = filtered();
+    const prev = state.visible - 12;
+    const next = Math.min(state.visible, items.length);
+    if (next <= prev) return;
+    updateMoreBtn(items);
+    const frag = document.createDocumentFragment();
+    items.slice(prev, next).forEach((d) => {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = cardHtml(d).trim();
+      frag.appendChild(tmp.firstChild);
     });
+    grid.appendChild(frag);
+    items.slice(prev, next).forEach(bindCover);
   }
   function bindEvents() {
     const grid = document.getElementById('destGrid');
@@ -92,6 +120,6 @@
       if (card && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); window.openDestDetail(card.dataset.id); }
     });
     const wrap = document.getElementById('moreWrap');
-    if (wrap) wrap.addEventListener('click', (e) => { if (e.target.closest('#moreBtn')) { state.visible += 12; renderGrid(); } });
+    if (wrap) wrap.addEventListener('click', (e) => { if (e.target.closest('#moreBtn')) { state.visible += 12; loadMore(); } });
   }
 })();
