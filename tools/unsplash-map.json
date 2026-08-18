@@ -1632,5 +1632,43 @@
         "alt": "assorted-color flags hanging on forest"
       }
     ]
+  },
+  "jiuzhaigou": {
+    "cover": {
+      "src": "https://images.unsplash.com/photo-1694565176775-ec282698b5e9?fm=jpg&q=60&w=3000&auto=format&fit=crop",
+      "alt": "九寨沟翠绿湖水与森林"
+    },
+    "gallery": [
+      {
+        "src": "https://images.unsplash.com/photo-1719665417981-4c0c0f20b4c2?fm=jpg&q=60&w=3000&auto=format&fit=crop",
+        "alt": "九寨沟湖泊与群山"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1646215670550-a09db4f28239?fm=jpg&q=60&w=3000&auto=format&fit=crop",
+        "alt": "九寨沟湖水与森林"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1635772512104-98695c3a73f1?fm=jpg&q=60&w=3000&auto=format&fit=crop",
+        "alt": "九寨沟溪流穿行森林"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1705345923863-f3212da12b9c?fm=jpg&q=60&w=3000&auto=format&fit=crop",
+        "alt": "九寨沟碧水环绕绿树"
+      }
+    ],
+    "highlights": [
+      {
+        "src": "https://images.unsplash.com/photo-1654373823282-d1c833ac2b34?fm=jpg&q=60&w=3000&auto=format&fit=crop",
+        "alt": "九寨沟五花海蓝色湖水"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1654373823187-ed250d2f2a6b?fm=jpg&q=60&w=3000&auto=format&fit=crop",
+        "alt": "九寨沟森林中的瀑布"
+      },
+      {
+        "src": "https://images.unsplash.com/photo-1762285142094-9bccc96cc4b5?fm=jpg&q=60&w=3000&auto=format&fit=crop",
+        "alt": "黄龙钙华彩池"
+      }
+    ]
   }
 }

@@ -1420,7 +1420,7 @@
       "cover": "/images/liuzhou/cover.jpg",
       "gallery": [
         "/images/liuzhou/gallery-1.jpg",
-        "/images/liuzhou/gallery-2-orig.jpg",
+        "/images/liuzhou/gallery-2.jpg",
         "/images/liuzhou/gallery-3.jpg",
         "/images/liuzhou/gallery-4.jpg"
       ],
@@ -1497,7 +1497,7 @@
       "gallery": [
         "/images/pingyao/gallery-1.jpg",
         "/images/pingyao/gallery-2.jpg",
-        "/images/pingyao/gallery-3-orig.jpg",
+        "/images/pingyao/gallery-3.jpg",
         "/images/pingyao/gallery-4.jpg"
       ],
       "elderlyFriendly": "古城以平缓步行为主，可坐电瓶车代步；石板路注意防滑。",
@@ -2674,8 +2674,8 @@
       ],
       "cover": "/images/zhoushan/cover.jpg",
       "gallery": [
-        "/images/zhoushan/gallery-1-orig.jpg",
-        "/images/zhoushan/gallery-2-orig.jpg",
+        "/images/zhoushan/gallery-1.jpg",
+        "/images/zhoushan/gallery-2.jpg",
         "/images/zhoushan/gallery-3.jpg",
         "/images/zhoushan/gallery-4.jpg"
       ],
@@ -2827,10 +2827,10 @@
       ],
       "cover": "/images/yantai/cover.jpg",
       "gallery": [
-        "/images/yantai/gallery-1-orig.jpg",
-        "/images/yantai/gallery-2-orig.jpg",
+        "/images/yantai/gallery-1.jpg",
+        "/images/yantai/gallery-2.jpg",
         "/images/yantai/gallery-3.jpg",
-        "/images/yantai/gallery-4-orig.jpg"
+        "/images/yantai/gallery-4.jpg"
       ],
       "lat": 37.4638,
       "lon": 121.4479,
@@ -2905,8 +2905,8 @@
       "gallery": [
         "/images/wanning/gallery-1.jpg",
         "/images/wanning/gallery-2.jpg",
-        "/images/wanning/gallery-3-orig.jpg",
-        "/images/wanning/gallery-4-orig.jpg"
+        "/images/wanning/gallery-3.jpg",
+        "/images/wanning/gallery-4.jpg"
       ],
       "lat": 18.796,
       "lon": 110.388,
@@ -3134,7 +3134,7 @@
       ],
       "cover": "/images/shaoxing/cover.jpg",
       "gallery": [
-        "/images/shaoxing/gallery-1-orig.jpg",
+        "/images/shaoxing/gallery-1.jpg",
         "/images/shaoxing/gallery-2.jpg",
         "/images/shaoxing/gallery-3.jpg",
         "/images/shaoxing/gallery-4.jpg"
@@ -3319,6 +3319,84 @@
           "tags": [
             "全家人",
             "清淡"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "jiuzhaigou",
+      "name": "九寨沟",
+      "enName": "Jiuzhaigou",
+      "province": "四川",
+      "emoji": "🏞️",
+      "accent": "#0e7490",
+      "tagline": "翠海叠瀑彩林雪峰，带爸妈孩子走进童话世界",
+      "tags": [
+        "自然",
+        "摄影",
+        "休闲"
+      ],
+      "bestSeasons": [
+        "秋",
+        "春",
+        "夏"
+      ],
+      "suggestDays": "3-4 天",
+      "climate": "高原山地气候，昼夜温差大，夏季凉爽避暑、秋季色彩最绚烂",
+      "elderlyFriendly": "海拔 2000-3000 米需防高反；景区观光车+木质栈道完善，节奏放慢、备好氧气和厚外套更安心。",
+      "packingNote": "高原防晒+墨镜+厚外套必备；景区步行多，穿防滑鞋，备雨衣、氧气瓶与常用药。",
+      "description": "九寨沟以翠海、叠瀑、彩林、雪峰、藏情闻名于世，是世界自然遗产和童话般的人间仙境。带爸妈孩子乘观光车穿行斑斓海子，秋日层林尽染，每一步都是壁纸级风景。",
+      "highlights": [
+        {
+          "title": "五花海·五彩池",
+          "text": "湖水蓝绿相间、晶莹剔透，是九寨沟的精华所在，沿平缓栈道漫步即可饱览。",
+          "image": "/images/jiuzhaigou/hl-1.jpg"
+        },
+        {
+          "title": "诺日朗瀑布",
+          "text": "中国最宽的钙华瀑布之一，水雾弥漫、气势磅礴，观景平台视野极佳。",
+          "image": "/images/jiuzhaigou/hl-2.jpg"
+        },
+        {
+          "title": "黄龙彩池",
+          "text": "毗邻的黄龙以钙华彩池闻名，层层叠叠如大地调色盘，雪山倒映美不胜收。",
+          "image": "/images/jiuzhaigou/hl-3.jpg"
+        }
+      ],
+      "cover": "/images/jiuzhaigou/cover.jpg",
+      "gallery": [
+        "/images/jiuzhaigou/gallery-1.jpg",
+        "/images/jiuzhaigou/gallery-2.jpg",
+        "/images/jiuzhaigou/gallery-3.jpg",
+        "/images/jiuzhaigou/gallery-4.jpg"
+      ],
+      "lat": 33.26,
+      "lon": 103.92,
+      "foods": [
+        {
+          "name": "牦牛肉串",
+          "spicy": "微辣",
+          "desc": "高原牦牛现烤，肉质紧实、香而不腻",
+          "tags": [
+            "全家人",
+            "特色"
+          ]
+        },
+        {
+          "name": "藏式酸奶",
+          "spicy": "不辣",
+          "desc": "浓稠酸甜，饭后来一杯解腻助消化",
+          "tags": [
+            "全家人",
+            "清淡"
+          ]
+        },
+        {
+          "name": "酥油茶",
+          "spicy": "不辣",
+          "desc": "藏区待客茶，咸香暖身，配青稞饼更地道",
+          "tags": [
+            "本地特色"
           ]
         }
       ]
