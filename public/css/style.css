@@ -755,7 +755,7 @@ html.js .reveal.reveal-in { animation: jyh-rise .5s cubic-bezier(.22, .61, .36, 
 /* ================= 🎨 动态高级感 · 动效层（不改变功能） ================= */
 /* 页面入场：整页淡入上浮（仅 JS 可用时） */
 html.js body { animation: pageIn .5s ease both; }
-@keyframes pageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes pageIn { from { opacity: 0; } to { opacity: 1; } }
 
 /* 流动渐变背景（柔和青绿→暖白，贴合家庭旅行主题） */
 body::before {
@@ -981,7 +981,7 @@ html.js [data-reveal].in { opacity: 1; transform: none; filter: none; }
 /* 1. 卡片封面悬停放大 */
 .dest-cover { overflow: hidden; }
 .dest-cover::before { content: ''; position: absolute; inset: 0; background: inherit; background-size: cover; background-position: center; transform: scale(1.01); transition: transform .7s cubic-bezier(.22,.61,.36,1); z-index: 0; }
-.dest-cover > * { position: relative; z-index: 1; }
+.dest-cover > .dest-emoji, .dest-cover > .dest-badges { z-index: 1; }
 .dest-card:hover .dest-cover::before { transform: scale(1.1); }
 
 /* 2. 回到顶部按钮 */
