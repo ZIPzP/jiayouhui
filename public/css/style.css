@@ -937,3 +937,45 @@ html.js [data-reveal].in { opacity: 1; transform: none; filter: none; }
 @media (prefers-reduced-motion: reduce) {
   .section-head h2, .draw-title { -webkit-text-fill-color: var(--primary-dark); color: var(--primary-dark); background: none; }
 }
+
+
+/* ================= 🎆 动态感加强层（不改变功能） ================= */
+/* 背景漂浮粒子 */
+.pdot { position: absolute; bottom: -14px; border-radius: 50%; background: radial-gradient(circle, rgba(13,148,136,.8), rgba(249,115,22,.35)); animation: rise linear infinite; pointer-events: none; }
+@keyframes rise {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  12% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: translateY(-108vh) translateX(36px); opacity: 0; }
+}
+
+/* 首页热门目的地滚动字幕 */
+.ticker { overflow: hidden; background: linear-gradient(90deg, #0f766e, #0d9488, #0f766e); padding: 9px 0; }
+.ticker-track { display: flex; gap: 44px; width: max-content; white-space: nowrap; animation: tickerMove 34s linear infinite; }
+.ticker-item { color: #fff; font-size: .88rem; font-weight: 600; letter-spacing: .5px; opacity: .92; }
+@keyframes tickerMove { to { transform: translateX(-50%); } }
+
+/* Hero 轮播图缓慢缩放（Ken Burns 高级感） */
+.hd-slide { animation: kenburns 26s ease-in-out infinite alternate; transform-origin: center; }
+@keyframes kenburns { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+/* 主按钮流光 */
+.btn-primary { position: relative; overflow: hidden; }
+.btn-primary::after {
+  content: ''; position: absolute; top: 0; left: -80%; width: 55%; height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.45), transparent);
+  transform: skewX(-20deg); animation: btnShine 3.2s ease-in-out infinite;
+}
+@keyframes btnShine { 0%, 55% { left: -80%; } 90%, 100% { left: 130%; } }
+
+/* 抽取页：统计 / 目的地池 / 最近抽取 / 底部山形 / 屏呼吸光晕 */
+.draw-stats { margin: 18px 0 8px; color: var(--ink-soft); font-size: .9rem; }
+.draw-pool, .draw-recent { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 8px auto 0; max-width: 640px; }
+.dp-chip { display: inline-flex; align-items: center; gap: 4px; padding: 5px 11px; border-radius: 999px; font-size: .82rem; color: var(--ink); background: #fff; border: 1px solid rgba(13,148,136,.22); }
+.dp-chip { background: color-mix(in srgb, var(--ac) 10%, #fff); border-color: color-mix(in srgb, var(--ac) 32%, #fff); }
+.dp-chip i { font-style: normal; opacity: .55; font-size: .74rem; margin-left: 2px; }
+.draw-recent { margin-top: 16px; }
+.draw-recent-title { width: 100%; color: var(--ink-soft); font-size: .85rem; margin: 4px 0 2px; }
+.draw-wave { display: block; width: 100%; height: 70px; margin-top: 26px; }
+.draw-screen { animation: screenBreath 3.4s ease-in-out infinite; }
+@keyframes screenBreath { 0%, 100% { box-shadow: 0 4px 16px rgba(15,118,110,.06); } 50% { box-shadow: 0 0 36px 3px rgba(13,148,136,.3); } }

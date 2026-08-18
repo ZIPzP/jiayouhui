@@ -407,6 +407,7 @@
       bar.setAttribute('aria-hidden', 'true');
       document.body.appendChild(bar);
     }
+    makeParticles(fx);
   }
 
   /* ---------- 滚动入场：元素进入视口时淡入上浮（尊重系统"减少动态"） ---------- */
@@ -472,6 +473,25 @@
         node.parentNode.replaceChild(frag, node);
       });
     });
+  }
+
+  /* ---------- 背景漂浮粒子（动态感） ---------- */
+  function makeParticles(wrap) {
+    if (!wrap) return;
+    const count = window.innerWidth > 900 ? 26 : 14;
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pdot';
+      const size = (3 + Math.random() * 5).toFixed(1);
+      p.style.width = size + 'px'; p.style.height = size + 'px';
+      p.style.left = (Math.random() * 100).toFixed(1) + '%';
+      p.style.animationDuration = (9 + Math.random() * 14).toFixed(1) + 's';
+      p.style.animationDelay = (-Math.random() * 20).toFixed(1) + 's';
+      p.style.opacity = (0.25 + Math.random() * 0.4).toFixed(2);
+      frag.appendChild(p);
+    }
+    wrap.appendChild(frag);
   }
 
   async function init() {

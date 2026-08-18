@@ -5,6 +5,7 @@
     setHero();
     initHeroSlide();
     renderFeatured();
+    renderTicker();
     bindQuick();
   };
 
@@ -92,6 +93,15 @@
   bindReveal([...document.querySelectorAll('.ft-item, .entry-card')]);
   /* 电脑端 Hero 风景轮播：43城几百张照片随机，5秒一换，双图层交叉淡入淡出（提前预载，切换更顺滑） */
   /* 电脑端 Hero 风景轮播：先出兜底图，再后台加载全部几百张照片补充，5秒一换、随机开头 */
+  /* 热门目的地滚动字幕（循环无缝） */
+  function renderTicker() {
+    const track = document.getElementById('tickerTrack');
+    if (!track) return;
+    const names = (app.state.destinations || []).filter((d) => d.name).map((d) => '<span class="ticker-item">' + (d.emoji || '🏡') + ' ' + d.name + '</span>');
+    if (!names.length) return;
+    track.innerHTML = names.concat(names).join('');
+  }
+
   async function initHeroSlide() {
     const imgs = [document.getElementById('heroSlide'), document.getElementById('heroSlide2')];
     if (!imgs[0] || !imgs[1]) return;

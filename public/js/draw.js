@@ -1,11 +1,62 @@
 (() => {
   'use strict';
-  const state = { currentId: null };
+  const state = { currentId: null, idleTimer: null };
 
   window.pageInit = async function () {
     bindDraw();
     bindModal();
+    fillStats();
+    renderPool();
+    renderRecent();
+    startIdle();
   };
+
+  /* ---------- 目的地池 / 统计 / 最近抽取 / 待机轮播 ---------- */
+  function fillStats() {
+    const el = document.getElementById('drawStats');
+    if (!el) return;
+    const total = (app.state.destinations || []).length;
+    el.textContent = '共 ' + total + ' 个热门家庭目的地 · 每个都适合全家出行';
+  }
+  function renderPool() {
+    const box = document.getElementById('drawPool');
+    if (!box) return;
+    box.innerHTML = (app.state.destinations || []).map((d) =>
+      '<span class="dp-chip" style="--ac:' + app.esc(d.accent || '#0f766e') + '">' + (d.emoji || '🏡') + ' ' + app.esc(d.name) + '</span>').join('');
+  }
+  const HIST_KEY = 'jyh_draw_history';
+  function loadDraws() { try { const a = JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function saveDraw(d) {
+    const arr = loadDraws();
+    arr.unshift({ id: d.id, name: d.name, emoji: d.emoji || '🏡', accent: d.accent || '#0f766e', ts: Date.now() });
+    try { localStorage.setItem(HIST_KEY, JSON.stringify(arr.slice(0, 8))); } catch (e) {}
+  }
+  function renderRecent() {
+    const box = document.getElementById('drawRecent');
+    if (!box) return;
+    const arr = loadDraws();
+    if (!arr.length) { box.innerHTML = ''; return; }
+    const when = (ts) => { const d = new Date(ts); return (d.getMonth() + 1) + '-' + d.getDate(); };
+    box.innerHTML = '<p class="draw-recent-title">🕘 最近抽到</p>' + arr.map((x) =>
+      '<span class="dp-chip" style="--ac:' + app.esc(x.accent) + '">' + app.esc(x.emoji) + ' ' + app.esc(x.name) + '<i>' + when(x.ts) + '</i></span>').join('');
+  }
+  function startIdle() {
+    const screen = document.getElementById('drawScreen');
+    const emojiEl = document.getElementById('drawEmoji');
+    const nameEl = document.getElementById('drawName');
+    if (!screen || !emojiEl || !nameEl) return;
+    if (state.idleTimer) return;
+    const pool = (app.state.destinations || []).filter((d) => d.name);
+    if (!pool.length) return;
+    state.idleTimer = setInterval(() => {
+      const d = pool[Math.floor(Math.random() * pool.length)];
+      emojiEl.textContent = d.emoji || '🏡';
+      nameEl.textContent = d.name;
+    }, 1300);
+  }
+  function stopIdle() {
+    if (state.idleTimer) { clearInterval(state.idleTimer); state.idleTimer = null; }
+  }
 
   function bindDraw() {
     const btn = document.getElementById('drawBtn');
@@ -16,6 +67,7 @@
     let running = false;
     btn.addEventListener('click', () => {
       if (running) return;
+      stopIdle();
       const pool = (app.state.destinations || []).filter((d) => d.cover && d.name);
       if (!pool.length) { app.toast('目的地数据加载中，请稍后再试'); return; }
       running = true;
@@ -39,6 +91,8 @@
           btn.disabled = false;
           btn.textContent = '🎲 再抽一次';
           showResult(picked);
+          saveDraw(picked);
+          renderRecent();
         }
       };
       step();
@@ -84,6 +138,7 @@
     const modal = document.getElementById('drawModal');
     if (modal) modal.hidden = true;
     document.body.style.overflow = '';
+    startIdle();
   }
 
   function bindModal() {
