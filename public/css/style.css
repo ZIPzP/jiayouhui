@@ -979,3 +979,10 @@ html.js [data-reveal].in { opacity: 1; transform: none; filter: none; }
 .draw-wave { display: block; width: 100%; height: 70px; margin-top: 26px; }
 .draw-screen { animation: screenBreath 3.4s ease-in-out infinite; }
 @keyframes screenBreath { 0%, 100% { box-shadow: 0 4px 16px rgba(15,118,110,.06); } 50% { box-shadow: 0 0 36px 3px rgba(13,148,136,.3); } }
+
+
+/* ================= 修复：手机端禁止横向溢出（右侧空白） ================= */
+html { overflow-x: hidden; }
+/* 极光层改为在视口内旋转放大（不再用负 inset 撑大，避免移动端横向溢出） */
+body::after { inset: 0; }
+@keyframes aurora { from { transform: rotate(0deg) scale(1.5); } to { transform: rotate(360deg) scale(1.5); } }
