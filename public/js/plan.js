@@ -242,7 +242,7 @@
     }
     const vals = planFormValues();
     empty.hidden = true; bodyEl.hidden = false;
-    bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)">⏳ AI 主理人正在后台生成行程…<br/>你可以放心切到别的页面/标签页，回来会自动恢复显示结果</p>';
+    bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>AI 主理人正在后台生成行程…<br/>你可以放心切到别的页面/标签页，回来会自动恢复显示结果</p>';
     try {
       const st = await app.api('/api/plan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({}, vals, app.state.ai)) });
       sessionStorage.setItem('jyh_last_plan', JSON.stringify({ jobId: st.jobId, vals, result: null, ts: Date.now() }));
@@ -270,7 +270,7 @@
       }
       if (p.jobId) {
         empty.hidden = true; bodyEl.hidden = false;
-        bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)">⏳ 上次的生成任务还在后台跑，正在恢复…</p>';
+        bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>上次的生成任务还在后台跑，正在恢复…</p>';
         app.pollJob(p.jobId, {
           onDone: (result) => { renderPlan(bodyEl, result, p.vals); savePlan(p.vals, result); },
           onError: () => { bodyEl.innerHTML = '<p style="padding:40px;text-align:center;color:var(--ink-soft)">上次任务已结束或过期，请重新生成。</p>'; }

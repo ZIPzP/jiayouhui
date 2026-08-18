@@ -392,7 +392,45 @@
       try { await window.pageInit(); } catch (e) { console.error('[pageInit]', e); }
     }
   }
+  /* ---------- 动态背景层：流动渐变 + 漂浮光斑（纯视觉，不影响功能） ---------- */
+  function injectBgFx() {
+    if (document.querySelector('.bg-fx')) return;
+    const fx = document.createElement('div');
+    fx.className = 'bg-fx';
+    fx.setAttribute('aria-hidden', 'true');
+    fx.innerHTML = '<span class="orb orb-1"></span><span class="orb orb-2"></span><span class="orb orb-3"></span>';
+    document.body.insertBefore(fx, document.body.firstChild);
+  }
+
+  /* ---------- 滚动入场：元素进入视口时淡入上浮（尊重系统"减少动态"） ---------- */
+  const revealIO = ('IntersectionObserver' in window) ? new IntersectionObserver((entries) => {
+    for (const en of entries) {
+      if (en.isIntersecting) { en.target.classList.add('in'); revealIO.unobserve(en.target); }
+    }
+  }, { threshold: 0.1, rootMargin: '0px 0px -36px 0px' }) : null;
+  function observeReveal(root) {
+    if (!revealIO) return;
+    (root || document).querySelectorAll('[data-reveal]:not(.in)').forEach((el) => revealIO.observe(el));
+  }
+  // 动态插入的内容（目的地卡片/榜单/结果等）自动纳入入场观察
+  if (revealIO && 'MutationObserver' in window) {
+    const mo = new MutationObserver((muts) => {
+      for (const m of muts) {
+        for (const node of m.addedNodes) {
+          if (!node || node.nodeType !== 1) continue;
+          if (node.matches && node.matches('[data-reveal]:not(.in)')) revealIO.observe(node);
+          if (node.querySelectorAll) node.querySelectorAll('[data-reveal]:not(.in)').forEach((el) => revealIO.observe(el));
+        }
+      }
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+  }
+
   async function init() {
+    injectBgFx();
+    observeReveal();
+    // 老浏览器没有 IntersectionObserver 时，直接显示所有入场元素
+    if (!revealIO) document.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('in'));
     // 关闭浏览器自动滚动恢复（返回键关闭弹窗时不跳回顶部）
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     ensureShell();

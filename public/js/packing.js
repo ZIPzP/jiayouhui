@@ -69,7 +69,7 @@
     const bodyEl = document.getElementById('resultBody');
     empty.hidden = true;
     bodyEl.hidden = false;
-    bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)">⏳ 正在后台生成打包清单…<br/>你可以放心切到别的页面，回来会自动恢复</p>';
+    bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>正在后台生成打包清单…<br/>你可以放心切到别的页面，回来会自动恢复</p>';
     try {
       const st = await app.api('/api/recommend', {
         method: 'POST',
@@ -99,7 +99,7 @@
       }
       if (p.jobId) {
         empty.hidden = true; bodyEl.hidden = false;
-        bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)">⏳ 上次的生成任务还在后台跑，正在恢复…</p>';
+        bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>上次的生成任务还在后台跑，正在恢复…</p>';
         app.pollJob(p.jobId, {
           onDone: (result) => { renderResult(bodyEl, result, p.vals); savePack(p.vals, result); },
           onError: () => { bodyEl.innerHTML = '<p style="padding:40px;text-align:center;color:var(--ink-soft)">上次任务已结束或过期，请重新生成。</p>'; }

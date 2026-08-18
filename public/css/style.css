@@ -752,3 +752,129 @@ html.js .reveal.reveal-in { animation: jyh-rise .5s cubic-bezier(.22, .61, .36, 
   .ft-item:hover .ft-icon, .entry-card:hover, .dest-card:hover, .hot-item.clickable:hover { transform: none !important; }
   .nav { transition: none; }
 }
+/* ================= 🎨 动态高级感 · 动效层（不改变功能） ================= */
+/* 页面入场：整页淡入上浮（仅 JS 可用时） */
+html.js body { animation: pageIn .5s ease both; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* 流动渐变背景（柔和青绿→暖白，贴合家庭旅行主题） */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: -2;
+  background: linear-gradient(120deg, #fffbf5 0%, #f0fdfa 30%, #ecfeff 55%, #fef9ec 80%, #fffbf5 100%);
+  background-size: 300% 300%;
+  animation: bgFlow 32s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes bgFlow { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+/* 漂浮光斑（青绿 + 暖橙，柔和自然） */
+.bg-fx { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.bg-fx .orb { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .5; will-change: transform; animation: orbFloat 22s ease-in-out infinite; }
+.orb-1 { width: 380px; height: 380px; background: rgba(13, 148, 136, .34); top: 6%; left: -100px; }
+.orb-2 { width: 320px; height: 320px; background: rgba(249, 115, 22, .24); bottom: 5%; right: -80px; animation-delay: -8s; }
+.orb-3 { width: 260px; height: 260px; background: rgba(15, 118, 110, .22); top: 50%; left: 58%; animation-delay: -14s; }
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(46px, -34px) scale(1.1); }
+  66% { transform: translate(-30px, 30px) scale(.94); }
+}
+
+/* 区块背景半透明，让动态背景微微透出 */
+.section-alt { background: rgba(243, 239, 232, .72); }
+
+/* 滚动入场：元素进入视口淡入上浮 */
+html.js [data-reveal] { opacity: 0; transform: translateY(20px); transition: opacity .65s ease, transform .65s cubic-bezier(.22, .61, .36, 1); }
+html.js [data-reveal].in { opacity: 1; transform: none; }
+
+/* 首页 Hero 山形/波浪剪影（缓慢漂移，点缀主题） */
+.hero { position: relative; }
+.hero-wave { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 90px; pointer-events: none; z-index: 1; animation: waveDrift 18s ease-in-out infinite alternate; }
+@keyframes waveDrift { from { transform: translateX(-14px); } to { transform: translateX(14px); } }
+
+/* 微交互：卡片悬停浮起 */
+.dest-card, .entry-card, .about-card, .day-card, .hot-item, .quick-planner, .form-card {
+  transition: transform .28s ease, box-shadow .28s ease;
+}
+.dest-card:hover, .entry-card:hover, .about-card:hover, .day-card:hover, .hot-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(15, 118, 110, .14);
+}
+.quick-planner:hover, .form-card:hover { transform: translateY(-3px); box-shadow: 0 12px 26px rgba(15, 118, 110, .12); }
+/* 按钮按压反馈 */
+.btn:active { transform: scale(.97); }
+/* 导航当前项下划线 */
+.nav-links-inline a { position: relative; }
+.nav-links-inline a.active::after {
+  content: ''; position: absolute; left: 14px; right: 14px; bottom: 5px; height: 2px;
+  background: var(--primary); border-radius: 2px;
+  animation: underlineIn .3s ease both;
+}
+@keyframes underlineIn { from { opacity: 0; transform: scaleX(.4); } to { opacity: 1; transform: none; } }
+/* 筛选 chip 点击反馈 */
+.chip { transition: transform .18s ease, box-shadow .18s ease; }
+.chip:active { transform: scale(.94); }
+
+/* 级联入场：目的地/入口/榜单/关于/特色条 */
+.dest-grid > .dest-card, .entry-grid > .entry-card, .about-grid > .card, #hotList > .hot-item, .ft-item, .draw-card {
+  animation: cardIn .55s ease backwards;
+}
+.dest-grid > .dest-card:nth-child(1) { animation-delay: 0.00s; }
+.dest-grid > .dest-card:nth-child(2) { animation-delay: 0.06s; }
+.dest-grid > .dest-card:nth-child(3) { animation-delay: 0.12s; }
+.dest-grid > .dest-card:nth-child(4) { animation-delay: 0.18s; }
+.dest-grid > .dest-card:nth-child(5) { animation-delay: 0.24s; }
+.dest-grid > .dest-card:nth-child(6) { animation-delay: 0.30s; }
+.dest-grid > .dest-card:nth-child(7) { animation-delay: 0.36s; }
+.dest-grid > .dest-card:nth-child(8) { animation-delay: 0.42s; }
+.dest-grid > .dest-card:nth-child(9) { animation-delay: 0.48s; }
+.dest-grid > .dest-card:nth-child(10) { animation-delay: 0.54s; }
+.dest-grid > .dest-card:nth-child(11) { animation-delay: 0.60s; }
+.dest-grid > .dest-card:nth-child(12) { animation-delay: 0.66s; }
+.entry-grid > .entry-card:nth-child(1) { animation-delay: 0.00s; }
+.entry-grid > .entry-card:nth-child(2) { animation-delay: 0.08s; }
+.entry-grid > .entry-card:nth-child(3) { animation-delay: 0.16s; }
+.entry-grid > .entry-card:nth-child(4) { animation-delay: 0.24s; }
+.entry-grid > .entry-card:nth-child(5) { animation-delay: 0.32s; }
+.entry-grid > .entry-card:nth-child(6) { animation-delay: 0.40s; }
+#hotList > .hot-item:nth-child(1) { animation-delay: 0.00s; }
+#hotList > .hot-item:nth-child(2) { animation-delay: 0.05s; }
+#hotList > .hot-item:nth-child(3) { animation-delay: 0.10s; }
+#hotList > .hot-item:nth-child(4) { animation-delay: 0.15s; }
+#hotList > .hot-item:nth-child(5) { animation-delay: 0.20s; }
+#hotList > .hot-item:nth-child(6) { animation-delay: 0.25s; }
+#hotList > .hot-item:nth-child(7) { animation-delay: 0.30s; }
+#hotList > .hot-item:nth-child(8) { animation-delay: 0.35s; }
+#hotList > .hot-item:nth-child(9) { animation-delay: 0.40s; }
+#hotList > .hot-item:nth-child(10) { animation-delay: 0.45s; }
+.about-grid > .card:nth-child(1) { animation-delay: 0.00s; }
+.about-grid > .card:nth-child(2) { animation-delay: 0.08s; }
+.about-grid > .card:nth-child(3) { animation-delay: 0.16s; }
+.about-grid > .card:nth-child(4) { animation-delay: 0.24s; }
+.about-grid > .card:nth-child(5) { animation-delay: 0.32s; }
+.about-grid > .card:nth-child(6) { animation-delay: 0.40s; }
+.ft-item:nth-child(1) { animation-delay: 0.00s; }
+.ft-item:nth-child(2) { animation-delay: 0.12s; }
+.ft-item:nth-child(3) { animation-delay: 0.24s; }
+@keyframes cardIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+/* 加载中：精致旋转进度环 */
+.spinner { display: inline-block; width: 18px; height: 18px; border: 2.5px solid rgba(13, 148, 136, .25); border-top-color: var(--primary); border-radius: 50%; vertical-align: -3px; margin-right: 8px; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 页面切换过渡（Chrome 等现代浏览器渐进增强） */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: vtOut .16s ease both; }
+::view-transition-new(root) { animation: vtIn .32s ease both; }
+@keyframes vtOut { to { opacity: 0; transform: translateY(8px); } }
+@keyframes vtIn { from { opacity: 0; transform: translateY(12px); } }
+
+/* 尊重系统"减少动态"：关闭所有动画 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  html.js [data-reveal] { opacity: 1 !important; transform: none !important; }
+  .bg-fx, body::before { display: none !important; }
+}
+
+/* 桌面 Hero 相对定位（供山形剪影定位） */
+.hero-desktop { position: relative; overflow: hidden; }
