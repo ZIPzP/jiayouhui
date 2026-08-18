@@ -284,26 +284,29 @@ async function handleApi(req, res, pathname) {
       const tr = String(params.transport || '');
       if (['高铁', '火车', '未定', ''].includes(tr) && params.origin && params.destination) {
         const ret = params.returnDest || params.origin;
-        const od = await train.queryTrainsWithPrices(params.origin, params.destination.name, String(params.startDate || '').slice(0, 10));
-        const id2 = await train.queryTrainsWithPrices(params.destination.name, ret, String(params.endDate || '').slice(0, 10));
+        const od = await train.queryTrainsWithPrices(params.origin, params.destination.name, String(params.startDate || '').slice(0, 10), 100000);
+        const id2 = await train.queryTrainsWithPrices(params.destination.name, ret, String(params.endDate || '').slice(0, 10), 100000);
         const rtNote = (res) => {
           if (!res || !res.ok) return '12306 查询失败（' + ((res && res.error) || '未知') + '），请到 12306 官网确认实际车次';
           if (!res.trains || !res.trains.length) return '暂无直达，需中转（可到 12306 查询中转方案）';
           if (res.refNote) return '出行日期超出预售期，以上为近期参考班次，车次基本每日固定，请以出行日 12306 实际为准';
           return '';
         };
-        // 按用户选择的交通出行时间（上午/中午/下午）筛选车次；该时段无车次则回退显示全部
+        // 按用户选择的交通出行时间（上午/中午/下午）筛选车次；该时段无车次则自动推荐上午车次（上午也无则显示全部）
         const tt = params.travelTime || '上午';
+        const hh = (x) => { const m = /^(\d{1,2}):/.exec(String(x.fromTime || '')); return m ? Number(m[1]) : -1; };
         const pickByTime = (arr) => {
-          if (!Array.isArray(arr) || !arr.length) return { trains: [], filtered: false, fellBack: false };
-          if (tt === '未定' || !tt) return { trains: arr, filtered: false, fellBack: false };
+          if (!Array.isArray(arr) || !arr.length) return { trains: [], filtered: false, fellBack: false, recMorning: false };
+          if (tt === '未定' || !tt) return { trains: arr, filtered: false, fellBack: false, recMorning: false };
           const win = (h) => tt === '上午' ? (h >= 5 && h < 12) : tt === '中午' ? (h >= 12 && h < 14) : (h >= 14);
-          const hit = arr.filter((x) => { const m = /^(\d{1,2}):/.exec(String(x.fromTime || '')); return m && win(Number(m[1])); });
-          return hit.length ? { trains: hit, filtered: true, fellBack: false } : { trains: arr, filtered: false, fellBack: true };
+          const hit = arr.filter((x) => win(hh(x)));
+          if (hit.length) return { trains: hit, filtered: true, fellBack: false, recMorning: false };
+          const morn = arr.filter((x) => { const h = hh(x); return h >= 5 && h < 12; });
+          return morn.length ? { trains: morn, filtered: false, fellBack: true, recMorning: true } : { trains: arr, filtered: false, fellBack: true, recMorning: false };
         };
         const ob = pickByTime(od.ok ? od.trains : []);
         const ib = pickByTime(id2.ok ? id2.trains : []);
-        const timeNote = (r) => r.filtered ? '（已按「' + tt + '」时段筛选）' : r.fellBack ? '（「' + tt + '」时段暂无直达，以下为全部车次参考）' : '';
+        const timeNote = (r) => r.filtered ? '（已按「' + tt + '」时段筛选）' : '';
         params.realTrains = {
           outbound: ob.trains,
           inbound: ib.trains,
@@ -311,7 +314,10 @@ async function handleApi(req, res, pathname) {
             outboundLabel: '去程（' + (params.origin || '') + ' → ' + params.destination.name + '）',
             outboundNote: rtNote(od) + timeNote(ob),
             inboundLabel: '返程（' + params.destination.name + ' → ' + ret + '）',
-            inboundNote: rtNote(id2) + timeNote(ib)
+            inboundNote: rtNote(id2) + timeNote(ib),
+            outboundFellBack: ob.fellBack,
+            inboundFellBack: ib.fellBack,
+            timeFallbackNote: (ob.fellBack || ib.fellBack) && tt !== '未定' ? '所选「' + tt + '」时段暂无车次，自动推荐上午车次' : ''
           }
         };
       }

@@ -315,6 +315,7 @@ html.elderly .nav-links, html.elderly .quick-planner, html.elderly .packing-layo
 .rt-label { margin: 10px 0 4px; }
 .rt-price { font-size: .84rem; color: #b45309; margin-top: 2px; }
 .rt-note { font-size: .82rem; color: #92400e; opacity: .9; margin: 4px 0 8px; }
+.rt-fallback { background: #fff7ed; border: 1px solid #fdba74; color: #9a3412; border-radius: 8px; padding: 8px 10px; font-size: .88rem; font-weight: 600; margin: 6px 0 10px; }
 .rt-foot { font-size: .8rem; opacity: .65; margin-top: 6px; }
 .budget-box { background: #fffbeb; border: 1px solid #fde68a; color: #78350f; border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; font-size: .92rem; }
 .budget-box .total { font-size: 1.05rem; font-weight: 800; color: #b45309; }

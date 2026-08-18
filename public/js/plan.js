@@ -307,6 +307,7 @@
     const bg = data.budget || {};
     const rt = data.realTrains || {};
     const rtDisp = rt.display || {};
+    const timeFb = rtDisp.timeFallbackNote ? `<p class="rt-fallback">⚠️ ${app.esc(rtDisp.timeFallbackNote)}</p>` : '';
     const rtRow = (tr) => {
       const p = tr.prices || {};
       const pStr = ['二等座', '一等座', '商务座', '硬座', '硬卧', '软卧', '无座'].filter((k) => p[k]).map((k) => `${k}¥${p[k]}`).join(' ');
@@ -322,6 +323,7 @@
     const rtIn = rtSection(rtDisp.inboundLabel || '返程', rt.inbound, rtDisp.inboundNote);
     const rtHtml = (rtOut || rtIn) ? `
       <div class="transport-box"><h4>🚄 12306 实时车次与票价</h4>
+        ${timeFb}
         ${rtOut}
         ${rtIn}
         <p class="rt-foot">数据来自 12306 实时官方查询，请以 12306 实际为准</p>
