@@ -17,6 +17,7 @@
       endDate: document.getElementById('pl-end').value,
       days: Number(document.getElementById('pl-days').value) || 3,
       transport: chipValue('data-single="pl-transport"'),
+      travelTime: chipValue('data-single="pl-time"') || '上午',
       elderly: Number(document.getElementById('pl-elderly').value) || 0,
       adults: Number(document.getElementById('pl-adults').value) || 0,
       children: Number(document.getElementById('pl-children').value) || 0,
@@ -101,6 +102,7 @@
       end: document.getElementById('pl-end').value,
       days: document.getElementById('pl-days').value,
       transport: chips('data-single="pl-transport"')[0] || '',
+      travelTime: chips('data-single="pl-time"')[0] || '',
       elderly: document.getElementById('pl-elderly').value,
       adults: document.getElementById('pl-adults').value,
       children: document.getElementById('pl-children').value,
@@ -130,6 +132,7 @@
     document.getElementById('pl-notes').value = d.notes || '';
     const setChips = (sel, arr) => { [...document.querySelectorAll(`#planForm [${sel}] .chip`)].forEach((c) => c.classList.toggle('active', (arr || []).includes(c.dataset.value))); };
     if (d.transport) setChips('data-single="pl-transport"', [d.transport]);
+    if (d.travelTime) setChips('data-single="pl-time"', [d.travelTime]);
     if (d.dietary && d.dietary.length) setChips('data-multi="pl-dietary"', d.dietary);
     if (d.budget) setChips('data-single="pl-budget"', [d.budget]);
     if (d.pace) setChips('data-single="pl-pace"', [d.pace]);
@@ -176,6 +179,7 @@
         end: v.endDate || '',
         days: String(v.days || ''),
         transport: v.transport || '',
+        travelTime: v.travelTime || '',
         notes: v.notes || ''
       };
       if (d.dest || d.origin) saveHistory([d]);

@@ -267,6 +267,7 @@ async function handleApi(req, res, pathname) {
       endDate: body.endDate || '',
       days: Number(body.days) || 3,
       transport: String(body.transport || '').trim(),
+      travelTime: String(body.travelTime || '上午').trim(),
       elderly: Number(body.elderly) || 0,
       adults: Number(body.adults) || 2,
       children: Number(body.children) || 0,
@@ -291,14 +292,26 @@ async function handleApi(req, res, pathname) {
           if (res.refNote) return '出行日期超出预售期，以上为近期参考班次，车次基本每日固定，请以出行日 12306 实际为准';
           return '';
         };
+        // 按用户选择的交通出行时间（上午/中午/下午）筛选车次；该时段无车次则回退显示全部
+        const tt = params.travelTime || '上午';
+        const pickByTime = (arr) => {
+          if (!Array.isArray(arr) || !arr.length) return { trains: [], filtered: false, fellBack: false };
+          if (tt === '未定' || !tt) return { trains: arr, filtered: false, fellBack: false };
+          const win = (h) => tt === '上午' ? (h >= 5 && h < 12) : tt === '中午' ? (h >= 12 && h < 14) : (h >= 14);
+          const hit = arr.filter((x) => { const m = /^(\d{1,2}):/.exec(String(x.fromTime || '')); return m && win(Number(m[1])); });
+          return hit.length ? { trains: hit, filtered: true, fellBack: false } : { trains: arr, filtered: false, fellBack: true };
+        };
+        const ob = pickByTime(od.ok ? od.trains : []);
+        const ib = pickByTime(id2.ok ? id2.trains : []);
+        const timeNote = (r) => r.filtered ? '（已按「' + tt + '」时段筛选）' : r.fellBack ? '（「' + tt + '」时段暂无直达，以下为全部车次参考）' : '';
         params.realTrains = {
-          outbound: od.ok ? od.trains : [],
-          inbound: id2.ok ? id2.trains : [],
+          outbound: ob.trains,
+          inbound: ib.trains,
           display: {
             outboundLabel: '去程（' + (params.origin || '') + ' → ' + params.destination.name + '）',
-            outboundNote: rtNote(od),
+            outboundNote: rtNote(od) + timeNote(ob),
             inboundLabel: '返程（' + params.destination.name + ' → ' + ret + '）',
-            inboundNote: rtNote(id2)
+            inboundNote: rtNote(id2) + timeNote(ib)
           }
         };
       }
