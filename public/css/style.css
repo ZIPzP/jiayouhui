@@ -1209,3 +1209,7 @@ html.elderly .day-card, html.elderly .hot-heat .bar i, html.elderly .check-group
   .day-card { padding: 12px; }
   .result-card { padding: 18px; }
 }
+
+/* 抽取页头部与全站 section-head 完全一致（标题行高统一，防 emoji 撑高） */
+.section-head h2 { line-height: 1.25; }
+.draw-box .draw-machine { margin-top: 0; }
