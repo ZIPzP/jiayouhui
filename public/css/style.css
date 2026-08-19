@@ -1229,9 +1229,3 @@ body.draw-page .footer .footer-slogan { display: block; color: #E2E8F0; font-siz
 
 /* 备案图标：图标在前、编号在右（标准格式） */
 .icp .beian-icon { display: inline-block; width: 16px; height: 18px; vertical-align: -3px; margin-right: 4px; }
-
-/* 侧栏链接兜底：动画不运行（微信等老内核/减少动态）时链接仍可见 */
-.nav-drawer.open .nav-links a { opacity: 1; }
-@media (prefers-reduced-motion: reduce) {
-  .nav-drawer.open .nav-links a { opacity: 1 !important; animation: none !important; }
-}
