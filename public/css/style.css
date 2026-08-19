@@ -1235,3 +1235,9 @@ body.draw-page .footer .footer-slogan { display: block; color: #E2E8F0; font-siz
 @media (prefers-reduced-motion: reduce) {
   .nav-drawer.open .nav-links a { opacity: 1 !important; animation: none !important; }
 }
+
+/* 标题 emoji：渐变透明会隐藏 emoji，恢复可见 + 柔和闪动（同绿色按钮的光感） */
+.tt-emoji { display: inline-block; -webkit-text-fill-color: #1f2937; color: #1f2937; background: none; animation: emojiGlow 2.8s ease-in-out infinite; }
+@keyframes emojiGlow { 0%, 100% { filter: none; } 50% { filter: drop-shadow(0 0 5px rgba(255,255,255,.9)) drop-shadow(0 0 2px rgba(13,148,136,.55)); } }
+html.elderly .tt-emoji { animation: none; }
+@media (prefers-reduced-motion: reduce) { .tt-emoji { animation: none; } }
