@@ -284,8 +284,8 @@
   }
   function renderPlan(el, data, vals) {
     const dest = app.state.destinations.find((d) => d.id === vals.destinationId) || {};
-    const dayHtml = (data.days || []).map((d) => `
-      <div class="day-card">
+    const dayHtml = (data.days || []).map((d, i) => `
+      <div class="day-card" style="animation-delay:${(0.05 + i * 0.12).toFixed(2)}s">
         <div class="day-head">
           <div class="day-num">D${d.day}</div>
           <span class="day-title">${app.esc(d.title)}</span>
