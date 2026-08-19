@@ -1069,8 +1069,6 @@ html.js [data-reveal].in { opacity: 1; transform: none; filter: none; }
 .entry-card:hover .entry-icon { transform: scale(1.12) translateY(-3px); }
 .draw-card:hover .draw-card-emoji { transform: scale(1.18) rotate(8deg); }
 
-/* 4. 热门字幕 hover 暂停（方便阅读） */
-.ticker:hover .ticker-track { animation-play-state: paused; }
 
 /* 长辈模式 / 减少动态：关闭连续漂浮与呼吸 */
 html.elderly .hd-dot, html.elderly .ft-icon { animation: none; }
