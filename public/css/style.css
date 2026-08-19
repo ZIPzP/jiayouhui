@@ -1152,3 +1152,60 @@ html.elderly .day-card, html.elderly .hot-heat .bar i, html.elderly .check-group
 @media (prefers-reduced-motion: reduce) {
   .day-card, .hot-heat .bar i, .check-group, .detail-hero, .detail-body > *, .draw-result .draw-card, .draw-result .draw-card-body > *, .draw-result .draw-card-cover, .draw-emoji.rolling, .draw-emoji.hit-bounce, .draw-particle, .lightbox:not([hidden]) img { animation: none !important; }
 }
+
+
+/* =====================================================================
+   设计规范统一层（dev-test）——只覆盖不一致的值，不改功能/文案/配色
+   容器 1200px | 间距 8/12/16/20/24/32/40/48 | 卡片 radius16 同款阴影 | 断点 900/640
+   ===================================================================== */
+
+/* 1. 内容容器宽度统一 1200px（entry-grid 手机专用、draw-wrap 720→1200） */
+.entry-grid { max-width: 1200px; }
+.draw-wrap { max-width: 1200px; }
+
+/* 2. 间距体系：页面上下留白统一 48px；卡片网格间距统一 20px */
+.section { padding: 48px 20px; }
+.draw-wrap { padding: 48px 20px; }
+.dest-grid { gap: 20px; }
+.about-grid { gap: 20px; }
+
+/* 3. 卡片规范：圆角统一 var(--radius)=16px，内边距统一 20/24px */
+.hot-item { border-radius: var(--radius); padding: 16px 20px; }
+.day-card { border-radius: var(--radius); padding: 16px 20px; }
+.entry-card { padding: 24px 20px; }
+.result-card { padding: 24px; }
+.draw-result .draw-card { border-radius: var(--radius); overflow: hidden; }
+.draw-result .draw-card-cover { border-radius: 16px 16px 0 0; }
+.draw-result .draw-card-body { padding: 16px 20px 20px; }
+.draw-pool, .draw-recent { max-width: 720px; }
+
+/* 4. 字号层级：抽取页标题与 .section-head h2 同一 clamp 缩放 */
+.draw-title { font-size: clamp(1.6rem, 3.5vw, 2.3rem); }
+.draw-sub { margin: 12px 0 32px; }
+.draw-stats { margin: 16px 0 12px; font-size: .9rem; }
+
+/* 5. 按钮统一：抽取按钮回归标准 .btn；dp-chip 对齐标签尺度 */
+.draw-btn { font-size: 1rem; padding: 10px 18px; border-radius: 12px; }
+.dp-chip { padding: 6px 14px; font-size: .85rem; }
+
+/* 6. 抽取屏：桌面端宽度联动页面（不再写死 340px） */
+.draw-screen { width: min(440px, 100%); min-height: 220px; }
+.draw-machine { margin-bottom: 32px; }
+
+/* 7. 图片统一 object-fit: cover（画廊/亮点图） */
+.gallery-row img, .highlight-card img { object-fit: cover; }
+
+/* 8. 响应式回退：900/640 断点下恢复原有移动端值，保持全站一致 */
+@media (max-width: 900px) {
+  .section { padding: 40px 14px; }
+  .draw-wrap { padding: 28px 14px 40px; }
+  .entry-card { padding: 14px 6px; }
+  .draw-screen { width: 100%; max-width: 340px; min-height: 180px; }
+  .draw-btn { width: auto; max-width: none; }
+}
+@media (max-width: 640px) {
+  .dest-grid { gap: 12px; }
+  .hot-item { padding: 12px 14px; }
+  .day-card { padding: 12px; }
+  .result-card { padding: 18px; }
+}
