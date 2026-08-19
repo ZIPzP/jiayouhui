@@ -918,7 +918,7 @@ html.js .ch { display: inline-block; opacity: 0; transform: translateY(16px) rot
 .dest-card:hover::before, .entry-card:hover::before { opacity: 1; }
 
 /* 区块标题：渐变流光文字 */
-.section-head h2, .draw-title {
+.tt-grad {
   background: linear-gradient(90deg, var(--primary-dark), var(--accent), var(--primary-dark));
   background-size: 200% auto;
   -webkit-background-clip: text; background-clip: text;
@@ -937,7 +937,7 @@ html.js [data-reveal].in { opacity: 1; transform: none; filter: none; }
 
 /* 减少动态时，渐变文字恢复纯色可读 */
 @media (prefers-reduced-motion: reduce) {
-  .section-head h2, .draw-title { -webkit-text-fill-color: var(--primary-dark); color: var(--primary-dark); background: none; }
+  .tt-grad { -webkit-text-fill-color: var(--primary-dark); color: var(--primary-dark); background: none; }
 }
 
 
