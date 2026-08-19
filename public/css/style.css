@@ -1217,3 +1217,7 @@ html.elderly .day-card, html.elderly .hot-heat .bar i, html.elderly .check-group
 /* 页脚贴底：内容不足一屏时页脚固定在视口底部（全站一致，内容够长则不受影响） */
 body { min-height: 100vh; display: flex; flex-direction: column; }
 body > main, body > .section { flex: 1 0 auto; width: 100%; }
+
+/* 抽取页页脚与首页一致：深色底 + 品牌口号 */
+body.draw-page .footer { background: #1E293B; color: #94A3B8; padding: 48px 20px; border-top: none; }
+body.draw-page .footer .footer-slogan { display: block; color: #E2E8F0; font-size: 15px; font-weight: 600; margin-bottom: 10px; }
