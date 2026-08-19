@@ -1221,3 +1221,8 @@ body > main, body > .section { flex: 1 0 auto; width: 100%; }
 /* 抽取页页脚与首页一致：深色底 + 品牌口号 */
 body.draw-page .footer { background: #1E293B; color: #94A3B8; padding: 48px 20px; border-top: none; }
 body.draw-page .footer .footer-slogan { display: block; color: #E2E8F0; font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+
+/* 抽取页：目的地标签适当放大 + 波浪与首页一致 */
+.dp-chip { padding: 9px 18px; font-size: .95rem; gap: 6px; }
+.dp-chip i { font-size: .8rem; }
+.draw-pool, .draw-recent { gap: 10px; }
