@@ -1213,3 +1213,7 @@ html.elderly .day-card, html.elderly .hot-heat .bar i, html.elderly .check-group
 /* 抽取页头部与全站 section-head 完全一致（标题行高统一，防 emoji 撑高） */
 .section-head h2 { line-height: 1.25; }
 .draw-box .draw-machine { margin-top: 0; }
+
+/* 页脚贴底：内容不足一屏时页脚固定在视口底部（全站一致，内容够长则不受影响） */
+body { min-height: 100vh; display: flex; flex-direction: column; }
+body > main, body > .section { flex: 1 0 auto; width: 100%; }
