@@ -1063,10 +1063,11 @@ html.js [data-reveal].in { opacity: 1; transform: none; filter: none; }
 .ft-item:nth-child(3) .ft-icon { animation-delay: .8s; }
 .ft-item:hover .ft-icon { animation: none; } /* hover 时停漂浮，交给原有上浮效果 */
 
-/* 3. 卡片 hover 时 emoji 微弹 */
-.dest-emoji, .entry-icon { transition: transform .3s cubic-bezier(.22,.61,.36,1); }
+/* 3. 卡片 hover 时 emoji 微弹（目的地/入口/抽取 所有卡片） */
+.dest-emoji, .entry-icon, .draw-card-emoji { transition: transform .3s cubic-bezier(.22,.61,.36,1); }
 .dest-card:hover .dest-emoji { transform: scale(1.2) rotate(-8deg); }
 .entry-card:hover .entry-icon { transform: scale(1.12) translateY(-3px); }
+.draw-card:hover .draw-card-emoji { transform: scale(1.18) rotate(8deg); }
 
 /* 4. 热门字幕 hover 暂停（方便阅读） */
 .ticker:hover .ticker-track { animation-play-state: paused; }
