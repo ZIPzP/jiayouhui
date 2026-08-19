@@ -493,7 +493,8 @@ const server = http.createServer(async (req, res) => {
 });
 
 const port = Number(process.env.PORT || config.port || 3000);
-server.listen(port, () => {
+const host = process.env.HOST || '0.0.0.0';
+server.listen(port, host, () => {
   const aiCfg = (config.ai || {});
   console.log('🏡 家游汇 · 家庭旅游推荐已启动');
   console.log(`   ➜ 打开: http://localhost:${port}`);
