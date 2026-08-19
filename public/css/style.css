@@ -1226,3 +1226,6 @@ body.draw-page .footer .footer-slogan { display: block; color: #E2E8F0; font-siz
 .dp-chip { padding: 9px 18px; font-size: .95rem; gap: 6px; }
 .dp-chip i { font-size: .8rem; }
 .draw-pool, .draw-recent { gap: 10px; }
+
+/* 备案图标：图标在前、编号在右（标准格式） */
+.icp .beian-icon { width: 16px; height: 18px; vertical-align: -3px; margin-right: 5px; }
