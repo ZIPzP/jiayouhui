@@ -1050,3 +1050,105 @@ html.js [data-reveal].in { opacity: 1; transform: none; filter: none; }
 
 /* 极光：移入 bg-fx（overflow:hidden 裁剪，不再撑出底部空白） */
 .bg-fx .aurora { position: absolute; inset: -45%; background: conic-gradient(from 0deg, transparent 0deg, rgba(13,148,136,.10) 70deg, transparent 140deg, rgba(249,115,22,.08) 220deg, transparent 300deg); animation: aurora 46s linear infinite; pointer-events: none; }
+
+/* ========== 动态增强（dev-test 设计） ========== */
+/* 1. AI 徽章小圆点呼吸光晕 */
+.hd-dot { animation: dotPulse 2.2s ease-in-out infinite; }
+@keyframes dotPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(13,148,136,.35); } 50% { box-shadow: 0 0 0 6px rgba(13,148,136,0); } }
+
+/* 2. 特色条图标轻柔漂浮（错峰） */
+.ft-icon { animation: iconFloat 3.2s ease-in-out infinite; }
+@keyframes iconFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.ft-item:nth-child(2) .ft-icon { animation-delay: .4s; }
+.ft-item:nth-child(3) .ft-icon { animation-delay: .8s; }
+.ft-item:hover .ft-icon { animation: none; } /* hover 时停漂浮，交给原有上浮效果 */
+
+/* 3. 卡片 hover 时 emoji 微弹（目的地/入口/抽取 所有卡片） */
+.dest-emoji, .entry-icon, .draw-card-emoji { transition: transform .3s cubic-bezier(.22,.61,.36,1); }
+.dest-card:hover .dest-emoji { transform: scale(1.2) rotate(-8deg); }
+.entry-card:hover .entry-icon { transform: scale(1.12) translateY(-3px); }
+.draw-card:hover .draw-card-emoji { transform: scale(1.18) rotate(8deg); }
+
+
+/* 长辈模式 / 减少动态：关闭连续漂浮与呼吸 */
+html.elderly .hd-dot, html.elderly .ft-icon { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .hd-dot, .ft-icon { animation: none; }
+}
+
+/* ===== 动态效果增强（dev-test）：抽取/热度/逐日/清单/详情/灯箱 ===== */
+
+/* 抽取页：滚动脉冲+模糊 / 命中粒子 / 结果弹窗（D2/D3/D4） */
+.draw-screen { position: relative; }
+.draw-emoji { display: inline-block; transition: filter .15s ease, transform .15s ease; }
+.draw-emoji.rolling { animation: emojiPulse .14s ease-in-out infinite alternate; }
+@keyframes emojiPulse { from { transform: scale(1); } to { transform: scale(1.22); } }
+.draw-emoji.hit-bounce { animation: hitBounce .55s cubic-bezier(.22,.61,.36,1); }
+@keyframes hitBounce { 0% { transform: scale(0); opacity: 0; } 55% { transform: scale(1.35); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+.draw-particle { position: absolute; font-size: 1.15rem; line-height: 1; pointer-events: none; z-index: 5; animation: particleFly .8s ease-out forwards; }
+@keyframes particleFly { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) scale(.15); opacity: 0; } }
+.modal-backdrop:not([hidden]) { animation: backdropIn .25s ease both; }
+@keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
+.draw-result .draw-card { animation: drawCardIn .5s cubic-bezier(.22,.61,.36,1) both; }
+@keyframes drawCardIn { from { opacity: 0; transform: scale(.9) translateY(18px); } to { opacity: 1; transform: none; } }
+.draw-result .draw-card-cover { animation: drawKen 18s ease-in-out infinite alternate; transform-origin: center; }
+@keyframes drawKen { from { transform: scale(1); } to { transform: scale(1.07); } }
+.draw-result .draw-card-body > * { animation: drawBodyIn .45s ease both; }
+.draw-result .draw-card-body > *:nth-child(2) { animation-delay: .09s; }
+.draw-result .draw-card-body > *:nth-child(3) { animation-delay: .18s; }
+.draw-result .draw-card-body > *:nth-child(4) { animation-delay: .27s; }
+.draw-result .draw-card-body > *:nth-child(5) { animation-delay: .36s; }
+@keyframes drawBodyIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* 热度页排名条生长（H1） */
+.hot-heat .bar i { transform-origin: left; animation: heatGrow .9s cubic-bezier(.22,.61,.36,1) both; }
+@keyframes heatGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+#hotList > .hot-item:nth-child(1) .bar i { animation-delay: .55s; }
+#hotList > .hot-item:nth-child(2) .bar i { animation-delay: .63s; }
+#hotList > .hot-item:nth-child(3) .bar i { animation-delay: .71s; }
+#hotList > .hot-item:nth-child(4) .bar i { animation-delay: .79s; }
+#hotList > .hot-item:nth-child(5) .bar i { animation-delay: .87s; }
+#hotList > .hot-item:nth-child(6) .bar i { animation-delay: .95s; }
+#hotList > .hot-item:nth-child(7) .bar i { animation-delay: 1.03s; }
+#hotList > .hot-item:nth-child(8) .bar i { animation-delay: 1.11s; }
+#hotList > .hot-item:nth-child(9) .bar i { animation-delay: 1.19s; }
+#hotList > .hot-item:nth-child(10) .bar i { animation-delay: 1.27s; }
+
+/* 行程逐日卡级联上浮（P1，延迟由 JS 内联） */
+.day-card { animation: dayRise .45s ease both; }
+@keyframes dayRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+/* 出行清单分组级联（L1，延迟由 JS 内联）+ 勾选完成态过渡（L2） */
+.check-group { animation: groupIn .4s ease both; }
+@keyframes groupIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.check-item .item-name { transition: color .3s ease; }
+
+/* 详情弹窗内容错峰（M2） */
+.detail-hero { animation: heroFade .35s ease both; }
+@keyframes heroFade { from { opacity: 0; } to { opacity: 1; } }
+.detail-body > * { animation: bodyIn .4s ease both; }
+.detail-body > *:nth-child(2) { animation-delay: .07s; }
+.detail-body > *:nth-child(3) { animation-delay: .14s; }
+.detail-body > *:nth-child(4) { animation-delay: .21s; }
+.detail-body > *:nth-child(5) { animation-delay: .28s; }
+.detail-body > *:nth-child(6) { animation-delay: .35s; }
+.detail-body > *:nth-child(7) { animation-delay: .42s; }
+.detail-body > *:nth-child(8) { animation-delay: .49s; }
+.detail-body > *:nth-child(9) { animation-delay: .56s; }
+.detail-body > *:nth-child(10) { animation-delay: .63s; }
+.detail-body > *:nth-child(11) { animation-delay: .70s; }
+.detail-body > *:nth-child(12) { animation-delay: .77s; }
+@keyframes bodyIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* 灯箱：开合 zoom 淡入（M4） */
+.lightbox:not([hidden]) { animation: backdropIn .25s ease both; }
+.lightbox:not([hidden]) img { animation: lightboxZoom .32s cubic-bezier(.22,.61,.36,1) both; }
+.lightbox.closing { animation: backdropOut .2s ease both; }
+@keyframes lightboxZoom { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: none; } }
+@keyframes backdropOut { from { opacity: 1; } to { opacity: 0; } }
+
+/* 长辈模式 / 减少动态：关闭新增入场与连续动画 */
+html.elderly .day-card, html.elderly .hot-heat .bar i, html.elderly .check-group, html.elderly .detail-hero, html.elderly .detail-body > *, html.elderly .draw-result .draw-card, html.elderly .draw-result .draw-card-body > *, html.elderly .draw-result .draw-card-cover, html.elderly .draw-emoji.rolling, html.elderly .draw-emoji.hit-bounce, html.elderly .draw-particle { animation: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .day-card, .hot-heat .bar i, .check-group, .detail-hero, .detail-body > *, .draw-result .draw-card, .draw-result .draw-card-body > *, .draw-result .draw-card-cover, .draw-emoji.rolling, .draw-emoji.hit-bounce, .draw-particle, .lightbox:not([hidden]) img { animation: none !important; }
+}

@@ -116,8 +116,8 @@
     const destName = dest.name || (vals.customDest && vals.customDest.name) || '';
     const groups = {};
     (data.items || []).forEach((it) => { const c = it.category || '其他'; (groups[c] = groups[c] || []).push(it); });
-    const groupHtml = Object.entries(groups).map(([cat, items]) => `
-      <div class="check-group">
+    const groupHtml = Object.entries(groups).map(([cat, items], gi) => `
+      <div class="check-group" style="animation-delay:${(0.05 + gi * 0.1).toFixed(2)}s">
         <h4>${app.esc(cat)}</h4>
         ${items.map((it) => `
           <label class="check-item" data-name="${app.esc(it.name)}">

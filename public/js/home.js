@@ -42,7 +42,7 @@
   function animateCount(el) {
     const target = Number(el.dataset.count || 0);
     const suffix = el.dataset.suffix || '';
-    const dur = 400;
+    const dur = 2000; // 数字滚动时长(ms)，慢慢涨更清晰
     const t0 = performance.now();
     const ease = (t) => 1 - Math.pow(1 - t, 4);
     const step = (now) => {

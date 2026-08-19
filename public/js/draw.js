@@ -57,6 +57,29 @@
   function stopIdle() {
     if (state.idleTimer) { clearInterval(state.idleTimer); state.idleTimer = null; }
   }
+  /* 命中瞬间：一圈 emoji 粒子爆散（≤8 个，0.8s 后移除，只动 transform/opacity） */
+  const PARTICLE_EMOJI = ['✨', '🎉', '🌟', '💫', '🎊', '⭐', '🌈', '🔥'];
+  function burstParticles(screen, emojiEl) {
+    if (!screen) return;
+    const emoji = emojiEl || screen.querySelector('.draw-emoji');
+    const sRect = screen.getBoundingClientRect();
+    const eRect = emoji ? emoji.getBoundingClientRect() : null;
+    const cx = eRect ? (eRect.left + eRect.width / 2 - sRect.left) : sRect.width / 2;
+    const cy = eRect ? (eRect.top + eRect.height / 2 - sRect.top) : sRect.height * 0.42;
+    for (let i = 0; i < 8; i++) {
+      const p = document.createElement('span');
+      p.className = 'draw-particle';
+      p.textContent = PARTICLE_EMOJI[i % PARTICLE_EMOJI.length];
+      const ang = (Math.PI * 2 * i) / 8 + Math.random() * 0.6;
+      const dist = 70 + Math.random() * 70;
+      p.style.setProperty('--dx', (Math.cos(ang) * dist).toFixed(0) + 'px');
+      p.style.setProperty('--dy', (Math.sin(ang) * dist).toFixed(0) + 'px');
+      p.style.left = cx + 'px';
+      p.style.top = cy + 'px';
+      screen.appendChild(p);
+      setTimeout(() => { try { p.remove(); } catch (e) {} }, 850);
+    }
+  }
 
   function bindDraw() {
     const btn = document.getElementById('drawBtn');
@@ -79,14 +102,26 @@
       const step = () => {
         i++;
         const d = pool[Math.floor(Math.random() * pool.length)];
-        if (emojiEl) emojiEl.textContent = d.emoji || '🏡';
+        const prog = i / total;
+        if (emojiEl) {
+          emojiEl.textContent = d.emoji || '🏡';
+          emojiEl.classList.add('rolling');
+          // 越快越糊：早期快→模糊大，临近命中逐渐清晰
+          emojiEl.style.filter = 'blur(' + (Math.max(0, 1 - prog) * 3).toFixed(1) + 'px)';
+        }
         if (nameEl) nameEl.textContent = d.name;
         if (i < total) {
-          setTimeout(step, 60 + Math.pow(i / total, 2.2) * 240);
+          setTimeout(step, 60 + Math.pow(prog, 2.2) * 240);
         } else {
           const picked = d;
-          if (emojiEl) emojiEl.textContent = '🎉';
+          if (emojiEl) {
+            emojiEl.classList.remove('rolling');
+            emojiEl.style.filter = '';
+            emojiEl.textContent = '🎉';
+            emojiEl.classList.remove('hit-bounce'); void emojiEl.offsetWidth; emojiEl.classList.add('hit-bounce');
+          }
           if (nameEl) nameEl.textContent = d.name + '！';
+          burstParticles(screen, emojiEl);
           running = false;
           btn.disabled = false;
           btn.textContent = '🎲 再抽一次';

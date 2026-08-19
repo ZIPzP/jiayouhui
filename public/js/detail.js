@@ -154,8 +154,13 @@
   }
   function closeLightbox() {
     const box = document.getElementById('lightbox');
-    if (box) box.hidden = true;
-    document.body.style.overflow = '';
+    if (!box || box.hidden) return;
+    box.classList.add('closing');
+    setTimeout(() => {
+      box.hidden = true;
+      box.classList.remove('closing');
+      document.body.style.overflow = '';
+    }, 200);
   }
   function navLightbox(dir) { openLightbox(lb.index + dir); }
 
