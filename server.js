@@ -45,13 +45,17 @@ const JOB_TTL = 5 * 60 * 1000;                                // 任务结果保
 const MAX_JOBS = 20;                                          // 最大并发任务数
 const hits = new Map();                                       // ip -> { n, reset }
 const loginFails = new Map();                                 // ip -> { n, reset, lockedUntil }
+// 仅信任来自本机 nginx 的代理头（remoteAddress 不可伪造）；直连请求一律忽略伪造头，防绕过限流/锁定
+const TRUSTED_PROXY = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
 function clientIp(req) {
-  // 经过 nginx 反代时，remoteAddress 是 127.0.0.1；用 nginx 写入的 X-Real-IP / X-Forwarded-For 取真实客户端 IP
-  const real = req.headers['x-real-ip'];
-  if (real) return String(real).trim();
-  const xff = req.headers['x-forwarded-for'];
-  if (xff) { const list = String(xff).split(',').map((s) => s.trim()).filter(Boolean); if (list.length) return list[list.length - 1]; }
-  return String((req.socket.remoteAddress || '')).replace(/^::ffff:/, '');
+  const socketIp = String(req.socket.remoteAddress || '');
+  if (TRUSTED_PROXY.has(socketIp)) {
+    const real = req.headers['x-real-ip'];
+    if (real) return String(real).trim();
+    const xff = req.headers['x-forwarded-for'];
+    if (xff) { const list = String(xff).split(',').map((s) => s.trim()).filter(Boolean); if (list.length) return list[list.length - 1]; }
+  }
+  return socketIp.replace(/^::ffff:/, '');
 }
 function bucket(map, key, windowMs) {
   const now = Date.now();
@@ -81,7 +85,7 @@ const SEC_HEADERS = {
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'SAMEORIGIN',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Content-Security-Policy': "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+  'Content-Security-Policy': "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 };
 function sendJson(res, status, obj) {
   const body = JSON.stringify(obj);
@@ -421,7 +425,8 @@ async function handleApi(req, res, pathname) {
 
   // GET /api/health —— 含 AI Key 来源状态（不返回 Key 本身）
   if (pathname === '/api/health') {
-    return sendJson(res, 200, { ok: true, hasServerKey: ai.hasServerKey(), time: new Date().toISOString() });
+    const authed = !auth.accessConfig().enabled || auth.verifyToken(auth.extractBearer(req));
+    return sendJson(res, 200, Object.assign({ ok: true, time: new Date().toISOString() }, authed ? { hasServerKey: ai.hasServerKey() } : {}));
   }
 
 

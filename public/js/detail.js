@@ -48,7 +48,7 @@
     const body = document.getElementById('modalBody');
     if (!body) return;
     const tags = (d.tags || []).map((t) => `<span class="badge">${app.esc(t)}</span>`).join('');
-    const gallery = (d.gallery || []).map((g, i) => `<img src="${app.esc(g)}" alt="${app.esc(d.name)} 风光 ${i + 1}" onerror="window.__jyhImgFallback(this,'${app.esc(d.emoji || '🏡')}','${app.esc(d.name)}','${app.esc(d.accent || '#0f766e')}')" />`).join('');
+    const gallery = (d.gallery || []).map((g, i) => `<img src="${app.esc(g)}" alt="${app.esc(d.name)} 风光 ${i + 1}" />`).join('');
     body.innerHTML = `
       <div class="detail-hero" style="background-color:${app.esc(d.accent || '#0f766e')}">
         <div class="detail-hero-overlay"></div>
@@ -76,7 +76,7 @@
         <h3>✨ 特色亮点</h3>
         ${(d.highlights || []).map((h) => `
           <div class="highlight-card">
-            <img src="${app.esc(h.image)}" alt="${app.esc(h.title)}" onerror="window.__jyhImgFallback(this,'${app.esc(d.emoji || '🏡')}','${app.esc(h.title)}','${app.esc(d.accent || '#0f766e')}')" />
+            <img src="${app.esc(h.image)}" alt="${app.esc(h.title)}" />
             <div><h4>${app.esc(h.title)}</h4><p>${app.esc(h.text)}</p></div>
           </div>`).join('')}
         ${(d.foods || []).length ? `
@@ -121,6 +121,10 @@
       img.style.cursor = 'zoom-in';
       img.addEventListener('click', () => openLightbox((d.cover ? 1 : 0) + galleryImgs.length + i));
     });
+    // 图片加载失败兜底（addEventListener 替代内联 onerror，兼容 CSP script-src 'self'）
+    const fbImg = (img, name, accent) => { img.addEventListener('error', () => { if (window.__jyhImgFallback) window.__jyhImgFallback(img, d.emoji || '🏡', name, accent); }, { once: true }); };
+    [...body.querySelectorAll('.gallery-row img')].forEach((img, i) => fbImg(img, d.name, d.accent || '#0f766e'));
+    [...body.querySelectorAll('.highlight-card img')].forEach((img, i) => fbImg(img, ((d.highlights || [])[i] || {}).title || '', d.accent || '#0f766e'));
     loadWeather(d);
   }
   async function loadWeather(d) {
