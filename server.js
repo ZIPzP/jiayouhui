@@ -38,9 +38,47 @@ function readJson(file) {
   try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return null; }
 }
 
+/* ---------- 安全防护：AI 限流 / 登录锁定 / 任务表清理 ---------- */
+const RATE = { windowMs: 60000, max: 30 };                    // AI 接口：每 IP 每分钟 30 次
+const LOGIN = { windowMs: 60000, max: 5, lockMs: 60000 };     // 登录失败：每 IP 每分钟 5 次后锁 1 分钟
+const JOB_TTL = 5 * 60 * 1000;                                // 任务结果保留 5 分钟
+const MAX_JOBS = 20;                                          // 最大并发任务数
+const hits = new Map();                                       // ip -> { n, reset }
+const loginFails = new Map();                                 // ip -> { n, reset, lockedUntil }
+function clientIp(req) { return String((req.socket.remoteAddress || '')).replace(/^::ffff:/, ''); }
+function bucket(map, key, windowMs) {
+  const now = Date.now();
+  const rec = map.get(key) || { n: 0, reset: now + windowMs };
+  if (now > rec.reset) { rec.n = 0; rec.reset = now + windowMs; }
+  return rec;
+}
+function allowAi(req) {
+  const rec = bucket(hits, clientIp(req), RATE.windowMs);
+  rec.n++; hits.set(clientIp(req), rec);
+  return rec.n <= RATE.max;
+}
+function loginAllowed(req) {
+  const rec = bucket(loginFails, clientIp(req), LOGIN.windowMs);
+  const allowed = !(rec.lockedUntil && Date.now() < rec.lockedUntil);
+  return { rec, allowed };
+}
+// 定期清理限流/登录记录，防止 Map 无限增长
+setInterval(() => {
+  const now = Date.now();
+  for (const [k, v] of hits) if (now > v.reset) hits.delete(k);
+  for (const [k, v] of loginFails) if (now > v.reset && now > (v.lockedUntil || 0)) loginFails.delete(k);
+}, 5 * 60 * 1000).unref();
+
+/* ---------- 响应安全头 ---------- */
+const SEC_HEADERS = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'SAMEORIGIN',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Content-Security-Policy': "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; font-src 'self' data:; frame-ancestors 'self'"
+};
 function sendJson(res, status, obj) {
   const body = JSON.stringify(obj);
-  const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
+  const headers = Object.assign({ 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }, SEC_HEADERS);
   const accept = (res.req && res.req.headers && res.req.headers['accept-encoding']) || '';
   if (body.length > 512 && /gzip/i.test(accept)) {
     headers['Content-Encoding'] = 'gzip';
@@ -54,12 +92,16 @@ function sendJson(res, status, obj) {
 /** 后台任务：AI 生成在服务器后台继续，客户端可随时轮询结果 */
 const jobs = new Map();
 function runJob(fn) {
+  if (jobs.size >= MAX_JOBS) throw new Error('系统繁忙，请稍后再试');
   const id = 'j' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
   jobs.set(id, { status: 'running', createdAt: Date.now() });
+  const expire = () => { jobs.delete(id); };
   Promise.resolve()
     .then(fn)
-    .then((result) => { const j = jobs.get(id); if (j) { j.status = 'done'; j.result = result; } })
-    .catch((e) => { const j = jobs.get(id); if (j) { j.status = 'error'; j.error = String((e && e.message) || e); } });
+    .then((result) => { const j = jobs.get(id); if (j) { j.status = 'done'; j.result = result; setTimeout(expire, JOB_TTL); } })
+    .catch((e) => { const j = jobs.get(id); if (j) { j.status = 'error'; j.error = String((e && e.message) || e); setTimeout(expire, JOB_TTL); } });
+  // 兜底：卡死的 running 任务也按时清理
+  setTimeout(() => { const j = jobs.get(id); if (j && j.status === 'running') jobs.delete(id); }, JOB_TTL * 4).unref();
   return id;
 }
 function readBody(req) {
@@ -130,9 +172,15 @@ async function handleApi(req, res, pathname) {
   if (pathname === '/api/auth' && req.method === 'POST') {
     let body;
     try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
+    const g = loginAllowed(req);
+    if (!g.allowed) return sendJson(res, 429, { error: '尝试过于频繁，请 1 分钟后再试' });
     if (auth.verifyPasscode(body.passcode)) {
+      g.rec.n = 0; g.rec.lockedUntil = 0; loginFails.set(clientIp(req), g.rec);
       return sendJson(res, 200, { ok: true, token: auth.signToken() });
     }
+    g.rec.n++;
+    if (g.rec.n >= LOGIN.max) { g.rec.lockedUntil = Date.now() + LOGIN.lockMs; g.rec.n = 0; }
+    loginFails.set(clientIp(req), g.rec);
     return sendJson(res, 401, { error: '口令错误' });
   }
 
@@ -181,6 +229,7 @@ async function handleApi(req, res, pathname) {
 
   // POST /api/recommend —— AI/规则 出行打包清单
   if (pathname === '/api/recommend' && req.method === 'POST') {
+    if (!allowAi(req)) return sendJson(res, 429, { error: '请求过于频繁，请稍后再试' });
     let body;
     try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
     const dest = destinations.find((d) => d.id === body.destinationId)
@@ -210,6 +259,7 @@ async function handleApi(req, res, pathname) {
 
   // POST /api/ai-guide —— AI 生成目的地攻略
   if (pathname === '/api/ai-guide' && req.method === 'POST') {
+    if (!allowAi(req)) return sendJson(res, 429, { error: '请求过于频繁，请稍后再试' });
     let body;
     try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
     const dest = destinations.find((d) => d.id === body.destinationId);
@@ -221,6 +271,7 @@ async function handleApi(req, res, pathname) {
 
   // POST /api/plan —— AI 主理人：生成逐日详细行程规划
   if (pathname === '/api/plan' && req.method === 'POST') {
+    if (!allowAi(req)) return sendJson(res, 429, { error: '请求过于频繁，请稍后再试' });
     let body;
     try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
     const customName = String((body.customDest || {}).name || '').trim();
@@ -330,6 +381,7 @@ async function handleApi(req, res, pathname) {
 
   // POST /api/chat —— AI 主理人问答
   if (pathname === '/api/chat' && req.method === 'POST') {
+    if (!allowAi(req)) return sendJson(res, 429, { error: '请求过于频繁，请稍后再试' });
     let body;
     try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
     const message = String(body.message || '').trim();
@@ -362,16 +414,7 @@ async function handleApi(req, res, pathname) {
 
   // GET /api/health —— 含 AI Key 来源状态（不返回 Key 本身）
   if (pathname === '/api/health') {
-    const s = ai.getSettings({});
-    return sendJson(res, 200, {
-      ok: true,
-      name: '家游汇',
-      hasAiKey: ai.hasServerKey(),
-      hasServerKey: ai.hasServerKey(),
-      keySource: s.keySource,
-      model: s.keySource !== 'none' ? s.model : '',
-      time: new Date().toISOString()
-    });
+    return sendJson(res, 200, { ok: true, name: '家游汇', hasServerKey: ai.hasServerKey(), time: new Date().toISOString() });
   }
 
 
@@ -403,10 +446,10 @@ function serveStatic(req, res, pathname) {
         gz = { mtime: st.mtimeMs, data: zlib.gzipSync(fs.readFileSync(filePath)) };
         gzipCache.set(filePath, gz);
       }
-      res.writeHead(200, { 'Content-Type': mime, 'Cache-Control': cacheCtrl, 'Content-Encoding': 'gzip', 'Vary': 'Accept-Encoding' });
+      res.writeHead(200, Object.assign({ 'Content-Type': mime, 'Cache-Control': cacheCtrl, 'Content-Encoding': 'gzip', 'Vary': 'Accept-Encoding' }, SEC_HEADERS));
       return res.end(gz.data);
     }
-    res.writeHead(200, { 'Content-Type': mime, 'Cache-Control': cacheCtrl });
+    res.writeHead(200, Object.assign({ 'Content-Type': mime, 'Cache-Control': cacheCtrl }, SEC_HEADERS));
     fs.createReadStream(filePath).pipe(res);
   });
 }

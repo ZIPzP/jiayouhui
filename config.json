@@ -7,7 +7,7 @@
                "temperature":  0.7
            },
     "access":  {
-                   "enabled":  false,
+                   "enabled":  true,
                    "passcode":  "",
                    "tokenTtlDays":  30
                },
