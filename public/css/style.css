@@ -1241,3 +1241,7 @@ body.draw-page .footer .footer-slogan { display: block; color: #E2E8F0; font-siz
 @keyframes emojiGlow { 0%, 100% { filter: none; } 50% { filter: drop-shadow(0 0 5px rgba(255,255,255,.9)) drop-shadow(0 0 2px rgba(13,148,136,.55)); } }
 html.elderly .tt-emoji { animation: none; }
 @media (prefers-reduced-motion: reduce) { .tt-emoji { animation: none; } }
+
+/* 首页深色页脚（手机端也一致，不再只限电脑端）——深色波浪上方配白色页脚会缺一块 */
+.home-page .footer { background: #1E293B; color: #94A3B8; border-top: none; }
+.home-page .footer .footer-slogan { display: block; color: #E2E8F0; font-size: 15px; font-weight: 600; margin-bottom: 8px; }
