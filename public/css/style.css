@@ -1245,3 +1245,27 @@ html.elderly .tt-emoji { animation: none; }
 /* 首页深色页脚（手机端也一致，不再只限电脑端）——深色波浪上方配白色页脚会缺一块 */
 .home-page .footer { background: #1E293B; color: #94A3B8; border-top: none; }
 .home-page .footer .footer-slogan { display: block; color: #E2E8F0; font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+
+/* ===== 手机端性能与滚动体验修复 ===== */
+/* 1) 手机端关闭重动画背景（极光/光斑/粒子=持续重绘导致卡顿），桌面端保留 */
+@media (max-width: 900px) { .bg-fx { display: none !important; } }
+/* 2) 滚动入场只淡入：去掉上移+模糊（底部内容不再位移/双重闪动，杜绝到底回弹） */
+html.js [data-reveal] { transform: none !important; filter: none !important; }
+/* 3) 防橡皮筋回弹（手机端滚到底部自动弹回） */
+html, body { overscroll-behavior: none; }
+
+/* ===== 手机端进一步性能与滚动体验修复 ===== */
+/* 4) 关掉每帧重绘/重排的动画：全屏背景流动 / 按钮流光(动画 left 触发重排) / 文字渐变流动 / emoji 光晕(滤镜) */
+@media (max-width: 900px) {
+  body::before { animation: none !important; }
+  .btn-primary::after, .tt-grad, .tt-emoji { animation: none !important; }
+}
+/* 5) 首页入口卡滚动入场改为直出：避免 cardIn 播完后被 .reveal 隐藏(opacity:0)，滚到底再二次弹出(底部闪动) */
+@media (max-width: 900px) {
+  html.js .reveal { opacity: 1 !important; }
+  html.js .reveal.reveal-in { animation: none !important; }
+}
+/* 6) 手机端关掉 html 平滑滚动：与触控惯性叠加易卡顿/回弹（回顶按钮仍会平滑滚动） */
+@media (max-width: 900px) {
+  html { scroll-behavior: auto !important; }
+}
