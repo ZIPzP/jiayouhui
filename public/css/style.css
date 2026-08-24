@@ -1269,3 +1269,76 @@ html, body { overscroll-behavior: none; }
 @media (max-width: 900px) {
   html { scroll-behavior: auto !important; }
 }
+
+/* ===== 手机端底部三卡与高级感（版本 al） ===== */
+/* 1) 底部三卡（行程规划/出行清单/平台热度）：完全静止，去掉加载时错峰滑入的 cardIn，不再闪 */
+@media (max-width: 900px) {
+  .home-page .entry-grid > .entry-card { animation: none !important; }
+}
+/* 2) 精选目的地卡片：手机端滚入视口时一次性上浮淡入（只播一次），桌面保持原级联入场 */
+@media (max-width: 900px) {
+  .home-page .dest-grid > .dest-card {
+    animation: none !important;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity .5s ease, transform .5s cubic-bezier(.22, .61, .36, 1);
+  }
+  .home-page .dest-grid > .dest-card.m-in { opacity: 1; transform: none; }
+  .home-page .dest-grid > .dest-card:nth-child(1) { transition-delay: 0s; }
+  .home-page .dest-grid > .dest-card:nth-child(2) { transition-delay: .06s; }
+  .home-page .dest-grid > .dest-card:nth-child(3) { transition-delay: .12s; }
+  .home-page .dest-grid > .dest-card:nth-child(4) { transition-delay: .18s; }
+  .home-page .dest-grid > .dest-card:nth-child(5) { transition-delay: .24s; }
+  .home-page .dest-grid > .dest-card:nth-child(6) { transition-delay: .30s; }
+}
+/* 3) 区块标题下方加一条青绿→橙渐变细线（极慢流光，成本低） */
+@media (max-width: 900px) {
+  .home-page .section-head h2 {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 12px;
+  }
+  .home-page .section-head h2::after {
+    content: '';
+    position: absolute;
+    left: 50%; bottom: 0;
+    transform: translateX(-50%);
+    width: 56px; height: 4px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #0D9488, #F97316, #0D9488);
+    background-size: 200% auto;
+    animation: gradLine 5s linear infinite;
+  }
+}
+@keyframes gradLine { to { background-position: 200% center; } }
+/* 4) 手机端点卡片轻微下沉反馈 */
+@media (max-width: 900px) {
+  .home-page .dest-card:active, .home-page .entry-card:active { transform: scale(.97); }
+}
+/* 5) 回到顶部按钮：呼吸光晕 */
+@media (max-width: 900px) {
+  .to-top { animation: toTopGlow 3s ease-in-out infinite; }
+}
+@keyframes toTopGlow {
+  0%, 100% { box-shadow: 0 8px 22px rgba(15,118,110,.32), 0 0 0 0 rgba(13,148,136,.35); }
+  50% { box-shadow: 0 8px 22px rgba(15,118,110,.32), 0 0 0 7px rgba(13,148,136,0); }
+}
+/* 6) 手机端 Hero 标题后方极淡青绿光晕（8s 慢呼吸） */
+@media (max-width: 900px) {
+  .home-page #hero .hero-content::before {
+    content: '';
+    position: absolute;
+    top: 12%; left: 50%;
+    width: min(70vw, 320px); height: min(70vw, 320px);
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(13,148,136,.20), rgba(249,115,22,.07) 55%, transparent 70%);
+    animation: heroBreath 8s ease-in-out infinite;
+    z-index: -1;
+    pointer-events: none;
+  }
+}
+@keyframes heroBreath {
+  0%, 100% { opacity: .6; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.06); }
+}

@@ -179,7 +179,24 @@
       const cover = card && card.querySelector('.dest-cover');
       if (cover && d.cover) { const probe = new Image(); probe.onload = () => app.setBg(cover, d.cover); probe.src = d.cover; }
     });
-    // 首页精选与目的地页一致：走级联 cardIn 入场（不再单独挂滚动入场）
+    // 首页精选与目的地页一致：桌面走级联 cardIn 入场；手机端改为滚入视口一次性上浮淡入
+    bindMobileDestReveal(grid);
+  }
+  /* 手机端：精选目的地卡片滚入视口时一次性上浮淡入（只播一次；桌面保持 cardIn 级联，不受影响） */
+  function bindMobileDestReveal(grid) {
+    if (window.innerWidth > 900 || !grid) return;
+    if (!('IntersectionObserver' in window)) {
+      grid.querySelectorAll('.dest-card').forEach((el) => el.classList.add('m-in'));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (!en.isIntersecting) return;
+        en.target.classList.add('m-in');
+        io.unobserve(en.target);
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -20px 0px' });
+    grid.querySelectorAll('.dest-card').forEach((el) => io.observe(el));
   }
   function bindQuick() {
     const btn = document.getElementById('hf-submit');
