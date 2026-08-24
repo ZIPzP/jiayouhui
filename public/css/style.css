@@ -525,14 +525,14 @@ html.elderly .ai-feedback { padding: 22px 24px; font-size: 1.05rem; }
 .nav-toggle { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: none; border-radius: 10px; background: transparent; color: var(--ink); font-size: 1.5rem; cursor: pointer; line-height: 1; flex: none; }
 .nav-toggle:hover { background: var(--primary-light); }
 .nav-actions { margin-left: auto; }
-.nav-drawer { position: fixed; top: 0; left: 0; bottom: 0; width: min(290px, 82vw); background: #fff; z-index: 90; box-shadow: var(--shadow-lg); padding: 0 0 20px; transform: translateX(-105%); transition: transform .25s ease; overflow-y: auto; }
+.nav-drawer { position: fixed; top: 0; left: 0; bottom: 0; width: min(290px, 82vw); background: #fff; z-index: 90; box-shadow: var(--shadow-lg); padding: 0 0 20px; transform: translateX(-105%); transition: transform .38s cubic-bezier(.22,.61,.36,1); overflow-y: auto; }
 .nav-drawer.open { transform: translateX(0); }
 .nav-drawer-head { padding: 20px 20px 14px; font-size: 1.2rem; font-weight: 800; color: var(--primary); border-bottom: 1px solid var(--line); margin-bottom: 10px; }
 .nav-drawer .nav-links { display: flex; flex-direction: column; gap: 4px; }
 .nav-drawer .nav-links a { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-radius: 12px; color: var(--ink-soft); font-weight: 600; font-size: 1.05rem; }
 .nav-drawer .nav-links a:hover { background: var(--primary-light); color: var(--primary-dark); }
 .nav-drawer .nav-links a.active { background: var(--primary-light); color: var(--primary-dark); font-weight: 800; }
-.nav-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 85; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+.nav-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 85; opacity: 0; pointer-events: none; transition: opacity .3s ease; }
 .nav-backdrop.show { opacity: 1; pointer-events: auto; }
 html.elderly .nav-toggle { width: 52px; height: 52px; font-size: 1.7rem; }
 html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; }
@@ -1007,15 +1007,15 @@ html.js [data-reveal].in { opacity: 1; transform: none; filter: none; }
 @keyframes modalIn { from { opacity: 0; transform: scale(.92) translateY(16px); } to { opacity: 1; transform: none; } }
 
 /* 5. 导航抽屉链接错峰滑入 */
-.nav-drawer.open .nav-links a { opacity: 0; animation: drawerLinkIn .38s cubic-bezier(.22,.61,.36,1) forwards; }
-.nav-drawer.open .nav-links a:nth-child(1) { animation-delay: .04s; }
-.nav-drawer.open .nav-links a:nth-child(2) { animation-delay: .08s; }
-.nav-drawer.open .nav-links a:nth-child(3) { animation-delay: .12s; }
-.nav-drawer.open .nav-links a:nth-child(4) { animation-delay: .16s; }
-.nav-drawer.open .nav-links a:nth-child(5) { animation-delay: .20s; }
-.nav-drawer.open .nav-links a:nth-child(6) { animation-delay: .24s; }
-.nav-drawer.open .nav-links a:nth-child(7) { animation-delay: .28s; }
-.nav-drawer.open .nav-links a:nth-child(8) { animation-delay: .32s; }
+.nav-drawer.open .nav-links a { opacity: 0; animation: drawerLinkIn .55s cubic-bezier(.22,.61,.36,1) forwards; }
+.nav-drawer.open .nav-links a:nth-child(1) { animation-delay: .07s; }
+.nav-drawer.open .nav-links a:nth-child(2) { animation-delay: .14s; }
+.nav-drawer.open .nav-links a:nth-child(3) { animation-delay: .21s; }
+.nav-drawer.open .nav-links a:nth-child(4) { animation-delay: .28s; }
+.nav-drawer.open .nav-links a:nth-child(5) { animation-delay: .35s; }
+.nav-drawer.open .nav-links a:nth-child(6) { animation-delay: .42s; }
+.nav-drawer.open .nav-links a:nth-child(7) { animation-delay: .49s; }
+.nav-drawer.open .nav-links a:nth-child(8) { animation-delay: .56s; }
 @keyframes drawerLinkIn { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: none; } }
 
 /* 6. Toast 滑入 */
