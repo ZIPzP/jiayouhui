@@ -12,7 +12,8 @@
     elderly: localStorage.getItem('jyh_elderly') === '1',
     ai: JSON.parse(localStorage.getItem('jyh_ai') || '{}'),
     serverKey: false,
-    accessEnabled: false
+    accessEnabled: false,
+    aiUnlocked: false
   };
 
   /* ---------------- 工具 ---------------- */
@@ -139,25 +140,42 @@
   function updateAiModal() {
     const st = $('#aiServerStatus');
     const keyGroup = $('#aiKeyGroup');
-    if (state.serverKey) {
-      if (st) st.hidden = false;
+    const invGroup = $('#aiInviteGroup');
+    const invStatus = $('#aiInviteStatus');
+    const offBtn = $('#ai-unlock-off');
+    if (state.aiUnlocked) {
+      if (st) { st.hidden = false; st.textContent = '✅ 已解锁服务端 AI（使用我的 Key，仅服务器持有）'; }
       if (keyGroup) keyGroup.hidden = true;
+      if (invGroup) invGroup.hidden = true;
+      if (invStatus) invStatus.hidden = true;
+      if (offBtn) offBtn.hidden = false;
+    } else if (state.serverKey) {
+      if (st) { st.hidden = false; st.textContent = '🔒 服务端 AI 已就绪：输入邀请码解锁后用我的 Key；不输则用下方自带 Key'; }
+      if (keyGroup) keyGroup.hidden = false;
+      if (invGroup) invGroup.hidden = false;
+      if (invStatus) invStatus.hidden = true;
+      if (offBtn) offBtn.hidden = true;
     } else {
       if (st) st.hidden = true;
       if (keyGroup) keyGroup.hidden = false;
+      if (invGroup) invGroup.hidden = true;
+      if (invStatus) invStatus.hidden = true;
+      if (offBtn) offBtn.hidden = true;
     }
   }
   function updateAiHints() {
     const m = $('#aiModeHint');
-    if (m) m.textContent = state.serverKey ? '🔒 服务端已内置 Key（仅服务器持有，浏览器不保存）· ' + (state.ai.model || '默认模型')
+    if (m) m.textContent = state.aiUnlocked ? '🔒 已解锁服务端 AI（使用我的 Key）· ' + (state.ai.model || '默认模型')
+      : (state.serverKey ? '🔑 服务端 AI 需邀请码解锁；也可用下方自带 Key'
       : (state.ai.apiKey ? '🐱 当前使用浏览器本地 Key：' + (state.ai.model || '默认')
-      : '📋 演示模式（内置规则引擎）。配置 DeepSeek Key 后启用大模型。');
+      : '📋 演示模式（内置规则引擎）。配置 DeepSeek Key 后启用大模型。'));
     const ph = $('#planAiHint');
-    if (ph) ph.textContent = state.serverKey ? '🔒 AI 主理人已接入（服务端内置 Key，仅服务器持有）'
+    if (ph) ph.textContent = state.aiUnlocked ? '🔒 AI 主理人已接入（服务端 Key，仅服务器持有）'
+      : (state.serverKey ? '🔑 输入邀请码解锁服务端 AI，或填自带 Key'
       : (state.ai.apiKey ? '🐱 AI 主理人已接入（浏览器本地 Key：' + (state.ai.model || '已配置') + '）'
-      : '📋 演示模式：未配置 AI Key，将使用内置规划引擎（点右上角 ⚙️ AI 设置 接入 DeepSeek）');
+      : '📋 演示模式：未配置 AI Key，将使用内置规划引擎（点右上角 ⚙️ AI 设置 接入 DeepSeek）'));
     const ct = $('#chatModeTag');
-    if (ct) ct.textContent = state.serverKey ? '🔒 AI 模式' : (state.ai.apiKey ? 'AI 模式 · ' + (state.ai.model || '') : '演示模式');
+    if (ct) ct.textContent = state.aiUnlocked ? '🔒 AI 模式' : (state.ai.apiKey ? 'AI 模式 · ' + (state.ai.model || '') : '演示模式');
   }
 
   async function refreshAiStatus() {
@@ -171,10 +189,18 @@
     updateAiModal();
   }
 
-  function openAiModal() {
+  async function openAiModal() {
     $('#ai-key').value = state.ai.apiKey || '';
     $('#ai-base').value = state.ai.baseUrl || '';
     $('#ai-model').value = state.ai.model || '';
+    const iv = $('#ai-invite'); if (iv) iv.value = '';
+    // 检查当前解锁状态（服务端是否配了邀请码、本地令牌是否仍有效）
+    if (state.serverKey) {
+      try {
+        const r = await api('/api/ai/status', { headers: { 'x-ai-token': state.ai.aiToken || '' } });
+        state.aiUnlocked = !!r.unlocked;
+      } catch (e) { state.aiUnlocked = false; }
+    } else { state.aiUnlocked = false; }
     $('#aiModal').hidden = false;
     document.body.style.overflow = 'hidden';
     updateAiModal();
@@ -187,7 +213,8 @@
     state.ai = {
       apiKey: $('#ai-key').value.trim(),
       baseUrl: $('#ai-base').value.trim(),
-      model: $('#ai-model').value.trim()
+      model: $('#ai-model').value.trim(),
+      aiToken: state.ai.aiToken || ''
     };
     localStorage.setItem('jyh_ai', JSON.stringify(state.ai));
     updateAiHints();
@@ -217,6 +244,32 @@
     if (ac) ac.addEventListener('click', closeAiModal);
     const save = $('#ai-save');
     if (save) save.addEventListener('click', saveAi);
+    const ib = $('#ai-invite-btn');
+    if (ib) ib.addEventListener('click', async () => {
+      const code = $('#ai-invite').value.trim();
+      const st = $('#aiInviteStatus');
+      if (!code) { app.toast('请输入邀请码'); return; }
+      ib.disabled = true;
+      try {
+        const r = await api('/api/ai/invite', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) });
+        state.ai.aiToken = r.aiToken;
+        localStorage.setItem('jyh_ai', JSON.stringify(state.ai));
+        state.aiUnlocked = true;
+        if (st) { st.hidden = true; st.textContent = ''; }
+        updateAiModal(); updateAiHints();
+        toast('✅ 已解锁服务端 AI，正在使用我的 Key');
+      } catch (e) {
+        if (st) { st.textContent = (e && e.message) || '邀请码错误'; st.hidden = false; }
+      } finally { ib.disabled = false; }
+    });
+    const uo = $('#ai-unlock-off');
+    if (uo) uo.addEventListener('click', () => {
+      state.ai.aiToken = '';
+      localStorage.setItem('jyh_ai', JSON.stringify(state.ai));
+      state.aiUnlocked = false;
+      updateAiModal(); updateAiHints();
+      toast('已退出解锁，改用自带 Key');
+    });
     // 设置菜单
     const closeMenu = () => { const m = $('#settingsMenu'); if (m) m.hidden = true; };
     const sb = $('#settingsBtn');
@@ -277,7 +330,14 @@
             <button class="chip" data-provider="qwen" type="button">通义千问</button>
             <button class="chip" data-provider="moonshot" type="button">Moonshot</button>
           </div>
-          <div id="aiServerStatus" class="ai-server-status" hidden>🔒 服务端已内置 Key（仅服务器持有，浏览器不保存）</div>
+          <div id="aiServerStatus" class="ai-server-status" hidden></div>
+          <div class="form-group" id="aiInviteGroup" hidden>
+            <label class="form-label" for="ai-invite">🔑 邀请码（解锁服务端 AI，用我的 Key）</label>
+            <input id="ai-invite" type="password" class="input" placeholder="输入邀请码" autocomplete="off" />
+            <button id="ai-invite-btn" class="btn btn-primary" type="button" style="margin-top:8px;width:100%">🔓 解锁服务端 AI</button>
+          </div>
+          <div id="aiInviteStatus" class="ai-server-status form-hint" hidden></div>
+          <button id="ai-unlock-off" class="btn btn-ghost" type="button" hidden style="margin:4px 0 10px;width:100%">退出解锁（改用自带 Key）</button>
           <div class="form-group" id="aiKeyGroup">
             <label class="form-label" for="ai-key">API Key</label>
             <input id="ai-key" type="password" class="input" placeholder="sk-..." autocomplete="off" />

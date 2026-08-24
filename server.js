@@ -195,7 +195,21 @@ async function handleApi(req, res, pathname) {
     return sendJson(res, 401, { error: '口令错误' });
   }
 
-  // GET /api/destinations —— 列表（不含超大字段）
+  // POST /api/ai/invite —— 邀请码解锁服务端 AI（换短时效令牌；服务端 Key 永不下发）
+  if (pathname === '/api/ai/invite' && req.method === 'POST') {
+    if (!allowAi(req)) return sendJson(res, 429, { error: '请求过于频繁，请稍后再试' });
+    let body;
+    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
+    if (ai.verifyInvite(body && body.code)) {
+      return sendJson(res, 200, { ok: true, aiToken: ai.signAiToken() });
+    }
+    return sendJson(res, 401, { error: '邀请码错误' });
+  }
+  // GET /api/ai/status —— 查询是否配置了邀请码、当前令牌是否有效
+  if (pathname === '/api/ai/status' && req.method === 'GET') {
+    return sendJson(res, 200, { hasInvite: ai.hasInvite(), unlocked: ai.verifyAiToken(String(req.headers['x-ai-token'] || '')) });
+  }
+    // GET /api/destinations —— 列表（不含超大字段）
   if (pathname === '/api/destinations' && req.method === 'GET') {
     const list = applyImageBase(destinations.map(({ gallery, highlights, description, ...rest }) => ({
       ...rest,
@@ -263,7 +277,7 @@ async function handleApi(req, res, pathname) {
       mode: String(body.mode || '简略').trim(),
       notes: String(body.notes || '').trim(),
     };
-    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model };
+    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '' };
     const jobId = runJob(() => rec.recommend(params, overrides));
     return sendJson(res, 200, { jobId, status: 'running' });
   }
@@ -275,7 +289,7 @@ async function handleApi(req, res, pathname) {
     try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
     const dest = destinations.find((d) => d.id === body.destinationId);
     if (!dest) return sendJson(res, 400, { error: '请选择目的地 destinationId' });
-    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model };
+    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '' };
     const result = await rec.aiGuide(dest, overrides);
     return sendJson(res, 200, result);
   }
@@ -340,7 +354,7 @@ async function handleApi(req, res, pathname) {
       interests: Array.isArray(body.interests) ? body.interests : [],
       notes: String(body.notes || '').trim(),
     };
-    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model };
+    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '' };
     const jobId = runJob(async () => {
       // 高铁/火车：从 12306 拉取当天真实车次，供 AI 直接采用
       const tr = String(params.transport || '');
@@ -397,7 +411,7 @@ async function handleApi(req, res, pathname) {
     try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
     const message = String(body.message || '').trim();
     if (!message) return sendJson(res, 400, { error: '请输入问题' });
-    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model };
+    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '' };
     const result = await planner.chatReply(message, Array.isArray(body.history) ? body.history : [], overrides);
     return sendJson(res, 200, result);
   }
@@ -426,7 +440,7 @@ async function handleApi(req, res, pathname) {
   // GET /api/health —— 含 AI Key 来源状态（不返回 Key 本身）
   if (pathname === '/api/health') {
     const authed = !auth.accessConfig().enabled || auth.verifyToken(auth.extractBearer(req));
-    return sendJson(res, 200, Object.assign({ ok: true, time: new Date().toISOString() }, authed ? { hasServerKey: ai.hasServerKey() } : {}));
+    return sendJson(res, 200, Object.assign({ ok: true, time: new Date().toISOString() }, authed ? { hasServerKey: ai.hasServerKey() && ai.hasInvite() } : {}));
   }
 
 
