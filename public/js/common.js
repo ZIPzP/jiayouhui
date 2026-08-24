@@ -190,9 +190,11 @@
   }
 
   async function openAiModal() {
-    $('#ai-key').value = state.ai.apiKey || '';
+    $('#ai-key').value = '';
     $('#ai-base').value = state.ai.baseUrl || '';
     $('#ai-model').value = state.ai.model || '';
+    const kh = $('#aiKeyHint');
+    if (kh) kh.textContent = state.ai.apiKey ? '✅ 已保存 Key（留空保持现有，填写新 Key 可更换）' : '';
     const iv = $('#ai-invite'); if (iv) iv.value = '';
     // 检查当前解锁状态（服务端是否配了邀请码、本地令牌是否仍有效）
     if (state.serverKey) {
@@ -218,8 +220,11 @@
     };
     localStorage.setItem('jyh_ai', JSON.stringify(state.ai));
     updateAiHints();
+    const kh2 = $('#aiKeyHint');
+    if (kh2) kh2.textContent = state.ai.apiKey ? '✅ 已保存 Key（留空保持现有，填写新 Key 可更换）' : '';
+    $('#ai-key').value = '';
     closeAiModal();
-    toast(state.ai.apiKey ? '🐱 AI 设置已保存，开始使用大模型' : '已切换为演示模式（内置规则引擎）');
+    toast(state.ai.apiKey ? '✅ AI 设置已保存，开始使用大模型' : '已切换为演示模式（内置规则引擎）');
   }
 
   function openMobilePreview() {
@@ -341,6 +346,7 @@
           <div class="form-group" id="aiKeyGroup">
             <label class="form-label" for="ai-key">API Key</label>
             <input id="ai-key" type="password" class="input" placeholder="sk-..." autocomplete="off" />
+            <p id="aiKeyHint" class="form-hint" style="color:var(--primary-dark)"></p>
           </div>
           <div style="height:10px"></div>
           <div class="form-group">
