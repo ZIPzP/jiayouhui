@@ -168,7 +168,7 @@
   function migrateLastPlan() {
     try {
       if (loadHistory().length) return;
-      const p = JSON.parse(sessionStorage.getItem('jyh_last_plan') || 'null');
+      const p = loadLast();
       if (!p || !p.vals) return;
       const v = p.vals;
       const dest = v.destinationId === 'custom' ? (v.customDest && v.customDest.name) || '' : ((app.state.destinations.find((x) => x.id === v.destinationId) || {}).name || '');
@@ -221,8 +221,24 @@
   }
 
 
+  const LAST_KEY = 'jyh_last_plan';
+  /* 保存「上次生成」：localStorage 持久（关掉浏览器也还在）+ sessionStorage 兼容旧数据 */
+  function saveLast(data) {
+    const payload = JSON.stringify(Object.assign({ ts: Date.now() }, data));
+    try { localStorage.setItem(LAST_KEY, payload); } catch (e) { /* 忽略 */ }
+    try { sessionStorage.setItem(LAST_KEY, payload); } catch (e) { /* 忽略 */ }
+  }
+  /* 读取「上次生成」：两个存储都看，取时间较新的那条
+     （修复：以前写入用 sessionStorage、读取用 localStorage，导致刷新后显示很久以前的旧方案） */
+  function loadLast() {
+    const pick = (s) => { try { return JSON.parse(s || 'null'); } catch (e) { return null; } };
+    const a = pick(localStorage.getItem(LAST_KEY));
+    const b = pick(sessionStorage.getItem(LAST_KEY));
+    if (a && b) return (a.ts || 0) >= (b.ts || 0) ? a : b;
+    return a || b;
+  }
   function savePlan(vals, result) {
-    sessionStorage.setItem('jyh_last_plan', JSON.stringify({ vals, result, ts: Date.now() }));
+    saveLast({ vals, result });
   }
   async function generatePlan() {
     const empty = document.getElementById('planEmpty');
@@ -251,7 +267,7 @@
     bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>AI 主理人正在后台生成行程…<br/>你可以放心切到别的页面/标签页，回来会自动恢复显示结果</p>';
     try {
       const st = await app.api('/api/plan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({}, vals, app.state.ai)) });
-      sessionStorage.setItem('jyh_last_plan', JSON.stringify({ jobId: st.jobId, vals, result: null, ts: Date.now() }));
+      saveLast({ jobId: st.jobId, vals, result: null });
       app.pollJob(st.jobId, {
         onDone: (result) => { renderPlan(bodyEl, result, vals); savePlan(vals, result); },
         onError: (msg) => { bodyEl.innerHTML = `<div class="ai-feedback">🐱 AI 主理人：${app.esc(msg)}</div>`; }
@@ -267,7 +283,7 @@
     const empty = document.getElementById('planEmpty');
     if (!bodyEl) return;
     try {
-      const p = JSON.parse(localStorage.getItem('jyh_last_plan') || 'null');
+      const p = loadLast();
       if (!p) return;
       if (p.result) {
         empty.hidden = true; bodyEl.hidden = false;
