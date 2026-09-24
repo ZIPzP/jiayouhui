@@ -164,14 +164,16 @@
     saveHistory(arr);
   }
   function histLabel(d) {
+    const en = !!(window.i18n && window.i18n.lang === 'en');
+    const tr = (s) => (en && window.i18n ? window.i18n.t(s) : s);
     const dt = d.ts ? new Date(d.ts) : null;
     const when = dt ? (dt.getMonth() + 1) + '-' + dt.getDate() + ' ' + ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2) : '';
-    const dest = d.dest || '目的地';
-    const from = d.origin || '未知';
+    const dest = tr(d.dest || (en ? 'Destination' : '目的地'));
+    const from = tr(d.origin || (en ? 'Unknown' : '未知'));
     const days = d.days || '?';
-    const ret = d.returnDest ? ('·返' + d.returnDest) : '';
-    const note = d.notes ? ('·' + d.notes) : '';
-    return (when ? when + ' ' : '') + from + '→' + dest + ' ' + days + '天' + ret + note;
+    const ret = d.returnDest ? (en ? ' · via ' + tr(d.returnDest) : '·返' + d.returnDest) : '';
+    const note = d.notes ? (' · ' + d.notes) : '';
+    return (when ? when + ' ' : '') + from + ' → ' + dest + ' ' + days + (en ? ' days' : '天') + ret + note;
   }
   /* 把历史功能上线前的最后一条生成补进历史（一次性迁移） */
   function migrateLastPlan() {
