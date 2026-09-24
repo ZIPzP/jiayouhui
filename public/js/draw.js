@@ -1,6 +1,10 @@
 (() => {
   'use strict';
   const state = { currentId: null, idleTimer: null };
+  /* 语言助手（模块级，step 与 showResult 共用） */
+  const uiEn = () => !!(window.i18n && window.i18n.lang === 'en');
+  const tr = (s) => (uiEn() && window.i18n ? window.i18n.t(s) : s);
+  const daysTxt = (s) => (uiEn() ? String(s || '').replace(/(\d+)\s*-\s*(\d+)\s*天/, '$1–$2 days').replace(/(\d+)\s*天/, '$1 days') : s);
 
   window.pageInit = async function () {
     bindDraw();
@@ -120,11 +124,11 @@
             emojiEl.textContent = '🎉';
             emojiEl.classList.remove('hit-bounce'); void emojiEl.offsetWidth; emojiEl.classList.add('hit-bounce');
           }
-          if (nameEl) nameEl.textContent = tr(d.name) + (en ? '!' : '！');
+          if (nameEl) nameEl.textContent = tr(d.name) + (uiEn() ? '!' : '！');
           burstParticles(screen, emojiEl);
           running = false;
           btn.disabled = false;
-          btn.textContent = '🎲 再抽一次';
+          btn.textContent = uiEn() ? '🎲 Draw again' : '🎲 再抽一次';
           showResult(picked);
           saveDraw(picked);
           renderRecent();
@@ -138,24 +142,21 @@
     const modal = document.getElementById('drawModal');
     const body = document.getElementById('drawResultBody');
     if (!modal || !body) return;
-    const en = !!(window.i18n && window.i18n.lang === 'en');
-    const tr = (s) => (en && window.i18n ? window.i18n.t(s) : s);
-    const daysTxt = (s) => (en ? String(s || '').replace(/(\d+)\s*-\s*(\d+)\s*天/, '$1–$2 days').replace(/(\d+)\s*天/, '$1 days') : s);
     const tags = (d.tags || []).slice(0, 4).map((t) => `<span class="badge" style="background:${app.esc(d.accent || '#0f766e')}22;color:${app.esc(d.accent || '#0f766e')}">${app.esc(tr(t))}</span>`).join('');
-    const foods = (d.foods || []).slice(0, 4).map((f) => app.esc(tr(f.name || f))).join(en ? ', ' : '、');
+    const foods = (d.foods || []).slice(0, 4).map((f) => app.esc(tr(f.name || f))).join(uiEn() ? ', ' : '、');
     const hls = (d.highlights || []).slice(0, 3);
     body.innerHTML = `
       <div class="draw-card">
         <div class="draw-card-cover" style="background-color:${app.esc(d.accent || '#0f766e')}">
           <div class="draw-card-emoji">${app.esc(d.emoji || '🏡')}</div>
           <div class="draw-card-name">${app.esc(tr(d.name))}</div>
-          <div class="draw-card-meta">${app.esc(en ? tr(d.province || '') : (d.province || ''))}${d.suggestDays ? ' · ' + app.esc(en ? 'Suggested ' + daysTxt(d.suggestDays) : '建议 ' + d.suggestDays) : ''}${(d.bestSeasons || []).length ? ' · ' + app.esc(en ? 'Best ' + d.bestSeasons.map((x) => tr(x)).join(', ') : '最佳 ' + d.bestSeasons.join('/')) : ''}</div>
+          <div class="draw-card-meta">${app.esc(uiEn() ? tr(d.province || '') : (d.province || ''))}${d.suggestDays ? ' · ' + app.esc(uiEn() ? 'Suggested ' + daysTxt(d.suggestDays) : '建议 ' + d.suggestDays) : ''}${(d.bestSeasons || []).length ? ' · ' + app.esc(uiEn() ? 'Best ' + d.bestSeasons.map((x) => tr(x)).join(', ') : '最佳 ' + d.bestSeasons.join('/')) : ''}</div>
         </div>
         <div class="draw-card-body">
           ${tags ? `<div class="draw-card-tags">${tags}</div>` : ''}
           <p class="draw-card-tagline">${app.esc(d.tagline || '')}</p>
           <p class="draw-card-desc">${app.esc(d.description || '')}</p>
-          ${hls.length ? `<div class="draw-card-sec"><b>✨ 必去亮点</b><ul>${hls.map((h) => `<li>${app.esc(tr(h.title))}${h.text ? (en ? ' — ' : '：') + app.esc(tr(h.text)) : ''}</li>`).join('')}</ul></div>` : ''}
+          ${hls.length ? `<div class="draw-card-sec"><b>✨ 必去亮点</b><ul>${hls.map((h) => `<li>${app.esc(tr(h.title))}${h.text ? (uiEn() ? ' — ' : '：') + app.esc(tr(h.text)) : ''}</li>`).join('')}</ul></div>` : ''}
           ${foods ? `<div class="draw-card-sec"><b>🍜 当地美食</b><p>${foods}</p></div>` : ''}
         </div>
       </div>`;
