@@ -4,6 +4,8 @@
   window.pageInit = async function () {
     bindEvents();
     restoreDraft();
+    renderHistory();
+    bindHistory();
     restorePlan();
   };
 
@@ -194,6 +196,10 @@
     if (!box || !list) return;
     const arr = loadHistory();
     box.hidden = !arr.length;
+    const cnt = document.getElementById('plHistCount');
+    if (cnt) cnt.textContent = arr.length ? String(arr.length) : '';
+    const clr = document.getElementById('plHistClear');
+    if (clr) clr.hidden = !arr.length;
     list.innerHTML = arr.map((d, i) => `
       <div class="hist-item" data-i="${i}" role="button" tabindex="0" title="点击恢复此前的填写">
         <span class="hist-text">${app.esc(histLabel(d))}</span>
@@ -201,6 +207,14 @@
       </div>`).join('') || '';
   }
   function bindHistory() {
+    const tg = document.getElementById('plHistToggle');
+    if (tg) tg.addEventListener('click', () => {
+      const body = document.getElementById('planHistoryList');
+      if (!body) return;
+      const willOpen = body.hidden;
+      body.hidden = !willOpen;
+      tg.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    });
     const clear = document.getElementById('plHistClear');
     if (clear) clear.addEventListener('click', () => { saveHistory([]); renderHistory(); });
     const list = document.getElementById('planHistoryList');
@@ -210,6 +224,7 @@
         const arr = loadHistory();
         arr.splice(Number(del.dataset.del), 1);
         saveHistory(arr);
+        renderHistory();
         return;
       }
       const item = e.target.closest('.hist-item[data-i]');
@@ -263,6 +278,8 @@
       return;
     }
     const vals = planFormValues();
+    saveHistoryEntry(collectDraft()); // 记录这次的问题概要（最多 20 条）
+    renderHistory(); // 立即刷新历史列表（否则要刷新页面才看得到）
     empty.hidden = true; bodyEl.hidden = false;
     bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>AI 主理人正在后台生成行程…<br/>你可以放心切到别的页面/标签页，回来会自动恢复显示结果</p>';
     try {

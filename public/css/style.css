@@ -1342,3 +1342,18 @@ html, body { overscroll-behavior: none; }
   0%, 100% { opacity: .6; transform: translateX(-50%) scale(1); }
   50% { opacity: 1; transform: translateX(-50%) scale(1.06); }
 }
+
+/* 行程规划：历史生成记录（默认折叠，展开后内部滚动，避免手机端把布局撑溢出） */
+.plan-history { margin: 4px 0 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; overflow: hidden; }
+.hist-head { display: flex; align-items: center; gap: 6px; padding: 4px 10px; }
+.hist-toggle { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 8px; background: none; border: 0; font: inherit; color: var(--ink-soft); font-size: .9rem; font-weight: 600; padding: 8px 2px; cursor: pointer; text-align: left; }
+.hist-toggle .hist-caret { transition: transform .2s ease; }
+.hist-toggle[aria-expanded="true"] .hist-caret { transform: rotate(180deg); }
+.hist-clear { background: none; border: 0; color: var(--ink-soft); font-size: .82rem; cursor: pointer; padding: 8px 4px; flex: none; }
+.hist-clear:hover { color: var(--danger); }
+.hist-body { max-height: 220px; overflow-y: auto; padding: 0 8px 8px; }
+.hist-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px; background: #F8FAFC; margin-bottom: 6px; cursor: pointer; }
+.hist-item:hover { background: var(--primary-light); }
+.hist-text { flex: 1; font-size: .84rem; color: var(--ink); line-height: 1.4; word-break: break-word; }
+.hist-del { border: 0; background: none; color: var(--ink-soft); cursor: pointer; font-size: .9rem; padding: 2px 6px; border-radius: 6px; flex: none; }
+.hist-del:hover { color: var(--danger); background: #FEE2E2; }
