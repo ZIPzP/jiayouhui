@@ -56,6 +56,8 @@
     body.addEventListener('click', (e) => {
       if (e.target.closest('[data-print]')) { window.print(); return; }
       if (e.target.closest('[data-save-img]')) { app.saveAsImage('resultBody', '家游汇-出行清单.png'); return; }
+      if (e.target.closest('[data-save-parts]')) { app.saveAsImageParts('resultBody', '家游汇-出行清单.png', 3); return; }
+      if (e.target.closest('[data-save-word]')) { app.saveAsWord('resultBody', '家游汇-出行清单'); return; }
       const r = e.target.closest('[data-read]');
       if (r) { app.speak(r.dataset.read); return; }
     });
@@ -139,6 +141,8 @@
       <div class="result-actions">
         <button class="btn btn-primary" type="button" data-print>🖨️ 打印 / 存为 PDF</button>
         <button class="btn btn-ghost" type="button" data-save-img>📷 保存为图片</button>
+        <button class="btn btn-ghost" type="button" data-save-parts>✂️ 三等分导出</button>
+        <button class="btn btn-ghost" type="button" data-save-word>📝 导出 Word</button>
         <button class="btn btn-ghost read-aloud" type="button" data-read="${app.esc(destName + '出行清单。' + (data.items || []).map(i => i.name + '，' + (i.reason || '')).join('。') + '。' + (data.tips || []).join('。'))}">🔊 朗读清单</button>
       </div>`;
     [...el.querySelectorAll('.ck')].forEach((ck) => {

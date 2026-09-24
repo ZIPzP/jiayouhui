@@ -657,7 +657,26 @@
       else showFormErr(errId, '');
     }, 200));
   }
-  /* ---------- 保存为图片（结果区截图，html2canvas） ---------- */
+  /* ---------- 结果区导出：保存图片 / 三等分导出 / 导出 Word ---------- */
+  // 关键修复：html2canvas 会先克隆 DOM 再渲染，克隆体里的入场动画会重放
+  // （.day-card 的 dayRise 起点是 opacity:0），导致逐日行程被截成一片空白。
+  // 这里在克隆体里统一关掉动画/过渡，并把滚动入场元素强制显示。
+  const CAPTURE_CSS = '*,*::before,*::after{animation:none!important;transition:none!important;}' +
+    'html.js [data-reveal],html.js .reveal{opacity:1!important;transform:none!important;filter:none!important;}';
+  function captureOptions() {
+    return {
+      backgroundColor: '#ffffff',
+      scale: 2,
+      useCORS: true,
+      onclone: (doc) => { const s = doc.createElement('style'); s.textContent = CAPTURE_CSS; doc.head.appendChild(s); }
+    };
+  }
+  function saveBlob(href, filename) {
+    const a = document.createElement('a');
+    a.download = filename;
+    a.href = href;
+    a.click();
+  }
   async function saveAsImage(elId, filename) {
     const el = document.getElementById(elId);
     if (!el) return;
@@ -666,7 +685,7 @@
       const actions = el.querySelector('.result-actions');
       const prev = actions ? actions.style.display : '';
       if (actions) actions.style.display = 'none'; // 截图时先藏按钮
-      const canvas = await window.html2canvas(el, { backgroundColor: '#ffffff', scale: 2, useCORS: true });
+      const canvas = await window.html2canvas(el, captureOptions());
       if (actions) actions.style.display = prev;
       const a = document.createElement('a');
       a.download = filename || '家游汇.png';
@@ -677,8 +696,65 @@
       toast('保存图片失败，请用「打印 / 存为 PDF」');
     }
   }
+  /* 三等分导出：整图只截一次，再按高度均分成 3 张（手机端放大看更清楚） */
+  async function saveAsImageParts(elId, filename, parts) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    if (!window.html2canvas) { toast('当前浏览器暂不支持截图，请用「打印 / 存为 PDF」'); return; }
+    const n = Math.max(2, Number(parts) || 3);
+    const actions = el.querySelector('.result-actions');
+    const prev = actions ? actions.style.display : '';
+    if (actions) actions.style.display = 'none';
+    try {
+      const canvas = await window.html2canvas(el, captureOptions());
+      const sliceH = Math.ceil(canvas.height / n);
+      const base = String(filename || '家游汇.png').replace(/\.png$/i, '');
+      for (let i = 0; i < n; i++) {
+        const top = i * sliceH;
+        const h = Math.min(sliceH, canvas.height - top);
+        if (h <= 0) break;
+        const c = document.createElement('canvas');
+        c.width = canvas.width; c.height = h;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, c.width, c.height);
+        ctx.drawImage(canvas, 0, top, canvas.width, h, 0, 0, canvas.width, h);
+        saveBlob(c.toDataURL('image/png'), base + '-第' + (i + 1) + '部分.png');
+        await new Promise((r) => setTimeout(r, 400)); // 连续多张下载留点间隔
+      }
+      toast('✅ 已导出 ' + n + ' 张图片，按顺序查看即可');
+    } catch (e) {
+      toast('导出失败，请用「打印 / 存为 PDF」');
+    } finally {
+      if (actions) actions.style.display = prev;
+    }
+  }
+  /* 导出 Word：Word / WPS 可直接打开 .doc 的 HTML 文档，无需额外依赖 */
+  function saveAsWord(elId, filename) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    const clone = el.cloneNode(true);
+    const acts = clone.querySelector('.result-actions');
+    if (acts) acts.remove();
+    const css = 'body{font-family:"Microsoft YaHei",sans-serif;font-size:10.5pt;line-height:1.65;color:#1E293B}' +
+      'h3{font-size:15pt;color:#0F766E;margin:0 0 8pt}h4{font-size:11.5pt;color:#0F766E;margin:10pt 0 6pt}' +
+      'p{margin:0 0 6pt}ul{margin:0 0 6pt 16pt}.provider-tag{color:#64748B;font-size:9pt}' +
+      '.day-card,.transport-box,.budget-box,.dietary-box,.tips-box,.weather-box{border:1px solid #E2E8F0;border-radius:6pt;padding:8pt 10pt;margin:0 0 8pt}' +
+      '.day-num{color:#0D9488;font-weight:bold;margin-right:6pt}.day-title{font-weight:bold;color:#0F766E}' +
+      '.schedule-item{margin:0 0 4pt}.schedule-time{color:#64748B;margin-right:6pt}' +
+      '.schedule-activity{font-weight:600}.schedule-detail{color:#64748B;font-size:9.5pt}' +
+      '.meal-pill,.prio,.rt-price{color:#64748B}.total{font-weight:bold;color:#0F766E}';
+    const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">' +
+      '<head><meta charset="utf-8"><style>' + css + '</style></head><body>' + clone.innerHTML + '</body></html>';
+    const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    saveBlob(url, /\.docx?$/i.test(String(filename)) ? filename : String(filename || '家游汇').replace(/\.[a-z]+$/i, '') + '.doc');
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    toast('✅ Word 已导出，可用 Word / WPS 打开');
+  }
+
   window.__jyhImgFallback = imgFallback;
-  window.app = { state, api, esc, toast, speak, $, $$, imgFallback, setBg, updateAiHints, pollJob, normCity, findCityInList, cityAutocomplete, saveAsImage };
+  window.app = { state, api, esc, toast, speak, $, $$, imgFallback, setBg, updateAiHints, pollJob, normCity, findCityInList, cityAutocomplete, saveAsImage, saveAsImageParts, saveAsWord };
   if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = () => {};
 
   document.addEventListener('DOMContentLoaded', init);
