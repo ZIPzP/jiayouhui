@@ -345,6 +345,11 @@ async function handleApi(req, res, pathname) {
       const g = guessCity(origin);
       return sendJson(res, 400, { error: '未找到出发城市「' + origin + '」' + (g ? '，你是不是想输入「' + g + '」？' : '') + ' 请修改后重新生成' });
     }
+    // 拼音/英文输入 → 规范成标准中文城市名（供 12306 查站与提示词使用）
+    if (body.destinationId === 'custom') {
+      const cc = findCity(customName);
+      if (cc && dest && dest.id === 'custom') dest.name = cc.name;
+    }
     if (body.destinationId === 'custom' && !findCity(customName)) {
       const g = guessCity(customName);
       return sendJson(res, 400, { error: '未找到该城市「' + customName + '」' + (g ? '，你是不是想输入「' + g + '」？' : '') + ' 请修改后重新生成' });
@@ -370,8 +375,8 @@ async function handleApi(req, res, pathname) {
     if (endDate < startDate) return sendJson(res, 400, { error: '返程日期不能早于去程日期' });
     const params = {
       destination: dest,
-      origin,
-      returnDest,
+      origin: (findCity(origin) || {}).name || origin,
+      returnDest: returnDest ? ((findCity(returnDest) || {}).name || returnDest) : '',
       startDate: body.startDate || '',
       endDate: body.endDate || '',
       days: Number(body.days) || 3,
@@ -395,10 +400,12 @@ async function handleApi(req, res, pathname) {
         const ret = params.returnDest || params.origin;
         const od = await train.queryTrainsWithPrices(params.origin, params.destination.name, String(params.startDate || '').slice(0, 10), 100000);
         const id2 = await train.queryTrainsWithPrices(params.destination.name, ret, String(params.endDate || '').slice(0, 10), 100000);
+        const en = overrides.lang === 'en';
+        const timeEn = (v) => ({ '上午': 'morning', '中午': 'midday', '下午': 'afternoon' }[v] || v);
         const rtNote = (res) => {
-          if (!res || !res.ok) return '12306 查询失败（' + ((res && res.error) || '未知') + '），请到 12306 官网确认实际车次';
-          if (!res.trains || !res.trains.length) return '暂无直达，需中转（可到 12306 查询中转方案）';
-          if (res.refNote) return '出行日期超出预售期，以上为近期参考班次，车次基本每日固定，请以出行日 12306 实际为准';
+          if (!res || !res.ok) return en ? ('12306 lookup failed (' + ((res && res.error) || 'unknown') + ') — please confirm the actual trains on the official 12306 website') : ('12306 查询失败（' + ((res && res.error) || '未知') + '），请到 12306 官网确认实际车次');
+          if (!res.trains || !res.trains.length) return en ? 'No direct trains — a transfer is needed (check connections on 12306)' : '暂无直达，需中转（可到 12306 查询中转方案）';
+          if (res.refNote) return en ? 'Your date is beyond the 12306 sales window; the services above are recent reference trains (schedules are largely fixed) — confirm on 12306 for your travel date' : '出行日期超出预售期，以上为近期参考班次，车次基本每日固定，请以出行日 12306 实际为准';
           return '';
         };
         // 按用户选择的交通出行时间（上午/中午/下午）筛选车次；该时段无车次则自动推荐上午车次（上午也无则显示全部）
@@ -415,18 +422,18 @@ async function handleApi(req, res, pathname) {
         };
         const ob = pickByTime(od.ok ? od.trains : []);
         const ib = pickByTime(id2.ok ? id2.trains : []);
-        const timeNote = (r) => r.filtered ? '（已按「' + tt + '」时段筛选）' : '';
+        const timeNote = (r) => r.filtered ? (en ? ' (filtered to ' + timeEn(tt) + ' departures)' : '（已按「' + tt + '」时段筛选）') : '';
         params.realTrains = {
           outbound: ob.trains,
           inbound: ib.trains,
           display: {
-            outboundLabel: '去程（' + (params.origin || '') + ' → ' + params.destination.name + '）',
+            outboundLabel: (en ? 'Outbound (' : '去程（') + (en ? planner.cityEn(params.origin) : (params.origin || '')) + ' → ' + (en ? planner.cityEn(params.destination.name) : params.destination.name) + (en ? ')' : '）'),
             outboundNote: rtNote(od) + timeNote(ob),
-            inboundLabel: '返程（' + params.destination.name + ' → ' + ret + '）',
+            inboundLabel: (en ? 'Return' : '返程') + (en ? ' (' : '（') + (en ? planner.cityEn(params.destination.name) : params.destination.name) + ' → ' + (en ? planner.cityEn(ret) : ret) + (en ? ')' : '）'),
             inboundNote: rtNote(id2) + timeNote(ib),
             outboundFellBack: ob.fellBack,
             inboundFellBack: ib.fellBack,
-            timeFallbackNote: (ob.fellBack || ib.fellBack) && tt !== '未定' ? '所选「' + tt + '」时段暂无车次，自动推荐上午车次' : ''
+            timeFallbackNote: (ob.fellBack || ib.fellBack) && tt !== '未定' ? (en ? 'No trains in the chosen ' + timeEn(tt) + ' window — morning services suggested instead' : '所选「' + tt + '」时段暂无车次，自动推荐上午车次') : ''
           }
         };
       }

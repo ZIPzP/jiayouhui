@@ -350,11 +350,24 @@
     const rt = data.realTrains || {};
     const rtDisp = rt.display || {};
     const timeFb = rtDisp.timeFallbackNote ? `<p class="rt-fallback">⚠️ ${app.esc(rtDisp.timeFallbackNote)}</p>` : '';
+    // 车次行：英文界面用英文座位名与时长格式
+    const seatEn = { '二等座': '2nd class', '一等座': '1st class', '商务座': 'Business', '硬座': 'Hard seat', '硬卧': 'Hard sleeper', '软卧': 'Soft sleeper', '无座': 'Standing' };
+    const uiEn = () => !!(window.i18n && window.i18n.lang === 'en');
+    const durTxt = (d) => {
+      const m = String(d || '').split(':');
+      return m.length === 2 ? (Number(m[0]) + 'h ' + Number(m[1]) + 'm') : String(d || '');
+    };
     const rtRow = (tr) => {
       const p = tr.prices || {};
-      const pStr = ['二等座', '一等座', '商务座', '硬座', '硬卧', '软卧', '无座'].filter((k) => p[k]).map((k) => `${k}¥${p[k]}`).join(' ');
-      const seats = [['二等座', tr.second], ['一等座', tr.first]].filter((x) => x[1] && x[1] !== '无').map((x) => (x[1] === '有' ? x[0] + '有票' : x[0] + '余' + x[1])).join(' ');
-      return `<li><b>${app.esc(tr.no)}</b> ${app.esc(tr.fromTime)}-${app.esc(tr.toTime)} 历时${app.esc(tr.duration)}${seats ? ' · ' + app.esc(seats) : ''}${pStr ? '<div class="rt-price">' + app.esc(pStr) + '</div>' : ''}</li>`;
+      const en = uiEn();
+      const pStr = ['二等座', '一等座', '商务座', '硬座', '硬卧', '软卧', '无座'].filter((k) => p[k])
+        .map((k) => (en ? (seatEn[k] || k) + ' ¥' + p[k] : k + '¥' + p[k])).join(en ? ' · ' : ' ');
+      const seats = [['二等座', tr.second], ['一等座', tr.first]].filter((x) => x[1] && x[1] !== '无')
+        .map((x) => (en
+          ? (seatEn[x[0]] || x[0]) + (x[1] === '有' ? ': available' : ': ' + x[1] + ' left')
+          : (x[1] === '有' ? x[0] + '有票' : x[0] + '余' + x[1]))).join(' · ');
+      const dur = en ? durTxt(tr.duration) : ('历时' + app.esc(tr.duration));
+      return `<li><b>${app.esc(tr.no)}</b> ${app.esc(tr.fromTime)}–${app.esc(tr.toTime)} ${dur}${seats ? ' · ' + app.esc(seats) : ''}${pStr ? '<div class="rt-price">' + app.esc(pStr) + '</div>' : ''}</li>`;
     };
     const rtSection = (label, trains, note) => {
       const list = (trains && trains.length) ? `<ul class="rt-list">${trains.slice(0, 6).map(rtRow).join('')}</ul>` : '';

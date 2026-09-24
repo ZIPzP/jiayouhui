@@ -358,7 +358,11 @@
   "📦 简略": "📦 Simple",
   "🧳 超详细": "🧳 Detailed",
   "🔊 朗读行程": "🔊 Read itinerary aloud",
-  "🔊 朗读清单": "🔊 Read list aloud"
+  "🔊 朗读清单": "🔊 Read list aloud",
+  "连锁酒店": "Chain hotel",
+  "民宿": "Guesthouse",
+  "高档酒店": "Upscale hotel",
+  "无要求": "No preference"
 };
   // 上下文词典：同一个中文在不同位置用不同英文（如表单里的「目的地」用单数）
   const CTX = { 'form-label': { '目的地': 'Destination' } };
@@ -379,6 +383,8 @@
     [/^🐱 AI 主理人生成 · (.+)$/, (m) => '🐱 AI generated · ' + m[1]],
     [/^历时(.+)$/, (m) => 'Duration ' + m[1]],
     [/^合计：(.+)$/, (m) => 'Total: ' + m[1]],
+    [/^🏨 (.+)$/, (m) => '🏨 ' + (DICT[m[1]] || m[1])],
+    [/^💰 人均约 (.+)$/, (m) => '💰 About ¥' + m[1] + ' per person'],
     [/^(\d+)月(\d+)日 周([一二三四五六日])，(.+)$/, (m) => ['January','February','March','April','May','June','July','August','September','October','November','December'][Number(m[1]) - 1] + ' ' + m[2] + ' (' + m[4] + ')'],
     [/^本月热度 (\d+)$/, (m) => 'This month: ' + m[1]],
     [/^(\d+)月热门榜 · 更新于 (.+) · 数据源：(.+)$/, (m) => 'Top picks for month ' + m[1] + ' · updated ' + m[2] + ' · source: ' + (DICT[m[3]] || m[3])],
