@@ -133,6 +133,8 @@ const destinations = (readJson(path.join(ROOT, 'data', 'destinations.json')) || 
 const cities = (readJson(path.join(ROOT, 'data', 'cities.json')) || { cities: [] }).cities || [];
 // 城市拼音别名（供英文/拼音输入匹配，构建时生成，无需运行时依赖）
 const cityPinyin = readJson(path.join(ROOT, 'data', 'city-pinyin.json')) || {};
+// 目的地数据英文映射（亮点/适老说明等）
+const destI18n = readJson(path.join(ROOT, 'data', 'dest-i18n.json')) || {};
 function guessCity(raw) {
   const n = String(raw || '').trim().replace(/[省市]$/, '');
   if (!n) return null;
@@ -255,6 +257,11 @@ async function handleApi(req, res, pathname) {
   if (pathname === '/api/cities' && req.method === 'GET') {
     const list = cities.map((c) => (cityPinyin[c.name] ? Object.assign({}, c, { py: cityPinyin[c.name] }) : c));
     return sendJson(res, 200, { count: list.length, cities: list });
+  }
+
+  // GET /api/dest-i18n —— 目的地数据（亮点/适老说明等）英文映射，供前端 i18n 使用
+  if (pathname === '/api/dest-i18n' && req.method === 'GET') {
+    return sendJson(res, 200, { map: destI18n });
   }
 
   // GET /api/images —— 全部实景照片（封面/画廊/亮点，去重，供首页轮播使用）

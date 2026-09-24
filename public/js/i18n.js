@@ -362,7 +362,70 @@
   "连锁酒店": "Chain hotel",
   "民宿": "Guesthouse",
   "高档酒店": "Upscale hotel",
-  "无要求": "No preference"
+  "无要求": "No preference",
+  "所在省份": "Province",
+  "最佳季节": "Best season",
+  "建议天数": "Suggested length",
+  "气候特点": "Climate",
+  "👴 适老提示：": "👴 Senior-friendly:",
+  "✨ 特色亮点": "✨ Highlights",
+  "🍜 当地美食": "🍜 Local food",
+  "🎒 生成这份目的地的出行清单": "🎒 Build a packing list for this destination",
+  "🐱 AI 生成攻略": "🐱 AI travel guide",
+  "📷 更多照片": "📷 More photos",
+  "春": "Spring",
+  "夏": "Summer",
+  "秋": "Autumn",
+  "冬": "Winter",
+  "晴": "Sunny",
+  "多云": "Cloudy",
+  "阴": "Overcast",
+  "小雨": "Light rain",
+  "中雨": "Moderate rain",
+  "大雨": "Heavy rain",
+  "暴雨": "Rainstorm",
+  "雷阵雨": "Thunderstorms",
+  "阵雨": "Showers",
+  "小雪": "Light snow",
+  "中雪": "Moderate snow",
+  "大雪": "Heavy snow",
+  "雨夹雪": "Sleet",
+  "雾": "Fog",
+  "霾": "Haze",
+  "大风": "Strong wind",
+  "冰雹": "Hail",
+  "浮尘": "Dust",
+  "扬沙": "Sand",
+  "河北": "Hebei",
+  "山西": "Shanxi",
+  "辽宁": "Liaoning",
+  "吉林": "Jilin",
+  "黑龙江": "Heilongjiang",
+  "江苏": "Jiangsu",
+  "浙江": "Zhejiang",
+  "安徽": "Anhui",
+  "福建": "Fujian",
+  "江西": "Jiangxi",
+  "山东": "Shandong",
+  "河南": "Henan",
+  "湖北": "Hubei",
+  "湖南": "Hunan",
+  "广东": "Guangdong",
+  "广西": "Guangxi",
+  "海南": "Hainan",
+  "四川": "Sichuan",
+  "贵州": "Guizhou",
+  "云南": "Yunnan",
+  "西藏": "Tibet",
+  "陕西": "Shaanxi",
+  "甘肃": "Gansu",
+  "青海": "Qinghai",
+  "宁夏": "Ningxia",
+  "新疆": "Xinjiang",
+  "内蒙古": "Inner Mongolia",
+  "香港": "Hong Kong",
+  "澳门": "Macau",
+  "台湾": "Taiwan"
 };
   // 上下文词典：同一个中文在不同位置用不同英文（如表单里的「目的地」用单数）
   const CTX = { 'form-label': { '目的地': 'Destination' } };
@@ -385,6 +448,11 @@
     [/^合计：(.+)$/, (m) => 'Total: ' + m[1]],
     [/^🏨 (.+)$/, (m) => '🏨 ' + (DICT[m[1]] || m[1])],
     [/^💰 人均约 (.+)$/, (m) => '💰 About ¥' + m[1] + ' per person'],
+    [/^(\d+)-(\d+) 天$/, (m) => m[1] + '–' + m[2] + ' days'],
+    [/^🌤️ 未来 (\d+) 天天气（(.+)）$/, (m) => '🌤️ Next ' + m[1] + '-day weather (' + (DICT[m[2]] || m[2]) + ')'],
+    [/^周([一二三四五六日])$/, (m) => ({ '一': 'Mon', '二': 'Tue', '三': 'Wed', '四': 'Thu', '五': 'Fri', '六': 'Sat', '日': 'Sun' }[m[1]])],
+    [/^(.+)转(.+)$/, (m) => { const p1 = DICT[m[1]], p2 = DICT[m[2]]; return (p1 && p2) ? p1 + ' → ' + p2 : null; }],
+    [/^([春夏秋冬](、[春夏秋冬])+)$/, (m) => m[1].split('、').map((x) => DICT[x] || x).join(', ')],
     [/^(\d+)月(\d+)日 周([一二三四五六日])，(.+)$/, (m) => ['January','February','March','April','May','June','July','August','September','October','November','December'][Number(m[1]) - 1] + ' ' + m[2] + ' (' + m[4] + ')'],
     [/^本月热度 (\d+)$/, (m) => 'This month: ' + m[1]],
     [/^(\d+)月热门榜 · 更新于 (.+) · 数据源：(.+)$/, (m) => 'Top picks for month ' + m[1] + ' · updated ' + m[2] + ' · source: ' + (DICT[m[3]] || m[3])],
@@ -405,7 +473,7 @@
       const en = parts.map((x) => DICT[x.trim()] || null);
       if (en.every(Boolean)) return { pre: '', en: en.join(' · ') };
     }
-    for (const [re, fn] of PATTERNS) { const mm = k.match(re); if (mm) return { pre: '', en: fn(mm) }; }
+    for (const [re, fn] of PATTERNS) { const mm = k.match(re); if (mm) { const v = fn(mm); if (v) return { pre: '', en: v }; } }
     return null;
   }
   const hit = (s) => { const r = lookup(s); return r ? r.pre + r.en : null; };
@@ -502,6 +570,15 @@
     document.documentElement.setAttribute('lang', lang === 'en' ? 'en' : 'zh-CN');
     mountSwitch();
     if (lang === 'en') { walk(document.body); applyTitle(); updateSwitch(); }
+    // 英文模式：拉取目的地数据翻译表（亮点/适老说明等）并并入字典，再重扫一遍
+    if (lang === "en") {
+      fetch("/api/dest-i18n").then((r) => (r.ok ? r.json() : null)).then((j) => {
+        if (!j || !j.map) return;
+        let added = 0;
+        Object.keys(j.map).forEach((k) => { if (!Object.prototype.hasOwnProperty.call(DICT, k)) { DICT[k] = j.map[k]; added++; } });
+        if (added) { walk(document.body); applyTitle(); }
+      }).catch(() => {});
+    }
     if ('MutationObserver' in window) {
       let pend = false;
       const mo = new MutationObserver((muts) => {
