@@ -453,6 +453,10 @@
         const data = await api('/api/destinations');
         state.destinations = data.destinations || [];
       }
+      if (!(state.cities || []).length) {
+        const cd = await api('/api/cities');
+        state.cities = cd.cities || [];
+      }
     } catch (e) { /* 由页面自行处理 */ }
     if (typeof window.pageInit === 'function') {
       try { await window.pageInit(); } catch (e) { console.error('[pageInit]', e); }
@@ -602,11 +606,18 @@
 
   /* ---------- 城市输入提示（各页面共用） ---------- */
   function normCity(s) { return String(s || '').trim().replace(/[省市]$/, ''); }
-  function findCityInList(raw) {
-    const n = normCity(raw);
-    if (!n) return null;
-    return (state.cities || []).find((c) => normCity(c.name) === n) || null;
+  /* 城市匹配：支持中文名、拼音/英文（如 pingxiang、Beijing），忽略大小写与空格连字符 */
+  function cityKey(s) { return String(s || "").trim().toLowerCase().replace(/[\s\-_\.]+/g, ""); }
+  function resolveCity(raw) {
+    const k = cityKey(raw);
+    if (!k) return null;
+    const list = state.cities || [];
+    return list.find((c) => normCity(c.name) === normCity(raw))
+      || list.find((c) => cityKey(c.name) === k)
+      || list.find((c) => c.py && cityKey(c.py) === k)
+      || null;
   }
+  function findCityInList(raw) { return resolveCity(raw); }
   function showFormErr(id, msg) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -619,10 +630,24 @@
     let active = -1;
     function close() { sug.hidden = true; sug.innerHTML = ''; active = -1; }
     function render(v) {
-      const list = (state.cities || []).filter((c) => c.name.startsWith(v)).slice(0, 8);
-      const items = list.length ? list : (state.cities || []).filter((c) => c.name.includes(v)).slice(0, 8);
+      const vk = cityKey(v);
+      const en = !!(window.i18n && window.i18n.lang === "en");
+      const match = (c, mode) => {
+        const nm = c.name, py = c.py || "";
+        if (mode === "prefix") return nm.startsWith(v) || (py && py.startsWith(vk));
+        return nm.includes(v) || (py && py.includes(vk));
+      };
+      const list = (state.cities || []).filter((c) => match(c, "prefix")).slice(0, 8);
+      const items = list.length ? list : (state.cities || []).filter((c) => match(c, "any")).slice(0, 8);
       if (!items.length) { sug.hidden = true; sug.innerHTML = ''; active = -1; return; }
-      sug.innerHTML = items.map((c, i) => `<div class="ac-item${i === active ? ' active' : ''}" data-name="${esc(c.name)}"><span>${esc(c.name)}</span><small>${esc(c.province)}</small></div>`).join('');
+      // 英文模式：拼音与英文名相同则不重复显示（Beijing 后面不再跟 beijing），否则显示拼音
+      const subOf = (c) => {
+        if (!en) return c.province;
+        const enName = window.i18n ? String(window.i18n.t(c.name) || '') : '';
+        const norm = enName.toLowerCase().replace(/[\s\-_\.]+/g, '');
+        return (c.py && c.py !== norm) ? c.py : '';
+      };
+      sug.innerHTML = items.map((c, i) => { const sub = subOf(c); return `<div class="ac-item${i === active ? ' active' : ''}" data-name="${esc(c.name)}"><span>${esc(c.name)}</span>${sub ? '<small>' + esc(sub) + '</small>' : ''}</div>`; }).join('');
       sug.hidden = false;
     }
     function highlight() { [...sug.querySelectorAll('.ac-item')].forEach((el, i) => el.classList.toggle('active', i === active)); }
@@ -765,7 +790,7 @@
   }
 
   window.__jyhImgFallback = imgFallback;
-  window.app = { state, api, esc, toast, speak, $, $$, imgFallback, setBg, updateAiHints, pollJob, normCity, findCityInList, cityAutocomplete, saveAsImage, saveAsImageParts, saveAsWord, aiPayload };
+  window.app = { state, api, esc, toast, speak, $, $$, imgFallback, setBg, updateAiHints, pollJob, normCity, findCityInList, cityAutocomplete, saveAsImage, saveAsImageParts, saveAsWord, aiPayload, resolveCity, cityKey };
   if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = () => {};
 
   document.addEventListener('DOMContentLoaded', init);

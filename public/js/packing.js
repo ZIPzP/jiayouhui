@@ -35,7 +35,8 @@
   }
   function formValues() {
     const raw = document.getElementById('pf-dest').value.trim();
-    const name = app.normCity(raw);
+    const cityHit0 = app.resolveCity ? app.resolveCity(raw) : null;
+    const name = app.normCity(cityHit0 ? cityHit0.name : raw);
     const base = {
       month: Number(document.getElementById('pf-month').value),
       durationDays: Number(document.getElementById('pf-duration').value),
@@ -51,6 +52,8 @@
     return Object.assign({}, base, { destinationId: 'custom', customDest: { name: raw, note: '' } });
   }
   function bindEvents() {
+    // 城市自动补全（支持中文名与拼音/英文）
+    if (app.cityAutocomplete) app.cityAutocomplete('pf-dest', 'pfDestSug', 'pfDestErr', '目的地');
     document.getElementById('pf-submit').addEventListener('click', () => generatePacking(formValues()));
     const body = document.getElementById('resultBody');
     body.addEventListener('click', (e) => {

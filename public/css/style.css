@@ -1375,3 +1375,6 @@ html.lang-en .btn-lg { font-size: 1rem; }
   html.lang-en .btn-lang { padding: 6px 10px; font-size: 12px; }
   html.lang-en .hero-title { font-size: 1.85rem; }
 }
+
+/* 城市自动补全列表的定位父级 */
+.form-group { position: relative; }

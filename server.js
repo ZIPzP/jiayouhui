@@ -131,12 +131,38 @@ const config = ai.loadConfig();
 const destinations = (readJson(path.join(ROOT, 'data', 'destinations.json')) || { destinations: [] }).destinations || [];
 // 中国城市名单（输入提示/城市自查用）
 const cities = (readJson(path.join(ROOT, 'data', 'cities.json')) || { cities: [] }).cities || [];
+// 城市拼音别名（供英文/拼音输入匹配，构建时生成，无需运行时依赖）
+const cityPinyin = readJson(path.join(ROOT, 'data', 'city-pinyin.json')) || {};
 function guessCity(raw) {
   const n = String(raw || '').trim().replace(/[省市]$/, '');
   if (!n) return null;
   const all = (cities || []).map((c) => c.name);
   const hit = all.find((x) => x === n) || all.find((x) => x.includes(n)) || all.find((x) => n.includes(x));
   if (hit) return hit;
+  // 拼音/英文输入：精确 → 前缀 → 包含（如 pingxiang / beijing / shangha）
+  const k = cityKeyOf(n);
+  if (/^[a-z]+$/.test(k)) {
+    const py = all.filter((x) => cityPinyin[x]);
+    const exactPy = py.find((x) => cityPinyin[x] === k);
+    if (exactPy) return exactPy;
+    const prefixPy = py.find((x) => cityPinyin[x].startsWith(k)) || py.find((x) => k.startsWith(cityPinyin[x]));
+    if (prefixPy) return prefixPy;
+    const partPy = py.find((x) => k.length >= 4 && cityPinyin[x].includes(k));
+    if (partPy) return partPy;
+    // 拼写容错：编辑距离最近且足够接近时给出建议（如 pingxing → 萍乡）
+    const dist = (a, b) => {
+      const m = a.length, n = b.length;
+      const dp = Array.from({ length: m + 1 }, (_, i) => [i].concat(new Array(n).fill(0)));
+      for (let j = 0; j <= n; j++) dp[0][j] = j;
+      for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) {
+        dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      }
+      return dp[m][n];
+    };
+    let near = null, nearD = 99;
+    for (const x of py) { const d = dist(k, cityPinyin[x]); if (d < nearD) { nearD = d; near = x; } }
+    if (near && nearD <= 2 && k.length >= 5) return near;
+  }
   const score = (a, b) => {
     if (a === b) return 1;
     const sa = new Set(a), sb = new Set(b);
@@ -154,10 +180,16 @@ function guessCity(raw) {
   }
   return bestScore >= 0.55 ? best : null;
 }
+/* 城市键：忽略大小写与空格连字符，便于拼音/英文匹配 */
+const cityKeyOf = (s) => String(s || '').trim().toLowerCase().replace(/[\s\-_\.]+/g, '');
 function findCity(raw) {
   const n = String(raw || '').trim().replace(/[省市]$/, '');
   if (!n) return null;
-  return cities.find((c) => c.name === n) || null;
+  const k = cityKeyOf(n);
+  return cities.find((c) => c.name === n)
+    || cities.find((c) => cityKeyOf(c.name) === k)
+    || cities.find((c) => cityPinyin[c.name] && cityPinyin[c.name] === k)
+    || null;
 }
 // 对象存储(OSS/COS)支持：config.imageBase 为空时用本地 /images，设置后自动给所有图片路径加前缀（如 https://cdn.xxx.com）
 const IMAGE_BASE = String((config && config.imageBase) || '').replace(/\/+$/, '');
@@ -221,7 +253,8 @@ async function handleApi(req, res, pathname) {
 
   // GET /api/cities —— 中国城市名单（输入提示 / 城市自查）
   if (pathname === '/api/cities' && req.method === 'GET') {
-    return sendJson(res, 200, { count: cities.length, cities });
+    const list = cities.map((c) => (cityPinyin[c.name] ? Object.assign({}, c, { py: cityPinyin[c.name] }) : c));
+    return sendJson(res, 200, { count: list.length, cities: list });
   }
 
   // GET /api/images —— 全部实景照片（封面/画廊/亮点，去重，供首页轮播使用）

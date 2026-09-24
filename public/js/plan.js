@@ -31,15 +31,22 @@
       notes: document.getElementById('pl-notes').value.trim()
     };
     const destRaw = document.getElementById('pl-dest').value.trim();
-    const destName = app.normCity(destRaw);
+    const cityHit = app.resolveCity ? app.resolveCity(destRaw) : null;
+    const destName = app.normCity(cityHit ? cityHit.name : destRaw);
     // 输入的城市正好是库内目的地 → 用它的数据（天气/坐标）；否则走自定义
     const hit = app.state.destinations.find((d) => app.normCity(d.name) === destName);
     if (hit) return Object.assign({}, base, { destinationId: hit.id });
-    return Object.assign({}, base, { destinationId: 'custom', customDest: { name: destRaw, note: document.getElementById('pl-notes').value.trim() } });
+    return Object.assign({}, base, { destinationId: 'custom', customDest: { name: cityHit ? cityHit.name : destRaw, note: document.getElementById('pl-notes').value.trim() } });
   }
 
   function bindEvents() {
     // 选项 chips
+    // 城市自动补全（支持中文名与拼音/英文，如 pingxiang、Beijing）
+    if (app.cityAutocomplete) {
+      app.cityAutocomplete('pl-dest', 'plDestSug', 'plDestErr', '目的地');
+      app.cityAutocomplete('pl-origin', 'plOriginSug', 'plOriginErr', '出发城市');
+      app.cityAutocomplete('pl-return', 'plReturnSug', 'plReturnErr', '返回目的地');
+    }
     document.getElementById('planForm').addEventListener('click', (e) => {
       const chip = e.target.closest('.chip');
       if (!chip) return;
