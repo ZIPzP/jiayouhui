@@ -759,7 +759,7 @@
         }
       }
       const base = String(filename || '家游汇.png').replace(/\.png$/i, '');
-      saveBlob(out.toDataURL('image/png'), base + '-三等分拼图.png');
+      saveBlob(out.toDataURL('image/png'), base + ((window.i18n && window.i18n.lang === 'en') ? '-3-column.png' : '-三等分拼图.png'));
       toast('✅ 已导出 1 张拼图（三列并排，放大后左右滑动看）');
     } catch (e) {
       toast('导出失败，请用「打印 / 存为 PDF」');

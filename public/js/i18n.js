@@ -437,7 +437,29 @@
  "生成失败：": "Generation failed: ",
  "✨ 必去亮点": "✨ Must-see highlights",
  "点击恢复此前的填写": "Click to restore these settings",
- "删除": "Delete"
+ "删除": "Delete",
+ "点击下方按钮开始抽取": "Tap the button below to start drawing",
+ "正在聚合各平台热门数据…": "Aggregating trending data from all platforms…",
+ "没有符合条件的目的地": "No destinations match your filters",
+ "暂无热度数据": "No trending data yet",
+ "加载中…": "Loading…",
+ "天气获取失败，请稍后重试": "Weather lookup failed — please try again later",
+ "目的地数据加载中，请稍后再试": "Destination data is still loading — please try again shortly",
+ "请先填写目的地城市": "Please enter a destination city first",
+ "上次任务已结束或过期，请重新生成": "The previous task has ended or expired — please generate again",
+ "综合": "Overall",
+ "封面": "Cover",
+ "风光": "Scenery",
+ "去程": "Outbound",
+ "返程": "Return",
+ "当地": "Local",
+ "请输入问题": "Please enter a question",
+ "请填写目的地": "Please enter a destination",
+ "请填写出发城市": "Please enter a departure city",
+ "正在思考…": "Thinking…",
+ "生成失败": "Generation failed",
+ "请填写返回目的地": "Please enter a return destination",
+ "出错了：": "Error: "
 };
   // 上下文词典：同一个中文在不同位置用不同英文（如表单里的「目的地」用单数）
   const CTX = { 'form-label': { '目的地': 'Destination' } };
@@ -459,6 +481,12 @@
     [/^🐱 AI 主理人生成 · (.+)$/, (m) => '🐱 AI generated · ' + m[1]],
     [/^历时(.+)$/, (m) => 'Duration ' + m[1]],
     [/^合计：(.+)$/, (m) => 'Total: ' + m[1]],
+    [/^请求失败（(\d+)）$/, (m) => 'Request failed (' + m[1] + ')'],
+    [/^未找到「(.+)」，请从提示中选择$/, (m) => 'Not found: “' + m[1] + '” — please pick one from the suggestions'],
+    [/^加载失败：(.+)$/, (m) => 'Loading failed: ' + m[1]],
+    [/^攻略生成失败：(.+)$/, (m) => 'Guide generation failed: ' + m[1]],
+    [/^生成失败：(.+)$/, (m) => 'Generation failed: ' + m[1]],
+    [/^🐱 AI 主理人：(.+)$/, (m) => '🐱 AI planner: ' + m[1]],
     [/^🏨 (.+)$/, (m) => '🏨 ' + (DICT[m[1]] || m[1])],
     [/^💰 人均约 (.+)$/, (m) => '💰 About ¥' + m[1] + ' per person'],
     [/^(\d+)-(\d+) 天$/, (m) => m[1] + '–' + m[2] + ' days'],
@@ -473,6 +501,13 @@
     [/^共 (\d+) 个热门家庭目的地 · 每个都适合全家出行$/, (m) => m[1] + ' popular family destinations · all great for the whole family'],
     [/^查看更多目的地（还有 (\d+) 个）$/, (m) => 'View more destinations (' + m[1] + ' more)']
   ];
+  // 启动期校验：只保留合法的 [RegExp, Function] 对，防止个别写法错误导致整站失效
+  const VALID_PATTERNS = (Array.isArray(PATTERNS) ? PATTERNS : []).filter(function (it) {
+    return Array.isArray(it) && it.length === 2 && it[0] instanceof RegExp && typeof it[1] === "function";
+  });
+  if (VALID_PATTERNS.length !== (Array.isArray(PATTERNS) ? PATTERNS.length : 0)) {
+    console.warn("[i18n] 有 " + ((PATTERNS.length || 0) - VALID_PATTERNS.length) + " 条动态句式格式不合法，已跳过");
+  }
   // 精确匹配；再尝试「emoji/符号前缀 + 词干」复用，如「🏯 北京」复用「北京」
   function lookup(s) {
     const k = String(s).trim();
@@ -492,7 +527,9 @@
       const en = parts.map((x) => DICT[x.trim()] || null);
       if (en.every(Boolean)) return { pre: '', en: en.join(' · ') };
     }
-    for (const [re, fn] of PATTERNS) { const mm = k.match(re); if (mm) { const v = fn(mm); if (v) return { pre: '', en: v }; } }
+    for (const [re, fn] of VALID_PATTERNS) {
+      try { const mm = k.match(re); if (mm) { const v = fn(mm); if (v) return { pre: '', en: v }; } } catch (e) { /* 单条句式出错不影响其它 */ }
+    }
     return null;
   }
   const hit = (s) => { const r = lookup(s); return r ? r.pre + r.en : null; };
