@@ -657,6 +657,10 @@
       else showFormErr(errId, '');
     }, 200));
   }
+  /** AI 请求负载：附带当前界面语言，服务端据此决定生成内容的语言 */
+  function aiPayload(extra) {
+    return Object.assign({}, state.ai, { lang: (window.i18n && window.i18n.lang) || 'zh' }, extra || {});
+  }
   /* ---------- 结果区导出：保存图片 / 三等分导出 / 导出 Word ---------- */
   // 关键修复：html2canvas 会先克隆 DOM 再渲染，克隆体里的入场动画会重放
   // （.day-card 的 dayRise 起点是 opacity:0），导致逐日行程被截成一片空白。
@@ -761,7 +765,7 @@
   }
 
   window.__jyhImgFallback = imgFallback;
-  window.app = { state, api, esc, toast, speak, $, $$, imgFallback, setBg, updateAiHints, pollJob, normCity, findCityInList, cityAutocomplete, saveAsImage, saveAsImageParts, saveAsWord };
+  window.app = { state, api, esc, toast, speak, $, $$, imgFallback, setBg, updateAiHints, pollJob, normCity, findCityInList, cityAutocomplete, saveAsImage, saveAsImageParts, saveAsWord, aiPayload };
   if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = () => {};
 
   document.addEventListener('DOMContentLoaded', init);

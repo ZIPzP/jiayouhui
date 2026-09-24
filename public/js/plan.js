@@ -283,7 +283,7 @@
     empty.hidden = true; bodyEl.hidden = false;
     bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>AI 主理人正在后台生成行程…<br/>你可以放心切到别的页面/标签页，回来会自动恢复显示结果</p>';
     try {
-      const st = await app.api('/api/plan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({}, vals, app.state.ai)) });
+      const st = await app.api('/api/plan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(app.aiPayload(vals)) });
       saveLast({ jobId: st.jobId, vals, result: null });
       app.pollJob(st.jobId, {
         onDone: (result) => { renderPlan(bodyEl, result, vals); savePlan(vals, result); },
@@ -414,7 +414,7 @@
     const typing = addChatMsg('ai', '正在思考…');
     typing.classList.add('chat-typing');
     try {
-      const data = await app.api('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: msg, history: chatHistory, ...app.state.ai }) });
+      const data = await app.api('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(app.aiPayload({ message: msg, history: chatHistory })) });
       chatHistory.push({ role: 'user', content: msg }, { role: 'assistant', content: data.reply });
       typing.classList.remove('chat-typing');
       typing.textContent = data.reply;

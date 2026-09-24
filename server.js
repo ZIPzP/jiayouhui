@@ -277,7 +277,7 @@ async function handleApi(req, res, pathname) {
       mode: String(body.mode || '简略').trim(),
       notes: String(body.notes || '').trim(),
     };
-    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '' };
+    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '', lang: body.lang === 'en' ? 'en' : 'zh' };
     const jobId = runJob(() => rec.recommend(params, overrides));
     return sendJson(res, 200, { jobId, status: 'running' });
   }
@@ -289,7 +289,7 @@ async function handleApi(req, res, pathname) {
     try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
     const dest = destinations.find((d) => d.id === body.destinationId);
     if (!dest) return sendJson(res, 400, { error: '请选择目的地 destinationId' });
-    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '' };
+    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '', lang: body.lang === 'en' ? 'en' : 'zh' };
     const result = await rec.aiGuide(dest, overrides);
     return sendJson(res, 200, result);
   }
@@ -354,7 +354,7 @@ async function handleApi(req, res, pathname) {
       interests: Array.isArray(body.interests) ? body.interests : [],
       notes: String(body.notes || '').trim(),
     };
-    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '' };
+    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '', lang: body.lang === 'en' ? 'en' : 'zh' };
     const jobId = runJob(async () => {
       // 高铁/火车：从 12306 拉取当天真实车次，供 AI 直接采用
       const tr = String(params.transport || '');
@@ -411,7 +411,7 @@ async function handleApi(req, res, pathname) {
     try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
     const message = String(body.message || '').trim();
     if (!message) return sendJson(res, 400, { error: '请输入问题' });
-    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '' };
+    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '', lang: body.lang === 'en' ? 'en' : 'zh' };
     const result = await planner.chatReply(message, Array.isArray(body.history) ? body.history : [], overrides);
     return sendJson(res, 200, result);
   }

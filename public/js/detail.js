@@ -177,7 +177,7 @@
       const data = await app.api('/api/ai-guide', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ destinationId: id, ...app.state.ai })
+        body: JSON.stringify(app.aiPayload({ destinationId: id }))
       });
       renderGuide(box, data);
     } catch (e) {

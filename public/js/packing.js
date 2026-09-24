@@ -76,7 +76,7 @@
       const st = await app.api('/api/recommend', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(Object.assign({}, vals, app.state.ai))
+        body: JSON.stringify(app.aiPayload(vals))
       });
       localStorage.setItem('jyh_last_pack', JSON.stringify({ jobId: st.jobId, vals, result: null, ts: Date.now() }));
       app.pollJob(st.jobId, {
