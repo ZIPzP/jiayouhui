@@ -141,7 +141,7 @@
       <div class="result-actions">
         <button class="btn btn-primary" type="button" data-print>🖨️ 打印 / 存为 PDF</button>
         <button class="btn btn-ghost" type="button" data-save-img>📷 保存为图片</button>
-        <button class="btn btn-ghost" type="button" data-save-parts>✂️ 三等分导出</button>
+        <button class="btn btn-ghost" type="button" data-save-parts>✂️ 三等分拼图</button>
         <button class="btn btn-ghost" type="button" data-save-word>📝 导出 Word</button>
         <button class="btn btn-ghost read-aloud" type="button" data-read="${app.esc(destName + '出行清单。' + (data.items || []).map(i => i.name + '，' + (i.reason || '')).join('。') + '。' + (data.tips || []).join('。'))}">🔊 朗读清单</button>
       </div>`;

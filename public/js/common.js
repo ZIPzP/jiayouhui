@@ -696,7 +696,7 @@
       toast('保存图片失败，请用「打印 / 存为 PDF」');
     }
   }
-  /* 三等分导出：整图只截一次，再按高度均分成 3 张（手机端放大看更清楚） */
+  /* 三等分拼图：整图只截一次，切成 3 段后横向并排合成 1 张（图变矮变宽，手机放大左右滑动看） */
   async function saveAsImageParts(elId, filename, parts) {
     const el = document.getElementById(elId);
     if (!el) return;
@@ -706,23 +706,30 @@
     const prev = actions ? actions.style.display : '';
     if (actions) actions.style.display = 'none';
     try {
-      const canvas = await window.html2canvas(el, captureOptions());
-      const sliceH = Math.ceil(canvas.height / n);
-      const base = String(filename || '家游汇.png').replace(/\.png$/i, '');
+      const src = await window.html2canvas(el, captureOptions());
+      const sliceH = Math.ceil(src.height / n);
+      const gap = Math.round(src.width * 0.03) + 16; // 列间距（随宽度自适应）
+      const out = document.createElement('canvas');
+      out.width = src.width * n + gap * (n - 1);
+      out.height = sliceH;
+      const ctx = out.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, out.width, out.height);
       for (let i = 0; i < n; i++) {
         const top = i * sliceH;
-        const h = Math.min(sliceH, canvas.height - top);
+        const h = Math.min(sliceH, src.height - top);
         if (h <= 0) break;
-        const c = document.createElement('canvas');
-        c.width = canvas.width; c.height = h;
-        const ctx = c.getContext('2d');
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, c.width, c.height);
-        ctx.drawImage(canvas, 0, top, canvas.width, h, 0, 0, canvas.width, h);
-        saveBlob(c.toDataURL('image/png'), base + '-第' + (i + 1) + '部分.png');
-        await new Promise((r) => setTimeout(r, 400)); // 连续多张下载留点间隔
+        const x = i * (src.width + gap);
+        ctx.drawImage(src, 0, top, src.width, h, x, 0, src.width, h);
+        if (i) { // 列间细分隔线，方便看出三段边界
+          ctx.fillStyle = '#E2E8F0';
+          ctx.fillRect(x - Math.round(gap / 2), 0, Math.max(2, Math.round(gap / 12)), out.height);
+          ctx.fillStyle = '#ffffff';
+        }
       }
-      toast('✅ 已导出 ' + n + ' 张图片，按顺序查看即可');
+      const base = String(filename || '家游汇.png').replace(/\.png$/i, '');
+      saveBlob(out.toDataURL('image/png'), base + '-三等分拼图.png');
+      toast('✅ 已导出 1 张拼图（三列并排，放大后左右滑动看）');
     } catch (e) {
       toast('导出失败，请用「打印 / 存为 PDF」');
     } finally {
