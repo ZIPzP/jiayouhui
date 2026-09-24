@@ -117,6 +117,7 @@
     try { return JSON.parse(localStorage.getItem(checkedKey(vals)) || '[]').includes(name); } catch { return false; }
   }
   function renderResult(el, data, vals) {
+    const uiEn = !!(window.i18n && window.i18n.lang === 'en');
     const dest = app.state.destinations.find((d) => d.id === vals.destinationId) || {};
     const destName = dest.name || (vals.customDest && vals.customDest.name) || '';
     const groups = {};
@@ -134,7 +135,7 @@
     const tips = (data.tips || []).map((t) => `<li>${app.esc(t)}</li>`).join('');
     el.innerHTML = `
       <div class="result-head">
-    <h3>\u{1F392} ${app.esc(destName)} · ${app.esc(data.monthLabel || '')}出行清单${vals.mode === '超详细' ? ' · \u{1F9F3}超详细' : ''}</h3>
+    <h3>\u{1F392} ${app.esc(uiEn ? (window.i18n ? window.i18n.t(destName) : destName) : destName)} · ${app.esc(data.monthLabel || '')}${uiEn ? 'packing list' : '出行清单'}${vals.mode === '超详细' ? (uiEn ? ' · \u{1F9F3}Detailed' : ' · \u{1F9F3}超详细') : ''}</h3>
         <span class="provider-tag">${data.provider === 'ai' ? '🐱 AI 生成 · ' + app.esc(data.model || '') : '📋 内置规则引擎'}</span>
       </div>
       ${data.aiError ? `<p class="form-hint" style="color:var(--danger)">AI 调用失败，已自动使用内置清单：${app.esc(data.aiError)}</p>` : ''}
