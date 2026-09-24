@@ -328,7 +328,11 @@
   "自然风光": "Nature",
   "博物馆": "Museums",
   "海滨玩水": "Beaches",
-  "古城老街": "Old towns"
+  "古城老街": "Old towns",
+  "清空": "Clear",
+  "📋 演示模式：未配置 AI Key，将使用内置规划引擎（点右上角 ⚙️ AI 设置 接入 DeepSeek）": "📋 Demo mode: no AI key yet — using the built-in planning engine (add DeepSeek in ⚙️ AI Settings)",
+  "你好呀，我是「家游汇」的 AI 主理人 🏡 可以问我任何家庭旅行问题，比如「带老人孩子去西安怎么安排 5 天？」": "Hi! I’m the Family Trip Hub AI planner 🏡 Ask me anything about family travel — e.g. “How should we plan 5 days in Xi’an with elderly parents and kids?”",
+  "口令错误，请重试": "Wrong passcode, please try again"
 };
   // 上下文词典：同一个中文在不同位置用不同英文（如表单里的「目的地」用单数）
   const CTX = { 'form-label': { '目的地': 'Destination' } };
