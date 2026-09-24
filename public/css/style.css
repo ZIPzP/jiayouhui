@@ -1357,3 +1357,21 @@ html, body { overscroll-behavior: none; }
 .hist-text { flex: 1; font-size: .84rem; color: var(--ink); line-height: 1.4; word-break: break-word; }
 .hist-del { border: 0; background: none; color: var(--ink-soft); cursor: pointer; font-size: .9rem; padding: 2px 6px; border-radius: 6px; flex: none; }
 .hist-del:hover { color: var(--danger); background: #FEE2E2; }
+
+/* ===== 中英双语（方案 B）：语言切换按钮 + 英文版字号适配（主题/配色不变） ===== */
+.btn-lang { padding: 7px 12px; font-size: 13px; white-space: nowrap; flex: none; }
+html.lang-en .nav-links a, html.lang-en .nav-links-inline a { font-size: 13px; }
+html.lang-en .nav-drawer .nav-links a { font-size: 1rem; }
+html.lang-en .hero-title { font-size: clamp(1.9rem, 4.6vw, 3.2rem); }
+html.lang-en .hd-title { font-size: clamp(1.9rem, 3.6vw, 3rem); }
+html.lang-en .hero-sub, html.lang-en .hd-sub { font-size: 1rem; }
+html.lang-en .section-head h2 { font-size: clamp(1.45rem, 3vw, 2rem); }
+html.lang-en .section-head p { font-size: .95rem; }
+html.lang-en .dest-tagline { min-height: 0; }
+html.lang-en .entry-card h3 { font-size: .92rem; }
+html.lang-en .btn { font-size: .92rem; }
+html.lang-en .btn-lg { font-size: 1rem; }
+@media (max-width: 900px) {
+  html.lang-en .btn-lang { padding: 6px 10px; font-size: 12px; }
+  html.lang-en .hero-title { font-size: 1.85rem; }
+}
