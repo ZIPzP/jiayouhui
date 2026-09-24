@@ -47,8 +47,10 @@
   function renderDetail(d) {
     const body = document.getElementById('modalBody');
     if (!body) return;
+    const uiEn = () => !!(window.i18n && window.i18n.lang === 'en');
+    const tr = (s) => (uiEn() && window.i18n ? window.i18n.t(s) : s);
     const tags = (d.tags || []).map((t) => `<span class="badge">${app.esc(t)}</span>`).join('');
-    const gallery = (d.gallery || []).map((g, i) => `<img src="${app.esc(g)}" alt="${app.esc(d.name)} 风光 ${i + 1}" />`).join('');
+    const gallery = (d.gallery || []).map((g, i) => `<img src="${app.esc(g)}" alt="${app.esc(tr(d.name))} ${uiEn() ? 'scenery' : '风光'} ${i + 1}" />`).join('');
     body.innerHTML = `
       <div class="detail-hero" style="background-color:${app.esc(d.accent || '#0f766e')}">
         <div class="detail-hero-overlay"></div>
@@ -76,7 +78,7 @@
         <h3>✨ 特色亮点</h3>
         ${(d.highlights || []).map((h) => `
           <div class="highlight-card">
-            <img src="${app.esc(h.image)}" alt="${app.esc(h.title)}" />
+            <img src="${app.esc(h.image)}" alt="${app.esc(tr(h.title))}" />
             <div><h4>${app.esc(h.title)}</h4><p>${app.esc(h.text)}</p></div>
           </div>`).join('')}
         ${(d.foods || []).length ? `
@@ -108,8 +110,8 @@
     const titles = [];
     if (d.cover) { urls.push(d.cover); titles.push(d.name + ' · 封面'); }
     const seen = new Set(urls);
-    (d.gallery || []).filter(Boolean).forEach((g, i) => { if (!seen.has(g)) { seen.add(g); urls.push(g); titles.push(d.name + ' · 风光' + (i + 1)); } });
-    (d.highlights || []).forEach((h, i) => { if (h.image && !seen.has(h.image)) { seen.add(h.image); urls.push(h.image); titles.push(h.title); } });
+    (d.gallery || []).filter(Boolean).forEach((g, i) => { if (!seen.has(g)) { seen.add(g); urls.push(g); titles.push(tr(d.name) + (uiEn() ? ' · scenery ' : ' · 风光') + (i + 1)); } });
+    (d.highlights || []).forEach((h, i) => { if (h.image && !seen.has(h.image)) { seen.add(h.image); urls.push(h.image); titles.push(tr(h.title)); } });
     lb.urls = urls; lb.titles = titles; lb.index = 0;
     const galleryImgs = [...body.querySelectorAll('.gallery-row img')];
     const hlImgs = [...body.querySelectorAll('.highlight-card img')];

@@ -435,12 +435,15 @@
  "你可以放心切到别的页面/标签页，回来会自动恢复显示结果": "Feel free to switch pages or tabs — the result will be restored when you return.",
  "（当前为演示模式，未配置 AI Key）我是「家游汇」AI 主理人 🐱 配置 DeepSeek API Key 后，我可以帮你规划详细行程、推荐餐厅、估算费用、安排交通。你也可以直接使用页面上方的「行程规划」按钮式表单生成完整方案。": "(Demo mode — no AI key configured.) I’m the Family Trip Hub AI planner 🐱 Add a DeepSeek API key and I can plan detailed itineraries, recommend restaurants, estimate costs and arrange transport. You can also use the Trip Planner form above to generate a full plan.",
  "生成失败：": "Generation failed: ",
- "✨ 必去亮点": "✨ Must-see highlights"
+ "✨ 必去亮点": "✨ Must-see highlights",
+ "点击恢复此前的填写": "Click to restore these settings",
+ "删除": "Delete"
 };
   // 上下文词典：同一个中文在不同位置用不同英文（如表单里的「目的地」用单数）
   const CTX = { 'form-label': { '目的地': 'Destination' } };
   const ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
-  const SKIP_TAGS = /^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA|CODE)$/;
+  const HARD_SKIP = /^(SCRIPT|STYLE|NOSCRIPT)$/;            // 元素与内容都跳过
+  const TEXT_SKIP = /^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA|CODE)$/; // 仅跳过文本内容（TEXTAREA 的 placeholder 仍需翻译）
   let lang = 'zh';
   try { lang = localStorage.getItem(LANG_KEY) === 'en' ? 'en' : 'zh'; } catch (e) { /* 忽略 */ }
   const textCache = new WeakMap();  // textNode -> 原文
@@ -526,15 +529,22 @@
 
   function walk(root) {
     if (!root) return;
-    if (root.nodeType === 3) { trText(root); return; }
+    if (root.nodeType === 3) {
+      const tp = root.parentElement;
+      if (tp && TEXT_SKIP.test(tp.tagName)) return; // 不翻译用户输入框内的文字
+      trText(root);
+      return;
+    }
     if (root.nodeType !== 1 && root.nodeType !== 9) return;
     if (root.nodeType === 1) {
-      if (SKIP_TAGS.test(root.tagName)) return;
-      trAttrs(root);
+      if (HARD_SKIP.test(root.tagName)) return;
+      trAttrs(root); // 含 TEXTAREA 的 placeholder
     }
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT, {
       acceptNode(n) {
-        if (n.nodeType === 1) return SKIP_TAGS.test(n.tagName) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+        if (n.nodeType === 1) return HARD_SKIP.test(n.tagName) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+        const tp = n.parentElement;
+        if (tp && TEXT_SKIP.test(tp.tagName)) return NodeFilter.FILTER_REJECT;
         return n.nodeValue && n.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
       }
     });
