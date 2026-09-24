@@ -181,7 +181,7 @@
       });
       renderGuide(box, data);
     } catch (e) {
-      box.innerHTML = `<p class="form-hint" style="color:var(--danger)">攻略生成失败：${app.esc(e.message)}</p>`;
+      box.innerHTML = `<p class="form-hint" style="color:var(--danger)">${(window.i18n && window.i18n.lang === 'en') ? 'Guide generation failed: ' : '攻略生成失败：'}${app.esc(e.message)}</p>`;
     }
   }
   function renderGuide(box, data) {

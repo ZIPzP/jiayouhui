@@ -95,7 +95,7 @@
       if (!pool.length) { app.toast('目的地数据加载中，请稍后再试'); return; }
       running = true;
       btn.disabled = true;
-      btn.textContent = '🎲 抽取中…';
+      btn.textContent = (window.i18n && window.i18n.lang === 'en') ? '🎲 Drawing…' : '🎲 抽取中…';
       // 抽奖滚动：先快后慢，最后命中
       let i = 0;
       const total = 18 + Math.floor(Math.random() * 8);
@@ -120,7 +120,7 @@
             emojiEl.textContent = '🎉';
             emojiEl.classList.remove('hit-bounce'); void emojiEl.offsetWidth; emojiEl.classList.add('hit-bounce');
           }
-          if (nameEl) nameEl.textContent = d.name + '！';
+          if (nameEl) nameEl.textContent = tr(d.name) + (en ? '!' : '！');
           burstParticles(screen, emojiEl);
           running = false;
           btn.disabled = false;
@@ -138,21 +138,24 @@
     const modal = document.getElementById('drawModal');
     const body = document.getElementById('drawResultBody');
     if (!modal || !body) return;
-    const tags = (d.tags || []).slice(0, 4).map((t) => `<span class="badge" style="background:${app.esc(d.accent || '#0f766e')}22;color:${app.esc(d.accent || '#0f766e')}">${app.esc(t)}</span>`).join('');
-    const foods = (d.foods || []).slice(0, 4).map((f) => app.esc(f.name || f)).join('、');
+    const en = !!(window.i18n && window.i18n.lang === 'en');
+    const tr = (s) => (en && window.i18n ? window.i18n.t(s) : s);
+    const daysTxt = (s) => (en ? String(s || '').replace(/(\d+)\s*-\s*(\d+)\s*天/, '$1–$2 days').replace(/(\d+)\s*天/, '$1 days') : s);
+    const tags = (d.tags || []).slice(0, 4).map((t) => `<span class="badge" style="background:${app.esc(d.accent || '#0f766e')}22;color:${app.esc(d.accent || '#0f766e')}">${app.esc(tr(t))}</span>`).join('');
+    const foods = (d.foods || []).slice(0, 4).map((f) => app.esc(tr(f.name || f))).join(en ? ', ' : '、');
     const hls = (d.highlights || []).slice(0, 3);
     body.innerHTML = `
       <div class="draw-card">
         <div class="draw-card-cover" style="background-color:${app.esc(d.accent || '#0f766e')}">
           <div class="draw-card-emoji">${app.esc(d.emoji || '🏡')}</div>
-          <div class="draw-card-name">${app.esc(d.name)}</div>
-          <div class="draw-card-meta">${app.esc(d.province || '')} · 建议 ${app.esc(d.suggestDays || '')}${(d.bestSeasons || []).length ? ' · 最佳 ' + app.esc(d.bestSeasons.join('/')) : ''}</div>
+          <div class="draw-card-name">${app.esc(tr(d.name))}</div>
+          <div class="draw-card-meta">${app.esc(en ? tr(d.province || '') : (d.province || ''))}${d.suggestDays ? ' · ' + app.esc(en ? 'Suggested ' + daysTxt(d.suggestDays) : '建议 ' + d.suggestDays) : ''}${(d.bestSeasons || []).length ? ' · ' + app.esc(en ? 'Best ' + d.bestSeasons.map((x) => tr(x)).join(', ') : '最佳 ' + d.bestSeasons.join('/')) : ''}</div>
         </div>
         <div class="draw-card-body">
           ${tags ? `<div class="draw-card-tags">${tags}</div>` : ''}
           <p class="draw-card-tagline">${app.esc(d.tagline || '')}</p>
           <p class="draw-card-desc">${app.esc(d.description || '')}</p>
-          ${hls.length ? `<div class="draw-card-sec"><b>✨ 必去亮点</b><ul>${hls.map((h) => `<li>${app.esc(h.title)}${h.text ? '：' + app.esc(h.text) : ''}</li>`).join('')}</ul></div>` : ''}
+          ${hls.length ? `<div class="draw-card-sec"><b>✨ 必去亮点</b><ul>${hls.map((h) => `<li>${app.esc(tr(h.title))}${h.text ? (en ? ' — ' : '：') + app.esc(tr(h.text)) : ''}</li>`).join('')}</ul></div>` : ''}
           ${foods ? `<div class="draw-card-sec"><b>🍜 当地美食</b><p>${foods}</p></div>` : ''}
         </div>
       </div>`;

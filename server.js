@@ -131,6 +131,64 @@ const config = ai.loadConfig();
 const destinations = (readJson(path.join(ROOT, 'data', 'destinations.json')) || { destinations: [] }).destinations || [];
 // 中国城市名单（输入提示/城市自查用）
 const cities = (readJson(path.join(ROOT, 'data', 'cities.json')) || { cities: [] }).cities || [];
+/* 接口错误文案（中英双语）：英文站点不返回中文 */
+const API_MSG = {
+  zh: {
+    badJson: 'JSON 格式错误',
+    rateLimited: '请求过于频繁，请稍后再试',
+    needDest: '请选择目的地，或选择「自定义目的地」并填写城市名',
+    needDestId: '请选择目的地 destinationId',
+    needOrigin: '请填写出发城市后再生成行程',
+    originNotFound: (x, g) => '未找到出发城市「' + x + '」' + (g ? '，你是不是想输入「' + g + '」？' : '') + ' 请修改后重新生成',
+    destNotFound: (x, g) => '未找到该城市「' + x + '」' + (g ? '，你是不是想输入「' + g + '」？' : '') + ' 请修改后重新生成',
+    cityPick: (x) => '未找到该城市「' + x + '」，请从提示中选择正确的城市名',
+    sameCity: (x) => '出发城市和目的地是同一个城市「' + x + '」，行程没有参考价值，请换个目的地',
+    returnNotFound: (x) => '未找到返回目的地「' + x + '」，请从提示中选择正确的城市名',
+    returnSame: '返回目的地不能和目的地相同',
+    needStart: '请选择去程日期',
+    needEnd: '请选择返程日期',
+    endBeforeStart: '返程日期不能早于去程日期',
+    needQuestion: '请输入问题',
+    jobGone: '任务不存在或已过期',
+    destGone: '未找到该目的地',
+    passcodeWrong: '口令错误',
+    inviteWrong: '邀请码错误',
+    tooManyTries: '尝试过于频繁，请 1 分钟后再试',
+    noCoord: '目的地不存在或缺少坐标',
+    weatherFailed: (m) => '天气获取失败：' + m,
+    apiGone: '接口不存在',
+    serverError: '服务器内部错误'
+  },
+  en: {
+    badJson: 'Invalid JSON',
+    rateLimited: 'Too many requests — please try again shortly',
+    needDest: 'Please choose a destination, or pick “custom destination” and enter a city',
+    needDestId: 'Please provide a destinationId',
+    needOrigin: 'Please enter your departure city before generating a plan',
+    originNotFound: (x, g) => 'Departure city not found: “' + x + '”' + (g ? '. Did you mean “' + g + '”?' : '') + ' Please edit and try again.',
+    destNotFound: (x, g) => 'City not found: “' + x + '”' + (g ? '. Did you mean “' + g + '”?' : '') + ' Please edit and try again.',
+    cityPick: (x) => 'City not found: “' + x + '” — please pick one from the suggestions',
+    sameCity: (x) => 'Your departure city and destination are both “' + x + '” — please choose a different destination',
+    returnNotFound: (x) => 'Return destination not found: “' + x + '” — please pick one from the suggestions',
+    returnSame: 'The return destination cannot be the same as the destination',
+    needStart: 'Please choose a departure date',
+    needEnd: 'Please choose a return date',
+    endBeforeStart: 'The return date cannot be earlier than the departure date',
+    needQuestion: 'Please enter a question',
+    jobGone: 'This task no longer exists or has expired',
+    destGone: 'Destination not found',
+    passcodeWrong: 'Wrong passcode',
+    inviteWrong: 'Wrong invite code',
+    tooManyTries: 'Too many attempts — please try again in a minute',
+    noCoord: 'Destination not found or missing coordinates',
+    weatherFailed: (m) => 'Weather lookup failed: ' + m,
+    apiGone: 'API not found',
+    serverError: 'Server error'
+  }
+};
+const MSG = (lang) => API_MSG[lang === 'en' ? 'en' : 'zh'];
+/* 请求语言：优先 body.lang，其次 x-lang 头（解析请求体前也能用） */
+const reqLang = (req) => { const h = String((req.headers && req.headers['x-lang']) || '').toLowerCase(); return h === 'en' ? 'en' : 'zh'; };
 // 城市拼音别名（供英文/拼音输入匹配，构建时生成，无需运行时依赖）
 const cityPinyin = readJson(path.join(ROOT, 'data', 'city-pinyin.json')) || {};
 // 目的地数据英文映射（亮点/适老说明等）
@@ -216,9 +274,9 @@ async function handleApi(req, res, pathname) {
   }
   if (pathname === '/api/auth' && req.method === 'POST') {
     let body;
-    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
+    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: MSG(reqLang(req)).badJson }); }
     const g = loginAllowed(req);
-    if (!g.allowed) return sendJson(res, 429, { error: '尝试过于频繁，请 1 分钟后再试' });
+    if (!g.allowed) return sendJson(res, 429, { error: MSG(reqLang(req)).tooManyTries });
     if (auth.verifyPasscode(body.passcode)) {
       g.rec.n = 0; g.rec.lockedUntil = 0; loginFails.set(clientIp(req), g.rec);
       return sendJson(res, 200, { ok: true, token: auth.signToken() });
@@ -226,18 +284,18 @@ async function handleApi(req, res, pathname) {
     g.rec.n++;
     if (g.rec.n >= LOGIN.max) { g.rec.lockedUntil = Date.now() + LOGIN.lockMs; g.rec.n = 0; }
     loginFails.set(clientIp(req), g.rec);
-    return sendJson(res, 401, { error: '口令错误' });
+    return sendJson(res, 401, { error: MSG(reqLang(req)).passcodeWrong });
   }
 
   // POST /api/ai/invite —— 邀请码解锁服务端 AI（换短时效令牌；服务端 Key 永不下发）
   if (pathname === '/api/ai/invite' && req.method === 'POST') {
-    if (!allowAi(req)) return sendJson(res, 429, { error: '请求过于频繁，请稍后再试' });
+    if (!allowAi(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
     let body;
-    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
+    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: MSG(reqLang(req)).badJson }); }
     if (ai.verifyInvite(body && body.code)) {
       return sendJson(res, 200, { ok: true, aiToken: ai.signAiToken() });
     }
-    return sendJson(res, 401, { error: '邀请码错误' });
+    return sendJson(res, 401, { error: MSG(reqLang(req)).inviteWrong });
   }
   // GET /api/ai/status —— 查询是否配置了邀请码、当前令牌是否有效
   if (pathname === '/api/ai/status' && req.method === 'GET') {
@@ -280,7 +338,7 @@ async function handleApi(req, res, pathname) {
   const dm = pathname.match(/^\/api\/destinations\/([^/]+)$/);
   if (dm && req.method === 'GET') {
     const d = destinations.find((x) => x.id === decodeURIComponent(dm[1]));
-    if (!d) return sendJson(res, 404, { error: '未找到该目的地' });
+    if (!d) return sendJson(res, 404, { error: MSG(reqLang(req)).destGone });
     return sendJson(res, 200, { destination: applyImageBase(d) });
   }
 
@@ -294,17 +352,17 @@ async function handleApi(req, res, pathname) {
 
   // POST /api/recommend —— AI/规则 出行打包清单
   if (pathname === '/api/recommend' && req.method === 'POST') {
-    if (!allowAi(req)) return sendJson(res, 429, { error: '请求过于频繁，请稍后再试' });
+    if (!allowAi(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
     let body;
-    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
+    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: MSG(reqLang(req)).badJson }); }
     const dest = destinations.find((d) => d.id === body.destinationId)
       || (body.destinationId === 'custom' && String((body.customDest || {}).name || '').trim()
           ? planner.customDestination(String((body.customDest || {}).name || '').trim(), String((body.customDest || {}).note || '').trim())
           : null);
-    if (!dest) return sendJson(res, 400, { error: '请选择目的地，或选择「自定义目的地」并填写城市名' });
+    if (!dest) return sendJson(res, 400, { error: MSG(body.lang).needDest });
     if (body.destinationId === 'custom') {
       const customName = String((body.customDest || {}).name || '').trim();
-      if (!findCity(customName)) return sendJson(res, 400, { error: '未找到该城市「' + customName + '」，请从提示中选择正确的城市名' });
+      if (!findCity(customName)) return sendJson(res, 400, { error: MSG(body.lang).cityPick(customName) });
     }
     const params = {
       destination: dest,
@@ -318,17 +376,18 @@ async function handleApi(req, res, pathname) {
       notes: String(body.notes || '').trim(),
     };
     const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '', lang: body.lang === 'en' ? 'en' : 'zh' };
+    const L = MSG(body.lang);
     const jobId = runJob(() => rec.recommend(params, overrides));
     return sendJson(res, 200, { jobId, status: 'running' });
   }
 
   // POST /api/ai-guide —— AI 生成目的地攻略
   if (pathname === '/api/ai-guide' && req.method === 'POST') {
-    if (!allowAi(req)) return sendJson(res, 429, { error: '请求过于频繁，请稍后再试' });
+    if (!allowAi(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
     let body;
-    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
+    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: MSG(reqLang(req)).badJson }); }
     const dest = destinations.find((d) => d.id === body.destinationId);
-    if (!dest) return sendJson(res, 400, { error: '请选择目的地 destinationId' });
+    if (!dest) return sendJson(res, 400, { error: MSG(body.lang).needDestId });
     const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '', lang: body.lang === 'en' ? 'en' : 'zh' };
     const result = await rec.aiGuide(dest, overrides);
     return sendJson(res, 200, result);
@@ -336,21 +395,22 @@ async function handleApi(req, res, pathname) {
 
   // POST /api/plan —— AI 主理人：生成逐日详细行程规划
   if (pathname === '/api/plan' && req.method === 'POST') {
-    if (!allowAi(req)) return sendJson(res, 429, { error: '请求过于频繁，请稍后再试' });
+    if (!allowAi(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
     let body;
-    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
+    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: MSG(reqLang(req)).badJson }); }
     const customName = String((body.customDest || {}).name || '').trim();
     const dest = destinations.find((d) => d.id === body.destinationId)
       || (body.destinationId === 'custom' && customName
           ? planner.customDestination(customName, String((body.customDest || {}).note || '').trim())
           : null);
-    if (!dest) return sendJson(res, 400, { error: '请选择目的地，或选择「自定义目的地」并填写城市名' });
+    if (!dest) return sendJson(res, 400, { error: MSG(body.lang).needDest });
     // 防浪费：出发城市必填；用户输入的城市须为中国真实城市
+    const L = MSG(body.lang);
     const origin = String(body.origin || '').trim();
-    if (!origin) return sendJson(res, 400, { error: '请填写出发城市后再生成行程' });
+    if (!origin) return sendJson(res, 400, { error: L.needOrigin });
     if (!findCity(origin)) {
       const g = guessCity(origin);
-      return sendJson(res, 400, { error: '未找到出发城市「' + origin + '」' + (g ? '，你是不是想输入「' + g + '」？' : '') + ' 请修改后重新生成' });
+      return sendJson(res, 400, { error: L.originNotFound(origin, g) });
     }
     // 拼音/英文输入 → 规范成标准中文城市名（供 12306 查站与提示词使用）
     if (body.destinationId === 'custom') {
@@ -359,27 +419,27 @@ async function handleApi(req, res, pathname) {
     }
     if (body.destinationId === 'custom' && !findCity(customName)) {
       const g = guessCity(customName);
-      return sendJson(res, 400, { error: '未找到该城市「' + customName + '」' + (g ? '，你是不是想输入「' + g + '」？' : '') + ' 请修改后重新生成' });
+      return sendJson(res, 400, { error: L.destNotFound(customName, g) });
     }
     // 出发城市与目的地不能相同（否则行程无参考价值）
     const originCity = findCity(origin);
     const destRealName = body.destinationId === 'custom' ? customName : ((destinations.find((d) => d.id === body.destinationId) || {}).name || '');
     if (originCity && destRealName && String(originCity.name).replace(/[省市]$/, '') === String(destRealName).replace(/[省市]$/, '')) {
-      return sendJson(res, 400, { error: '出发城市和目的地是同一个城市「' + destRealName + '」，行程没有参考价值，请换个目的地' });
+      return sendJson(res, 400, { error: L.sameCity(destRealName) });
     }
     const returnDest = String(body.returnDest || '').trim();
     if (returnDest) {
-      if (!findCity(returnDest)) return sendJson(res, 400, { error: '未找到返回目的地「' + returnDest + '」，请从提示中选择正确的城市名' });
+      if (!findCity(returnDest)) return sendJson(res, 400, { error: L.returnNotFound(returnDest) });
       if (String(findCity(returnDest).name).replace(/[省市]$/, '') === String(destRealName).replace(/[省市]$/, '')) {
-        return sendJson(res, 400, { error: '返回目的地不能和目的地相同' });
+        return sendJson(res, 400, { error: L.returnSame });
       }
     }
     // 必填项：去程/返程日期（减少 AI 猜测、节省 token）
     const startDate = String(body.startDate || '').trim();
     const endDate = String(body.endDate || '').trim();
-    if (!startDate) return sendJson(res, 400, { error: '请选择去程日期' });
-    if (!endDate) return sendJson(res, 400, { error: '请选择返程日期' });
-    if (endDate < startDate) return sendJson(res, 400, { error: '返程日期不能早于去程日期' });
+    if (!startDate) return sendJson(res, 400, { error: L.needStart });
+    if (!endDate) return sendJson(res, 400, { error: L.needEnd });
+    if (endDate < startDate) return sendJson(res, 400, { error: L.endBeforeStart });
     const params = {
       destination: dest,
       origin: (findCity(origin) || {}).name || origin,
@@ -453,11 +513,11 @@ async function handleApi(req, res, pathname) {
 
   // POST /api/chat —— AI 主理人问答
   if (pathname === '/api/chat' && req.method === 'POST') {
-    if (!allowAi(req)) return sendJson(res, 429, { error: '请求过于频繁，请稍后再试' });
+    if (!allowAi(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
     let body;
-    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: 'JSON 格式错误' }); }
+    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: MSG(reqLang(req)).badJson }); }
     const message = String(body.message || '').trim();
-    if (!message) return sendJson(res, 400, { error: '请输入问题' });
+    if (!message) return sendJson(res, 400, { error: MSG(body.lang).needQuestion });
     const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '', lang: body.lang === 'en' ? 'en' : 'zh' };
     const result = await planner.chatReply(message, Array.isArray(body.history) ? body.history : [], overrides);
     return sendJson(res, 200, result);
@@ -467,7 +527,7 @@ async function handleApi(req, res, pathname) {
   if (pathname === '/api/job' && req.method === 'GET') {
     const q = url.parse(req.url, true).query;
     const job = jobs.get(String(q.id || ''));
-    if (!job) return sendJson(res, 404, { error: '任务不存在或已过期' });
+    if (!job) return sendJson(res, 404, { error: MSG(reqLang(req)).jobGone });
     return sendJson(res, 200, { jobId: String(q.id || ''), status: job.status, result: job.result || null, error: job.error || null });
   }
 
@@ -475,12 +535,12 @@ async function handleApi(req, res, pathname) {
   if (pathname === '/api/weather' && req.method === 'GET') {
     const q = url.parse(req.url, true).query;
     const dest = destinations.find((d) => d.id === String(q.id || ''));
-    if (!dest || !dest.lat) return sendJson(res, 400, { error: '目的地不存在或缺少坐标' });
+    if (!dest || !dest.lat) return sendJson(res, 400, { error: MSG(reqLang(req)).noCoord });
     try {
       const data = await weather.getForecast(dest);
       return sendJson(res, 200, data);
     } catch (e) {
-      return sendJson(res, 502, { error: '天气获取失败：' + String(e.message || e) });
+      return sendJson(res, 502, { error: MSG(reqLang(req)).weatherFailed(String(e.message || e)) });
     }
   }
 
@@ -491,7 +551,7 @@ async function handleApi(req, res, pathname) {
   }
 
 
-  return sendJson(res, 404, { error: '接口不存在' });
+  return sendJson(res, 404, { error: MSG(reqLang(req)).apiGone });
 }
 
 const gzipCache = new Map(); // 静态文件 gzip 缓存（按 mtime 失效）
@@ -546,7 +606,7 @@ const server = http.createServer(async (req, res) => {
       await handleApi(req, res, pathname);
     } catch (e) {
       console.error('[API Error]', e);
-      sendJson(res, 500, { error: '服务器内部错误', detail: String((e && e.message) || e) });
+      sendJson(res, 500, { error: MSG(reqLang(req)).serverError, detail: String((e && e.message) || e) });
     }
   } else {
     serveStatic(req, res, pathname);

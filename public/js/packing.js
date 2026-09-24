@@ -84,10 +84,10 @@
       localStorage.setItem('jyh_last_pack', JSON.stringify({ jobId: st.jobId, vals, result: null, ts: Date.now() }));
       app.pollJob(st.jobId, {
         onDone: (result) => { renderResult(bodyEl, result, vals); savePack(vals, result); },
-        onError: (msg) => { bodyEl.innerHTML = `<p style="padding:40px;text-align:center;color:var(--danger)">生成失败：${app.esc(msg)}</p>`; }
+        onError: (msg) => { bodyEl.innerHTML = `<p style="padding:40px;text-align:center;color:var(--danger)">${(window.i18n && window.i18n.lang === 'en') ? 'Generation failed: ' : '生成失败：'}${app.esc(msg)}</p>`; }
       });
     } catch (e) {
-      bodyEl.innerHTML = `<p style="padding:40px;text-align:center;color:var(--danger)">生成失败：${app.esc(e.message)}</p>`;
+      bodyEl.innerHTML = `<p style="padding:40px;text-align:center;color:var(--danger)">${(window.i18n && window.i18n.lang === 'en') ? 'Generation failed: ' : '生成失败：'}${app.esc(e.message)}</p>`;
     }
   }
   function restorePack() {

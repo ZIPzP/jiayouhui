@@ -428,7 +428,14 @@
  "台湾": "Taiwan",
  "出行天数": "Trip length",
  "出行日期": "Travel dates",
- "出行人数": "Travellers"
+ "出行人数": "Travellers",
+ "🔊 朗读": "🔊 Read aloud",
+ "🔊 朗读介绍": "🔊 Read the introduction",
+ "AI 主理人正在后台生成行程…": "The AI planner is building your itinerary in the background…",
+ "你可以放心切到别的页面/标签页，回来会自动恢复显示结果": "Feel free to switch pages or tabs — the result will be restored when you return.",
+ "（当前为演示模式，未配置 AI Key）我是「家游汇」AI 主理人 🐱 配置 DeepSeek API Key 后，我可以帮你规划详细行程、推荐餐厅、估算费用、安排交通。你也可以直接使用页面上方的「行程规划」按钮式表单生成完整方案。": "(Demo mode — no AI key configured.) I’m the Family Trip Hub AI planner 🐱 Add a DeepSeek API key and I can plan detailed itineraries, recommend restaurants, estimate costs and arrange transport. You can also use the Trip Planner form above to generate a full plan.",
+ "生成失败：": "Generation failed: ",
+ "✨ 必去亮点": "✨ Must-see highlights"
 };
   // 上下文词典：同一个中文在不同位置用不同英文（如表单里的「目的地」用单数）
   const CTX = { 'form-label': { '目的地': 'Destination' } };
@@ -471,6 +478,12 @@
     const m = k.match(/^([^\p{L}\p{N}]+)(.+)$/u);
     if (m && Object.prototype.hasOwnProperty.call(DICT, m[2])) return { pre: m[1], en: DICT[m[2]] };
     // 组合串：如「历史 · 文化 · 亲子」逐段翻译后重新拼接
+    // 顿号列表：如「沙虫粥、蟹仔粉、烤生蚝」逐项翻译
+    if (k.includes('、')) {
+      const parts = k.split('、');
+      const en2 = parts.map((x) => DICT[x.trim()] || null);
+      if (en2.length > 1 && en2.every(Boolean)) return { pre: '', en: en2.join(', ') };
+    }
     if (k.includes(' · ')) {
       const parts = k.split(' · ');
       const en = parts.map((x) => DICT[x.trim()] || null);

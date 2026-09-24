@@ -269,13 +269,16 @@
     const bodyEl = document.getElementById('planBody');
     // 硬性必填：城市 + 日期（缺失就在输出框提示，不调 AI）
     const problems = [];
-    if (!document.getElementById('pl-origin').value.trim()) problems.push('出发城市没填写');
-    if (!document.getElementById('pl-dest').value.trim()) problems.push('目的地城市没填写');
-    if (!document.getElementById('pl-start').value) problems.push('去程日期没选择');
-    if (!document.getElementById('pl-end').value) problems.push('返程日期没选择');
+    const uiEn = !!(window.i18n && window.i18n.lang === 'en');
+    if (!document.getElementById('pl-origin').value.trim()) problems.push(uiEn ? 'departure city missing' : '出发城市没填写');
+    if (!document.getElementById('pl-dest').value.trim()) problems.push(uiEn ? 'destination missing' : '目的地城市没填写');
+    if (!document.getElementById('pl-start').value) problems.push(uiEn ? 'departure date missing' : '去程日期没选择');
+    if (!document.getElementById('pl-end').value) problems.push(uiEn ? 'return date missing' : '返程日期没选择');
     if (problems.length) {
       empty.hidden = true; bodyEl.hidden = false;
-      bodyEl.innerHTML = `<div class="ai-feedback">🐱 AI 主理人：${problems.map((x) => '「' + x + '」').join('、')}，请补全后再生成。</div>`;
+      bodyEl.innerHTML = uiEn
+        ? `<div class="ai-feedback">🐱 AI planner: ${problems.map((x) => '“' + x + '”').join(', ')} — please fill these in and generate again.</div>`
+        : `<div class="ai-feedback">🐱 AI 主理人：${problems.map((x) => '「' + x + '」').join('、')}，请补全后再生成。</div>`;
       return;
     }
     // 出发与目的地不能同城（否则行程无参考价值，不调 AI）
@@ -283,7 +286,9 @@
     const destRaw2 = document.getElementById('pl-dest').value.trim();
     if (originRaw2 && destRaw2 && app.normCity(originRaw2) === app.normCity(destRaw2)) {
       empty.hidden = true; bodyEl.hidden = false;
-      bodyEl.innerHTML = `<div class="ai-feedback">🐱 AI 主理人：出发城市和目的地是同一个城市「${app.esc(destRaw2)}」，行程没有参考价值，请换个目的地。</div>`;
+      bodyEl.innerHTML = uiEn
+        ? `<div class="ai-feedback">🐱 AI planner: your departure city and destination are both “${app.esc(destRaw2)}” — please choose a different destination.</div>`
+        : `<div class="ai-feedback">🐱 AI 主理人：出发城市和目的地是同一个城市「${app.esc(destRaw2)}」，行程没有参考价值，请换个目的地。</div>`;
       return;
     }
     const vals = planFormValues();
@@ -296,12 +301,12 @@
       saveLast({ jobId: st.jobId, vals, result: null });
       app.pollJob(st.jobId, {
         onDone: (result) => { renderPlan(bodyEl, result, vals); savePlan(vals, result); },
-        onError: (msg) => { bodyEl.innerHTML = `<div class="ai-feedback">🐱 AI 主理人：${app.esc(msg)}</div>`; }
+        onError: (msg) => { bodyEl.innerHTML = `<div class="ai-feedback">${uiEn ? '🐱 AI planner: ' : '🐱 AI 主理人：'}${app.esc(msg)}</div>`; }
       });
     } catch (e) {
       // 校验类错误（400）直接显示在输出框（含 AI 猜城市）
       const msg = (e && e.message) || '生成失败';
-      bodyEl.innerHTML = `<div class="ai-feedback">🐱 AI 主理人：${app.esc(msg)}</div>`;
+      bodyEl.innerHTML = `<div class="ai-feedback">${uiEn ? '🐱 AI planner: ' : '🐱 AI 主理人：'}${app.esc(msg)}</div>`;
     }
   }
   function restorePlan() {

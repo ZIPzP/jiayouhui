@@ -32,6 +32,8 @@
     const headers = Object.assign({}, opts.headers || {});
     const token = localStorage.getItem('jyh_token');
     if (token) headers['Authorization'] = 'Bearer ' + token;
+    // 让服务端错误信息也跟随界面语言（解析请求体之前就能拿到）
+    headers['x-lang'] = (window.i18n && window.i18n.lang) || 'zh';
     const r = await fetch(path, Object.assign({}, opts, { headers }));
     const data = await r.json().catch(() => ({}));
     if (r.status === 401 && data.needAuth) showAuthGate();
