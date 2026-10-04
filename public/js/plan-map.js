@@ -38,7 +38,7 @@
     s = s.replace(/^(上午|中午|下午|晚上|推荐|安排|前往|游览|参观|打卡|体验|品尝|享用|乘坐|乘|去|到|逛|漫步|出发去)\s*/, '');
     s = s.replace(/[·・].*$/, '').trim();
     s = s.replace(/(慢逛|漫步|打卡|游玩|观光|体验|活动|安排|初体验)$/g, '').trim();
-    s = s.split(/[，,。；;:：]/)[0].trim();
+    s = s.split(/[，,。；;:：\/]/)[0].trim();
     // 从「玉龙雪山乘大索道」「丽江古城石板路」这类描述中取地点主体
     s = s.replace(/(乘|登|住|感受|观|游|逛|看|品尝|享用|前往|到达|游览|体验|漫步|慢逛|参观|打卡|拍照|高原湖泊|湖泊|古城石板路|石板路|小桥流水|湿地观鸟|骑马划船|特色客栈|特色晚餐).*$/, '').trim();
     if (s.length > 18) s = s.slice(0, 18);
@@ -62,9 +62,6 @@
       (day.schedule || []).forEach((item) => {
         add(item.activity, item.time, '行程');
         if (stops.length < 4 && item.detail) add(item.detail, item.time, '行程');
-      });
-      (day.meals || []).forEach((meal) => {
-        if (stops.length < 5 && meal.recommend) add(meal.recommend, meal.type, '餐饮');
       });
       if (stops.length) out.push({ day: Number(day.day) || out.length + 1, title: day.title || '', stops: stops.slice(0, 5) });
     });
