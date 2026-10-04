@@ -143,6 +143,8 @@ code { background: #f1f5f9; padding: 2px 6px; border-radius: 6px; font-size: .9e
 /* ---------- 打包布局 ---------- */
 .packing-layout { display: grid; grid-template-columns: 420px 1fr; gap: 24px; align-items: start; }
 .form-card { padding: 24px; position: sticky; top: calc(var(--nav-h) + 16px); }
+.plan-context { margin: 0 0 16px; padding: 10px 12px; border: 1px solid #99f6e4; background: var(--primary-light); color: var(--primary-dark); border-radius: 10px; font-size: .84rem; line-height: 1.5; }
+.plan-context p { margin: 0; }
 .result-card { padding: 28px; min-height: 420px; }
 .result-empty { text-align: center; color: var(--ink-soft); padding: 80px 20px; }
 .result-empty-icon { font-size: 3.2rem; margin-bottom: 14px; }

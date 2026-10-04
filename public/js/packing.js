@@ -1,8 +1,13 @@
 (() => {
   'use strict';
+  let linkedPlan = null;
+  const PLAN_KEY = 'jyh_last_plan';
   window.pageInit = async function () {
     fillMonths();
     bindEvents();
+    linkedPlan = loadLinkedPlan();
+    if (linkedPlan) applyPlanDefaults(linkedPlan);
+    renderPlanContext();
     // 从首页快捷规划跳转过来时，自动带入选择并生成
     const quick = sessionStorage.getItem('jyh_quick');
     if (quick) {
@@ -24,6 +29,7 @@
         if (v.elderly !== undefined) document.getElementById('pf-elderly').value = v.elderly;
         if (v.adults !== undefined) document.getElementById('pf-adults').value = v.adults;
         if (v.children !== undefined) document.getElementById('pf-children').value = v.children;
+        renderPlanContext();
         generatePacking(formValues());
       } catch (e) { /* 忽略 */ }
     } else {
@@ -36,6 +42,91 @@
     const now = new Date().getMonth() + 1;
     const sel = document.getElementById('pf-month');
     sel.innerHTML = labels.map((m, i) => `<option value="${i + 1}" ${i + 1 === now ? 'selected' : ''}>${m}</option>`).join('');
+  }
+  function loadLinkedPlan() {
+    const pick = (s) => { try { return JSON.parse(s || 'null'); } catch (e) { return null; } };
+    const a = pick(localStorage.getItem(PLAN_KEY));
+    const b = pick(sessionStorage.getItem(PLAN_KEY));
+    const p = a && b ? ((a.ts || 0) >= (b.ts || 0) ? a : b) : (a || b);
+    if (!p || !p.vals || !p.result || !Array.isArray(p.result.days)) return null;
+    return p;
+  }
+  function resolveCityName(raw) {
+    const city = app.resolveCity ? app.resolveCity(raw) : null;
+    return app.normCity(city ? city.name : raw);
+  }
+  function linkedDest(p) {
+    if (!p || !p.vals) return '';
+    const hit = app.state.destinations.find((d) => d.id === p.vals.destinationId);
+    if (hit) return hit.name;
+    return resolveCityName((p.vals.customDest && p.vals.customDest.name) || p.vals.destinationName || '');
+  }
+  function linkedDays(p) {
+    return Number(p && p.vals && p.vals.days) || ((p && p.result && p.result.days) || []).length || 0;
+  }
+  function durationValue(days) { return Number(days) <= 2 ? '2' : (Number(days) <= 5 ? '4' : '7'); }
+  function monthFromDate(v) { const m = /^(\d{4})-(\d{2})/.exec(String(v || '')); return m ? Number(m[2]) : 0; }
+  function applyPlanDefaults(p) {
+    const destName = linkedDest(p);
+    if (destName) document.getElementById('pf-dest').value = destName;
+    const m = monthFromDate(p && p.vals && p.vals.startDate);
+    if (m) document.getElementById('pf-month').value = String(m);
+    const days = linkedDays(p);
+    if (days) document.getElementById('pf-duration').value = durationValue(days);
+    if (p.vals.elderly !== undefined) document.getElementById('pf-elderly').value = p.vals.elderly;
+    if (p.vals.adults !== undefined) document.getElementById('pf-adults').value = p.vals.adults;
+    if (p.vals.children !== undefined) document.getElementById('pf-children').value = p.vals.children;
+    const interests = Array.isArray(p.vals.interests) ? p.vals.interests : [];
+    [...document.querySelectorAll('#interestChips input')].forEach((cb) => { cb.checked = interests.includes(cb.value); });
+  }
+  function renderPlanContext() {
+    const box = document.getElementById('planContext');
+    const text = document.getElementById('planContextText');
+    if (!box || !text) return;
+    if (!linkedPlan) { box.hidden = true; return; }
+    const planDest = app.normCity(linkedDest(linkedPlan));
+    const chosenDest = app.normCity((document.getElementById('pf-dest').value || '').trim());
+    if (planDest && chosenDest && planDest !== chosenDest) { box.hidden = true; return; }
+    const en = !!(window.i18n && window.i18n.lang === 'en');
+    const tr = (v) => (en && window.i18n && window.i18n.t ? window.i18n.t(v) : v);
+    const transport = (linkedPlan.vals && linkedPlan.vals.transport) || '';
+    const transportIcon = { '飞机': '✈️ ', '高铁': '🚄 ', '自驾': '🚗 ', '未定': '❓ ' };
+    const transportText = transport ? tr(transportIcon[transport] ? transportIcon[transport] + transport : transport).replace(/^\S+\s/, '') : '';
+    const days = linkedDays(linkedPlan);
+    const info = [tr(linkedDest(linkedPlan)), days ? (en ? days + ' days' : days + ' 天') : '', transportText].filter(Boolean).join(' · ');
+    text.textContent = en ? 'Linked itinerary: ' + info : '已关联行程规划：' + info;
+    box.hidden = false;
+  }
+  function destinationNameFromVals(vals) {
+    const hit = app.state.destinations.find((d) => d.id === vals.destinationId);
+    return hit ? hit.name : resolveCityName((vals.customDest && vals.customDest.name) || '');
+  }
+  function buildTripContext(vals) {
+    if (!linkedPlan || !linkedPlan.result || !Array.isArray(linkedPlan.result.days)) return null;
+    const planDest = linkedDest(linkedPlan);
+    const chosenDest = destinationNameFromVals(vals);
+    if (planDest && chosenDest && app.normCity(planDest) !== app.normCity(chosenDest)) return null;
+    const r = linkedPlan.result;
+    return {
+      title: r.title || '',
+      summary: r.summary || '',
+      notes: (linkedPlan.vals && linkedPlan.vals.notes) || '',
+      transportPlan: [r.transportPlan && r.transportPlan.outbound, r.transportPlan && r.transportPlan.inbound, r.transportPlan && r.transportPlan.local].filter(Boolean).join('；'),
+      dietaryNotes: (r.dietaryNotes || []).join('；'),
+      tips: (r.tips || []).join('；'),
+      days: r.days.map((d) => ({
+        day: d.day,
+        title: d.title || '',
+        schedule: (d.schedule || []).map((x) => [x.time, x.activity, x.detail].filter(Boolean).join(' ')).join('；'),
+        meals: (d.meals || []).map((x) => [x.type, x.recommend, x.note].filter(Boolean).join(' ')).join('；'),
+        transport: d.transport || '',
+        accommodation: d.accommodation || ''
+      }))
+    };
+  }
+  function withPlanContext(vals) {
+    const ctx = buildTripContext(vals);
+    return ctx ? Object.assign({}, vals, { tripContext: ctx }) : vals;
   }
   function formValues() {
     const raw = document.getElementById('pf-dest').value.trim();
@@ -53,12 +144,13 @@
       notes: document.getElementById('pf-notes').value.trim()
     };
     const hit = app.state.destinations.find((d) => app.normCity(d.name) === name);
-    if (hit) return Object.assign({}, base, { destinationId: hit.id });
-    return Object.assign({}, base, { destinationId: 'custom', customDest: { name: raw, note: '' } });
+    if (hit) return withPlanContext(Object.assign({}, base, { destinationId: hit.id }));
+    return withPlanContext(Object.assign({}, base, { destinationId: 'custom', customDest: { name: raw, note: '' } }));
   }
   function bindEvents() {
     // 城市自动补全（支持中文名与拼音/英文）
     if (app.cityAutocomplete) app.cityAutocomplete('pf-dest', 'pfDestSug', 'pfDestErr', '目的地');
+    document.getElementById('pf-dest').addEventListener('input', renderPlanContext);
     document.getElementById('pf-submit').addEventListener('click', () => generatePacking(formValues()));
     const body = document.getElementById('resultBody');
     body.addEventListener('click', (e) => {
@@ -144,6 +236,7 @@
         <span class="provider-tag">${data.provider === 'ai' ? '🐱 AI 生成 · ' + app.esc(data.model || '') : '📋 内置规则引擎'}</span>
       </div>
       ${data.aiError ? `<p class="form-hint" style="color:var(--danger)">AI 调用失败，已自动使用内置清单：${app.esc(data.aiError)}</p>` : ''}
+      ${vals.tripContext ? `<p class="form-hint">📋 ${uiEn ? 'Based on your itinerary plan' : '本清单已结合行程规划生成'}</p>` : ''}
       <div class="weather-box">🌤️ ${app.esc(data.weatherAdvice || '')}</div>
       ${groupHtml}
       <div class="tips-box"><strong>💡 出行贴士</strong><ul>${tips}</ul></div>
