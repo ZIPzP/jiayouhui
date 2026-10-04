@@ -1383,3 +1383,31 @@ html.lang-en .btn-lg { font-size: 1rem; }
 
 /* 增量修改提示（相比上次生成的改动 + 将采用的方式） */
 .plan-change-hint { margin: 6px 0 12px; padding: 9px 12px; border-radius: 10px; background: var(--primary-light); color: var(--primary-dark); font-size: .85rem; line-height: 1.55; }
+
+/* 行程规划：文字确认后生成地图路线 */
+.plan-map-cta { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 16px; padding: 12px 14px; border: 1px solid #99f6e4; border-radius: 12px; background: var(--primary-light); color: var(--primary-dark); }
+.plan-map-cta strong { display: block; font-size: .98rem; }
+.plan-map-cta span { display: block; margin-top: 2px; font-size: .82rem; color: var(--ink-soft); }
+.plan-map-shell { margin: 0 0 18px; padding: 14px; border: 1px solid #99f6e4; border-radius: 14px; background: #f0fdfa; }
+.plan-map-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; color: var(--primary-dark); }
+.plan-map-toolbar strong { flex: 1; }
+.plan-map-status { flex: 1 1 100%; font-size: .82rem; color: var(--ink-soft); }
+.plan-map-status.empty { color: #b45309; }
+.plan-map-body { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 12px; }
+.plan-map-canvas { height: 420px; min-height: 320px; border-radius: 12px; overflow: hidden; background: #e2e8f0; }
+.plan-map-stops { max-height: 420px; overflow-y: auto; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+.plan-map-day { margin-bottom: 10px; }
+.plan-map-day-title { display: flex; align-items: center; gap: 6px; font-size: .82rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 4px; }
+.plan-map-day-title i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.plan-map-stop { display: flex; gap: 8px; width: 100%; text-align: left; border: 0; background: #f8fafc; color: var(--ink); padding: 6px 8px; border-radius: 8px; margin-bottom: 4px; cursor: pointer; font: inherit; font-size: .8rem; }
+.plan-map-stop:hover { background: var(--primary-light); }
+.plan-map-stop b { color: var(--primary); flex: none; }
+.plan-map-stop span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.plan-map-foot { margin: 8px 0 0; font-size: .78rem; color: var(--ink-soft); }
+@media (max-width: 900px) {
+  .plan-map-cta { align-items: flex-start; flex-direction: column; }
+  .plan-map-body { grid-template-columns: 1fr; }
+  .plan-map-canvas { height: 300px; min-height: 260px; }
+  .plan-map-stops { max-height: 220px; }
+}
+@media print { .plan-map-cta, .plan-map-shell { display: none !important; } }

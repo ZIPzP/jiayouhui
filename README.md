@@ -25,6 +25,7 @@ node server.js
 | AI 行程规划 | 选项式表单（去返日期 / 天数 / 交通 / 忌食 / 预算 / 节奏 / 返回目的地等），AI 生成逐日详细行程（含交通、人均费用、忌食提醒）；「其他需求」AI 严格遵循；**高铁/火车自动查询 12306 真实车次**（不编造班次票价）；表单草稿自动保存，切页不丢 |
 | 热门目的地 | 43 个国内家庭游目的地，真实照片、特色亮点、**15 天天气预报**、当地美食（辣度 / 适合人群标签）、适老提示 |
 | AI 出行清单 | 目的地 + 出行月份 + 天数 + 同行人数 + 兴趣；支持「📦 简略 / 🧳 超详细（懒人配套：防晒→清洁乳、湿巾→纸巾…）」模式 + 用户要求填写框 |
+| 地图行程规划 | 行程生成后点击「生成地图规划」，用高德地图将逐日地点与路线显示在地图上，文字行程与地图同步查看；未配置 Key 时显示配置提示，不影响文字行程 |
 | AI 旅行攻略 | 目的地详情一键生成家庭攻略 |
 | 平台热度 | 按**当月**动态排名的热门目的地 |
 | 老年人模式 | 一键切换：字体放大、高对比、大按钮、语音朗读 |
@@ -41,6 +42,21 @@ node server.js
 
 > 支持 OpenAI 兼容协议的其他模型（OpenAI / 通义千问 / Moonshot 等），也可用环境变量 `AI_API_KEY` / `AI_BASE_URL` / `AI_MODEL`。
 > 未配置 Key 或调用失败时自动使用内置规则引擎（`data/packing-db.json` / `lib/planner.js`）。
+
+## 接入高德地图（地图行程规划）
+
+地图功能使用高德地图 Web端 JS API。请在 `config.local.json` 中增加 `map` 段（或使用环境变量）：
+
+```json
+{
+  "map": {
+    "amapJsKey": "你的 Web端 JS API Key",
+    "amapSecurityCode": "你的安全密钥"
+  }
+}
+```
+
+也可使用环境变量 `AMAP_JS_KEY` / `AMAP_SECURITY_CODE`。地图 Key 和高德地图服务条款请在高德开放平台配置，并建议按域名限制 Key。
 
 ## 邀请码 / 访问口令
 
@@ -84,7 +100,7 @@ node server.js
     ├── index.html         # 首页（桌面版轮播 Hero + 3×2 精选）
     ├── destinations.html / plan.html / packing.html / hot.html / about.html
     ├── css/style.css
-    ├── js/                # common / home / destinations / plan / packing / hot / detail
+    ├── js/                # common / home / destinations / plan / plan-map / packing / hot / detail
     └── images/            # 43 城本地真实照片（346 张）
 ```
 
@@ -101,6 +117,7 @@ node server.js
 | POST | `/api/recommend` | 生成出行打包清单（简略/超详细 + 用户要求） |
 | POST | `/api/plan` | AI 主理人：生成逐日行程（含 12306 真实车次） |
 | POST | `/api/chat` | AI 主理人：自由问答 |
+| GET | `/api/map/config` | 地图配置（高德 JS API Key / 安全密钥，未配置时前端降级提示） |
 | GET | `/api/health` | 健康检查 |
 
 ## 免责声明

@@ -1,6 +1,7 @@
 (() => {
   'use strict';
   let chatHistory = [];
+  let renderedPlan = null;
   window.pageInit = async function () {
     bindEvents();
     restoreDraft();
@@ -91,6 +92,8 @@
       if (e.target.closest('[data-save-img]')) { app.saveAsImage('planBody', '家游汇-行程规划.png'); return; }
       if (e.target.closest('[data-save-parts]')) { app.saveAsImageParts('planBody', '家游汇-行程规划.png', 3); return; }
       if (e.target.closest('[data-save-word]')) { app.saveAsWord('planBody', '家游汇-行程规划'); return; }
+      if (e.target.closest('[data-build-map]')) { if (window.planMap && renderedPlan) window.planMap.build(renderedPlan.data, renderedPlan.vals); return; }
+      if (e.target.closest('[data-close-map]')) { const shell = document.getElementById('planMapShell'); if (shell) shell.hidden = true; return; }
       const r = e.target.closest('[data-read]');
       if (r) { app.speak(r.dataset.read); return; }
     });
@@ -414,6 +417,7 @@
   }
 
   function renderPlan(el, data, vals) {
+    renderedPlan = { data, vals };
     const dest = app.state.destinations.find((d) => d.id === vals.destinationId) || {};
     const dayHtml = (data.days || []).map((d, i) => `
       <div class="day-card" style="animation-delay:${(0.05 + i * 0.12).toFixed(2)}s">
@@ -479,6 +483,25 @@
       </div>
       ${data.aiError ? `<p class="form-hint" style="color:var(--danger)">AI 调用失败，已自动使用内置方案：${app.esc(data.aiError)}</p>` : ''}
       ${data.summary ? `<p style="color:var(--ink-soft);margin-bottom:14px">${app.esc(data.summary)}</p>` : ''}
+      <div class="plan-map-cta" id="planMapCta">
+        <div>
+          <strong>🗺️ ${uiEn() ? 'Map plan' : '地图规划'}</strong>
+          <span>${uiEn() ? 'Confirm the text itinerary, then generate a day-by-day map route.' : '确认文字行程后，生成逐日地点与路线地图。'}</span>
+        </div>
+        <button class="btn btn-primary" type="button" data-build-map>${uiEn() ? 'Generate map' : '生成地图规划'}</button>
+      </div>
+      <div class="plan-map-shell" id="planMapShell" hidden>
+        <div class="plan-map-toolbar">
+          <strong>🗺️ ${uiEn() ? 'Map plan' : '地图规划'}</strong>
+          <span id="planMapStatus" class="plan-map-status"></span>
+          <button class="btn btn-ghost" type="button" data-close-map>${uiEn() ? 'Hide map' : '收起地图'}</button>
+        </div>
+        <div class="plan-map-body">
+          <div id="planMap" class="plan-map-canvas"></div>
+          <div id="planMapStops" class="plan-map-stops"></div>
+        </div>
+        <p class="plan-map-foot">${uiEn() ? 'Route order is indicative; use AMap navigation for actual travel.' : '路线为地点顺序示意，实际交通请以高德导航为准。'}</p>
+      </div>
       ${rtHtml}
       <div class="transport-box"><h4>🚄 交通安排</h4>
         ${tp.outbound ? `<p><b>去程：</b>${app.esc(tp.outbound)}</p>` : ''}

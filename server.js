@@ -85,7 +85,7 @@ const SEC_HEADERS = {
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'SAMEORIGIN',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Content-Security-Policy': "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+  'Content-Security-Policy': "default-src 'self'; img-src 'self' data: blob: https://*.amap.com https://*.autonavi.com; style-src 'self' 'unsafe-inline'; script-src 'self' https://webapi.amap.com https://*.amap.com; connect-src 'self' https://webapi.amap.com https://*.amap.com https://*.autonavi.com; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
 };
 function sendJson(res, status, obj) {
   const body = JSON.stringify(obj);
@@ -300,6 +300,13 @@ async function handleApi(req, res, pathname) {
   // GET /api/ai/status —— 查询是否配置了邀请码、当前令牌是否有效
   if (pathname === '/api/ai/status' && req.method === 'GET') {
     return sendJson(res, 200, { hasInvite: ai.hasInvite(), unlocked: ai.verifyAiToken(String(req.headers['x-ai-token'] || '')) });
+  }
+  // GET /api/map/config —— 前端地图配置（高德 JS API Key / 安全密钥）
+  if (pathname === '/api/map/config' && req.method === 'GET') {
+    const mapCfg = ai.loadConfig().map || {};
+    const key = process.env.AMAP_JS_KEY || mapCfg.amapJsKey || '';
+    const securityCode = process.env.AMAP_SECURITY_CODE || mapCfg.amapSecurityCode || '';
+    return sendJson(res, 200, { provider: 'amap', enabled: !!key, key, securityCode });
   }
     // GET /api/destinations —— 列表（不含超大字段）
   if (pathname === '/api/destinations' && req.method === 'GET') {
