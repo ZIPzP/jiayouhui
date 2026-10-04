@@ -519,7 +519,7 @@ async function handleApi(req, res, pathname) {
     const message = String(body.message || '').trim();
     if (!message) return sendJson(res, 400, { error: MSG(body.lang).needQuestion });
     const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '', lang: body.lang === 'en' ? 'en' : 'zh' };
-    const result = await planner.chatReply(message, Array.isArray(body.history) ? body.history : [], overrides);
+    const result = await planner.chatReply(message, Array.isArray(body.history) ? body.history : [], overrides, body.tripContext || null);
     return sendJson(res, 200, result);
   }
 

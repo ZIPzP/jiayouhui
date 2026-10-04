@@ -331,6 +331,26 @@
       }
     } catch (e) { /* 忽略 */ }
   }
+  /* 问答上下文：把上方表单的行程信息 + 最近生成的方案一起送给 AI */
+  function buildTripContext() {
+    try {
+      const v = planFormValues();
+      let last = null;
+      try { last = JSON.parse(sessionStorage.getItem('jyh_last_plan') || localStorage.getItem('jyh_last_plan') || 'null'); } catch (e) { /* 忽略 */ }
+      return {
+        destinationId: v.destinationId,
+        destinationName: document.getElementById('pl-dest').value.trim(),
+        origin: v.origin, returnDest: v.returnDest,
+        startDate: v.startDate, endDate: v.endDate, days: v.days,
+        transport: v.transport, travelTime: v.travelTime,
+        elderly: v.elderly, adults: v.adults, children: v.children,
+        dietary: v.dietary, budget: v.budget, pace: v.pace,
+        accommodation: v.accommodation, interests: v.interests, notes: v.notes,
+        planTitle: (last && last.result && last.result.title) || ''
+      };
+    } catch (e) { return null; }
+  }
+
   function renderPlan(el, data, vals) {
     const dest = app.state.destinations.find((d) => d.id === vals.destinationId) || {};
     const dayHtml = (data.days || []).map((d, i) => `
@@ -441,7 +461,7 @@
     const typing = addChatMsg('ai', '正在思考…');
     typing.classList.add('chat-typing');
     try {
-      const data = await app.api('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(app.aiPayload({ message: msg, history: chatHistory })) });
+      const data = await app.api('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(app.aiPayload({ message: msg, history: chatHistory, tripContext: buildTripContext() })) });
       chatHistory.push({ role: 'user', content: msg }, { role: 'assistant', content: data.reply });
       typing.classList.remove('chat-typing');
       typing.textContent = data.reply;
