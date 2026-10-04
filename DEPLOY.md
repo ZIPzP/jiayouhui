@@ -16,7 +16,7 @@ git remote add origin https://github.com/<你的用户名>/jiayouhui.git
 git push -u origin main
 ```
 
-> 推送时按提示登录 GitHub（可用 Personal Access Token 作为密码）。**不要**把 `config.local.json` 提交上去（已在 .gitignore 排除，里面是你的 DeepSeek Key 和访问口令）。
+> 推送时按提示登录 GitHub（可用 Personal Access Token 作为密码）。**不要**把 `config.local.json` 提交上去（已在 .gitignore 排除，里面是你的 DeepSeek Key、服务端 AI 邀请码和地图配置）。
 
 ## 二、准备阿里云服务器
 
@@ -41,7 +41,7 @@ cd jiayouhui
 
 # 2) 在服务器上写入敏感配置（这一步很关键！）
 node tools/set-key.js sk-你的DeepSeekKey        # 服务端内置 DeepSeek Key
-node tools/set-passcode.js 你的访问口令          # 启用访问口令（可选但推荐）
+node tools/set-invite.js 你的邀请码            # 可选：保护服务端 AI
 
 # 3) 安装 pm2 并启动
 npm i -g pm2
@@ -50,7 +50,7 @@ pm2 save
 pm2 startup    # 开机自启（按提示执行生成的命令）
 ```
 
-> `config.local.json` 只在服务器本地生成，不会进 git，别人克隆你的仓库也拿不到 Key/口令。
+> `config.local.json` 只在服务器本地生成，不会进 git，别人克隆你的仓库也拿不到 Key/邀请码。
 
 ## 四、域名解析 + Nginx + HTTPS
 
@@ -86,6 +86,6 @@ certbot --nginx -d 你的域名 -d www.你的域名
 
 ## 六、安全建议
 
-- 访问口令：部署到公网后**务必**启用（`node tools/set-passcode.js 你的口令`），避免他人消耗你的 DeepSeek 配额
+- 服务端 AI 邀请码：用 `node tools/set-invite.js 你的邀请码` 保护服务器 AI 配额；入口口令门禁已按产品需求关闭
 - DeepSeek Key 只写在服务器 `config.local.json`，不要提交、不要发给别人
 - 阿里云安全组只开 80/443；服务器本地 3000 端口不必对外开放

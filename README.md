@@ -41,6 +41,7 @@ node server.js
 - 页面「⚙️ 设置 → AI 设置」输入 Key，仅保存在该浏览器 localStorage
 
 > 支持 OpenAI 兼容协议的其他模型（OpenAI / 通义千问 / Moonshot 等），也可用环境变量 `AI_API_KEY` / `AI_BASE_URL` / `AI_MODEL`。
+> 浏览器自定义 AI 接口地址默认只允许 HTTPS 公网域名，防止服务端被当作内网探测跳板；如确需连接本机/内网模型，在 `config.local.json` 设置 `ai.allowPrivateBaseUrl: true`。
 > 未配置 Key 或调用失败时自动使用内置规则引擎（`data/packing-db.json` / `lib/planner.js`）。
 
 ## 接入高德地图（地图行程规划）
@@ -66,14 +67,17 @@ node tools/set-map.js --clear
 
 也可使用环境变量 `AMAP_JS_KEY` / `AMAP_SECURITY_CODE`。地图 Key 和高德地图服务条款请在高德开放平台配置，并建议按域名限制 Key。
 
-## 邀请码 / 访问口令
+## 邀请码 / 服务端 AI
 
-- 启用 / 修改（**仅站长**，通过服务器终端）：
+- 入口口令门禁已按产品需求关闭，不再弹出进入网页密码。
+- 服务端 AI 仍可选启用邀请码解锁，避免匿名用户消耗服务器 AI 额度：
   ```bash
-  node tools/set-passcode.js 你的口令
-  # 或直接改 /opt/jiayouhui/config.local.json 中的 access.passcode（立即生效）
+  node tools/set-invite.js 你的邀请码
+  # 清除
+  node tools/set-invite.js --clear
   ```
-- 用户端只能输入邀请码进入，**无法修改**（安全考虑，客户端已移除修改入口）
+- 用户输入邀请码后获得短时效 AI 解锁令牌，服务端 Key 不会下发到浏览器。
+- 如需重新启用整站入口口令，需先修改 `lib/auth.js` 的 `accessConfig()`，仅改配置文件不会生效。
 
 ## 部署（阿里云）
 
@@ -87,7 +91,7 @@ node tools/set-map.js --clear
 家庭旅游篇/
 ├── server.js              # 零依赖 Node 服务器（静态页 + REST API）
 ├── config.json            # 端口 / AI / 图片域名等配置
-├── config.local.json      # 【不入 git】服务端 Key / 口令
+├── config.local.json      # 【不入 git】服务端 Key / 邀请码 / 地图配置
 ├── package.json
 ├── data/
 │   ├── destinations.json  # 43 城目的地（照片、亮点、美食、天气坐标）
@@ -103,7 +107,7 @@ node tools/set-map.js --clear
 │   ├── train.js           # 12306 真实车次查询
 │   └── auth.js / collector.js
 ├── deploy/                # 阿里云一键部署脚本 + nginx 配置
-├── tools/                 # set-key / set-passcode / 图片工具等
+├── tools/                 # set-key / set-invite / set-map / 图片工具等
 └── public/
     ├── index.html         # 首页（桌面版轮播 Hero + 3×2 精选）
     ├── destinations.html / plan.html / packing.html / hot.html / about.html

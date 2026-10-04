@@ -38,9 +38,13 @@ echo "================ 4/6 配置 DeepSeek Key（输入不显示，粘贴后回�
 read -s -p "DeepSeek API Key: " KEY; echo ""
 node tools/set-key.js "$KEY"
 
-echo "================ 5/6 设置访问口令（输入不显示） ================"
-read -s -p "访问口令（请牢记）: " PASS; echo ""
-node tools/set-passcode.js "$PASS"
+echo "================ 5/6 设置服务端 AI 邀请码（可留空跳过） ================"
+read -s -p "邀请码（直接回车跳过）: " INVITE; echo ""
+if [ -n "$INVITE" ]; then
+  node tools/set-invite.js "$INVITE"
+else
+  echo "已跳过：服务端 AI 不上锁，用户需自带 Key 或后续用 set-invite.js 设置邀请码。"
+fi
 
 echo "================ 6/6 启动程序 ================"
 pm2 start ecosystem.config.js
@@ -69,5 +73,5 @@ if [ "$SSL" = "y" ] || [ "$SSL" = "Y" ]; then
 fi
 
 echo ""
-echo "🎉 全部完成！打开 https://$DOMAIN 输入访问口令即可使用"
+echo "🎉 全部完成！打开 https://$DOMAIN 即可使用（服务端 AI 需邀请码时按提示输入）"
 echo "后续更新：cd /opt/jiayouhui && git pull && pm2 restart jiayouhui"

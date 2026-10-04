@@ -1,10 +1,12 @@
 {
-  "access": {
-    "enabled": true,
-    "passcode": "在这里填你的新邀请码",
-    "tokenTtlDays": 30
-  },
   "ai": {
-    "apiKey": "sk-你的DeepSeekKey"
+    "apiKey": "sk-你的DeepSeekKey",
+    "inviteCode": "你的服务端AI邀请码",
+    "allowPrivateBaseUrl": false
+  },
+  "map": {
+    "provider": "amap",
+    "amapJsKey": "你的高德Web端JSKey",
+    "amapSecurityCode": "你的高德安全密钥"
   }
 }

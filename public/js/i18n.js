@@ -245,7 +245,7 @@
  "👴 老年人模式": "👴 Senior Mode",
  "一键切换大字体、高对比、大按钮，并支持语音朗读，让长辈看得清、听得懂。": "One tap for larger text, higher contrast, bigger buttons and voice reading — easy for older travellers to see and hear.",
  "🔒 隐私安全": "🔒 Privacy and security",
- "API Key 可内置到服务器本地配置（不入 git），支持访问口令门禁，公网部署时保护你的配额。": "API keys can live in the server’s local config (never committed to git), with an optional access passcode to protect your quota on public deployments.",
+ "API Key 可内置到服务器本地配置（不入 git），支持服务端 AI 邀请码解锁，公网部署时保护你的配额。": "API keys can live in the server’s local config (never committed to git), with an optional server-AI invite code to protect your quota on public deployments.",
  "免责声明": "Disclaimer",
  "本项目仅供学习、研究与技术交流，严禁用于任何商业用途。": "This project is for learning, research and technical exchange only. Commercial use is strictly prohibited.",
  "本项目不存储、不篡改、不传播任何 12306 官方数据，仅作为官方公开接口的智能聚合与转发。": "This project does not store, alter or redistribute any official 12306 data; it only aggregates and forwards publicly available official endpoints.",

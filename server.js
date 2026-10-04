@@ -572,7 +572,8 @@ function secHeaders(filePath) {
 
 function serveStatic(req, res, pathname) {
   let filePath = pathname === '/' ? path.join(PUBLIC, 'index.html') : path.normalize(path.join(PUBLIC, pathname));
-  if (!filePath.startsWith(PUBLIC)) {
+  const relativePath = path.relative(PUBLIC, filePath);
+  if (!relativePath || relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
     res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
     return res.end('Forbidden');
   }
@@ -621,7 +622,7 @@ const server = http.createServer(async (req, res) => {
       await handleApi(req, res, pathname);
     } catch (e) {
       console.error('[API Error]', e);
-      sendJson(res, 500, { error: MSG(reqLang(req)).serverError, detail: String((e && e.message) || e) });
+      sendJson(res, 500, { error: MSG(reqLang(req)).serverError });
     }
   } else {
     serveStatic(req, res, pathname);
