@@ -368,6 +368,7 @@ async function handleApi(req, res, pathname) {
       destination: dest,
       month: Number(body.month) || new Date().getMonth() + 1,
       durationDays: Number(body.durationDays) || 3,
+      durationLabel: String(body.durationLabel || '').trim(),
       elderly: Number(body.elderly) || 0,
       adults: Number(body.adults) || 2,
       children: Number(body.children) || 0,

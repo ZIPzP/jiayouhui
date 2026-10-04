@@ -487,7 +487,14 @@
  "雷阵雨伴有冰雹": "Thunderstorms with hail",
  "晴间多云": "Mostly sunny",
  "多云间晴": "Partly cloudy",
- "阴天": "Overcast"
+ "阴天": "Overcast",
+ "出行时长": "Trip length",
+ "短期（1–2 天）": "Short trip (1–2 days)",
+ "中期（3–5 天）": "Medium trip (3–5 days)",
+ "长期（7 天以上）": "Long trip (7+ days)",
+ "短期": "Short trip",
+ "中期": "Medium trip",
+ "长期": "Long trip"
 };
   // 上下文词典：同一个中文在不同位置用不同英文（如表单里的「目的地」用单数）
   const CTX = { 'form-label': { '目的地': 'Destination' } };

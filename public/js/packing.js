@@ -16,7 +16,11 @@
           if (d) document.getElementById('pf-dest').value = d.name;
         }
         if (v.month) document.getElementById('pf-month').value = String(v.month);
-        if (v.durationDays) document.getElementById('pf-duration').value = String(v.durationDays);
+        if (v.durationDays) {
+          // 旧数据可能是任意天数，映射到三档之一
+          const d = Number(v.durationDays) || 4;
+          document.getElementById('pf-duration').value = d <= 2 ? '2' : (d <= 5 ? '4' : '7');
+        }
         if (v.elderly !== undefined) document.getElementById('pf-elderly').value = v.elderly;
         if (v.adults !== undefined) document.getElementById('pf-adults').value = v.adults;
         if (v.children !== undefined) document.getElementById('pf-children').value = v.children;
@@ -40,6 +44,7 @@
     const base = {
       month: Number(document.getElementById('pf-month').value),
       durationDays: Number(document.getElementById('pf-duration').value),
+      durationLabel: (() => { const sel = document.getElementById('pf-duration'); return sel && sel.selectedOptions[0] ? sel.selectedOptions[0].textContent.trim() : ''; })(),
       elderly: Number(document.getElementById('pf-elderly').value) || 0,
       adults: Number(document.getElementById('pf-adults').value) || 0,
       children: Number(document.getElementById('pf-children').value) || 0,
