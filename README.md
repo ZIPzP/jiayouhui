@@ -47,6 +47,14 @@ node server.js
 
 地图功能使用高德地图 Web端 JS API。请在 `config.local.json` 中增加 `map` 段（或使用环境变量）：
 
+推荐使用配置工具（不会把 Key 打印出来）：
+
+```bash
+node tools/set-map.js 你的高德JSKey 你的安全密钥
+# 清除
+node tools/set-map.js --clear
+```
+
 ```json
 {
   "map": {
