@@ -8,6 +8,8 @@
   let map = null;
   let infoWindow = null;
   let buildToken = 0;
+  const POI_CACHE_KEY = 'jyh_map_poi_cache_v1';
+  const POI_CACHE_MAX = 300;
 
   const t = (zh, en) => ((window.i18n && window.i18n.lang === 'en') ? en : zh);
   const clean = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
@@ -85,6 +87,55 @@
     });
   }
 
+  function readPoiCache() {
+    try { const value = JSON.parse(localStorage.getItem(POI_CACHE_KEY) || '{}'); return value && typeof value === 'object' ? value : {}; } catch (e) { return {}; }
+  }
+  function writePoiCache(cache) {
+    try {
+      const keys = Object.keys(cache);
+      while (keys.length > POI_CACHE_MAX) delete cache[keys.shift()];
+      localStorage.setItem(POI_CACHE_KEY, JSON.stringify(cache));
+    } catch (e) { /* localStorage 不可用时忽略 */ }
+  }
+  function searchPlaceCached(AMap, city, keyword) {
+    const cache = readPoiCache();
+    const cacheKey = clean(city) + '|' + clean(keyword);
+    if (cache[cacheKey]) return Promise.resolve(cache[cacheKey]);
+    return searchPlace(AMap, city, keyword).then((poi) => {
+      if (poi) { cache[cacheKey] = poi; writePoiCache(cache); }
+      return poi;
+    });
+  }
+
+  function routeModeFor(group, vals) {
+    const text = [vals && vals.transport, group && group.title, ...(group && group.items ? group.items.map((x) => x.name) : [])].filter(Boolean).join(' ').toLowerCase();
+    return /步行|漫步|徒步|walk|hiking|trail/.test(text) ? 'walking' : 'driving';
+  }
+  function routeSegment(AMap, from, to, mode) {
+    return new Promise((resolve) => {
+      const plugin = mode === 'walking' ? 'AMap.Walking' : 'AMap.Driving';
+      AMap.plugin([plugin], () => {
+        const Router = mode === 'walking' ? AMap.Walking : AMap.Driving;
+        const router = new Router({ hideMarkers: true });
+        router.search(from, to, (status, result) => {
+          if (status !== 'complete' || !result || !result.routes || !result.routes[0]) return resolve(null);
+          const route = result.routes[0];
+          const path = [];
+          (route.steps || []).forEach((step) => (step.path || []).forEach((point) => path.push([point.lng, point.lat])));
+          if (!path.length) return resolve(null);
+          resolve({ path, distance: Number(route.distance) || 0, time: Number(route.time) || 0 });
+        });
+      });
+    });
+  }
+  function fmtDistance(meters) {
+    return meters >= 1000 ? (meters / 1000).toFixed(1) + ' km' : Math.round(meters) + ' m';
+  }
+  function fmtDuration(seconds) {
+    const minutes = Math.max(1, Math.round(seconds / 60));
+    return minutes >= 60 ? Math.floor(minutes / 60) + 'h ' + (minutes % 60) + 'm' : minutes + 'm';
+  }
+
   async function mapLimit(items, limit, fn) {
     const out = new Array(items.length);
     let cursor = 0;
@@ -121,11 +172,19 @@
   }
 
   function renderStopList(container, groups, markers) {
-    container.innerHTML = groups.map((group) => `
-      <div class="plan-map-day">
-        <div class="plan-map-day-title"><i style="background:${group.color}"></i>${t('第 ' + group.day + ' 天', 'Day ' + group.day)}</div>
+    container.innerHTML = groups.map((group) => {
+      const summary = group.summary && group.summary.routed ? ' · ' + fmtDistance(group.summary.distance) + ' · ' + fmtDuration(group.summary.time) : '';
+      return `<div class="plan-map-day">
+        <div class="plan-map-day-title" data-map-day="${group.day}"><i style="background:${group.color}"></i><span>${t('第 ' + group.day + ' 天', 'Day ' + group.day)}</span><em>${summary}</em></div>
         ${group.items.map((item) => `<button class="plan-map-stop" type="button" data-map-index="${item.index}"><b>${item.index + 1}</b><span>${escapeHtml(item.name)}</span></button>`).join('')}
-      </div>`).join('');
+      </div>`;
+    }).join('');
+    container.querySelectorAll('[data-map-day]').forEach((title) => {
+      title.addEventListener('click', () => {
+        const group = groups.find((item) => item.day === Number(title.dataset.mapDay));
+        if (group && group.markers && group.markers.length) map.setFitView(group.markers, false, [40, 40, 40, 40], 16);
+      });
+    });
     container.querySelectorAll('[data-map-index]').forEach((button) => {
       button.addEventListener('click', () => {
         const item = markers[Number(button.dataset.mapIndex)];
@@ -135,7 +194,6 @@
       });
     });
   }
-
   async function build(data, vals) {
     const shell = document.getElementById('planMapShell');
     const canvas = document.getElementById('planMap');
@@ -162,7 +220,7 @@
         return;
       }
       status(t('正在搜索地点坐标…', 'Looking up place coordinates…'));
-      const located = await mapLimit(items, 2, async (item) => ({ ...item, poi: await searchPlace(AMap, city, item.keyword) }));
+      const located = await mapLimit(items, 2, async (item) => ({ ...item, poi: await searchPlaceCached(AMap, city, item.keyword) }));
       if (token !== buildToken) return;
       const valid = located.filter((item) => item.poi);
       const center = dest && Number.isFinite(Number(dest.lon)) ? [Number(dest.lon), Number(dest.lat)] : [116.397, 39.908];
@@ -179,17 +237,38 @@
         map.add(marker);
         markerObjects.push(marker);
         markerItems[index] = { ...item, ...item.poi, lng: item.poi.lng, lat: item.poi.lat, position };
-        if (!groupsByDay.has(item.day)) groupsByDay.set(item.day, { day: item.day, color: item.color, path: [], items: [] });
+        if (!groupsByDay.has(item.day)) groupsByDay.set(item.day, { day: item.day, color: item.color, path: [], markers: [], items: [] });
         const group = groupsByDay.get(item.day);
         group.path.push(position);
+        group.markers.push(marker);
         group.items.push({ ...item, index, name: item.poi.name });
       });
-      [...groupsByDay.values()].forEach((group) => {
-        if (group.path.length > 1) map.add(new AMap.Polyline({ path: group.path, strokeColor: group.color, strokeWeight: 4, strokeOpacity: 0.8, strokeStyle: 'dashed', lineJoin: 'round' }));
+      const groups = [...groupsByDay.values()];
+      const routeTasks = [];
+      groups.forEach((group) => {
+        group.summary = { routed: false, distance: 0, time: 0 };
+        for (let i = 0; i < group.path.length - 1; i++) routeTasks.push({ group, from: group.path[i], to: group.path[i + 1], mode: routeModeFor(group, vals) });
       });
-      renderStopList(stopList, [...groupsByDay.values()], markerItems);
+      if (routeTasks.length) status(t('正在计算每日路线…', 'Calculating daily routes…'));
+      const routeResults = await mapLimit(routeTasks, 2, async (task) => ({ task, route: await routeSegment(AMap, task.from, task.to, task.mode) }));
+      groups.forEach((group) => { group.routePath = []; });
+      routeResults.forEach(({ task, route }) => {
+        if (route && route.path.length) {
+          task.group.routePath.push(...route.path);
+          task.group.summary.distance += route.distance;
+          task.group.summary.time += route.time;
+          task.group.summary.routed = true;
+        } else {
+          task.group.routePath.push(task.from, task.to);
+        }
+      });
+      groups.forEach((group) => {
+        if (group.routePath.length > 1) map.add(new AMap.Polyline({ path: group.routePath, strokeColor: group.color, strokeWeight: 4, strokeOpacity: 0.8, strokeStyle: group.summary.routed ? 'solid' : 'dashed', lineJoin: 'round' }));
+      });
+      renderStopList(stopList, groups, markerItems);
       if (markerObjects.length) map.setFitView(markerObjects, false, [40, 40, 40, 40], 15);
-      status(t('已定位 ' + valid.length + '/' + items.length + ' 个地点，路线为顺序示意。', 'Located ' + valid.length + '/' + items.length + ' places; route order is indicative.'));
+      const routedDays = groups.filter((group) => group.summary.routed).length;
+      status(t('已定位 ' + valid.length + '/' + items.length + ' 个地点，已完成 ' + routedDays + '/' + groups.length + ' 天路线计算。', 'Located ' + valid.length + '/' + items.length + ' places; routed ' + routedDays + '/' + groups.length + ' days.'));
     } catch (error) {
       if (error && error.message === 'NO_KEY') {
         status(t('未配置高德地图 Key，暂时无法生成地图。请在 config.local.json 的 map 段填写 Web端 JS API Key 和安全密钥。', 'AMap key is not configured. Add a Web JS API key and security code to the map section of config.local.json.'));

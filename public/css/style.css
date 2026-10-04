@@ -1397,7 +1397,8 @@ html.lang-en .btn-lg { font-size: 1rem; }
 .plan-map-canvas { height: 420px; min-height: 320px; border-radius: 12px; overflow: hidden; background: #e2e8f0; }
 .plan-map-stops { max-height: 420px; overflow-y: auto; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
 .plan-map-day { margin-bottom: 10px; }
-.plan-map-day-title { display: flex; align-items: center; gap: 6px; font-size: .82rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 4px; }
+.plan-map-day-title { display: flex; align-items: center; gap: 6px; font-size: .82rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 4px; cursor: pointer; }
+.plan-map-day-title em { margin-left: auto; font-style: normal; font-weight: 600; color: var(--ink-soft); }
 .plan-map-day-title i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
 .plan-map-stop { display: flex; gap: 8px; width: 100%; text-align: left; border: 0; background: #f8fafc; color: var(--ink); padding: 6px 8px; border-radius: 8px; margin-bottom: 4px; cursor: pointer; font: inherit; font-size: .8rem; }
 .plan-map-stop:hover { background: var(--primary-light); }
