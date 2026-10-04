@@ -504,7 +504,7 @@ async function handleApi(req, res, pathname) {
           }
         };
       }
-      const result = await planner.buildPlan(params, overrides);
+      const result = await planner.buildPlan(params, overrides, body.patch || null);
       result.realTrains = params.realTrains;
       return result;
     });

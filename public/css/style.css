@@ -1378,3 +1378,6 @@ html.lang-en .btn-lg { font-size: 1rem; }
 
 /* 城市自动补全列表的定位父级 */
 .form-group { position: relative; }
+
+/* 增量修改提示（相比上次生成的改动 + 将采用的方式） */
+.plan-change-hint { margin: 6px 0 12px; padding: 9px 12px; border-radius: 10px; background: var(--primary-light); color: var(--primary-dark); font-size: .85rem; line-height: 1.55; }

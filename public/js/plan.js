@@ -13,6 +13,7 @@
   function chipValues(groupSel) { return [...document.querySelectorAll(`#planForm [${groupSel}] .chip.active`)].map((c) => c.dataset.value); }
   function planFormValues() {
     const base = {
+      destinationName: document.getElementById('pl-dest').value.trim(),
       origin: document.getElementById('pl-origin').value.trim(),
       returnDest: document.getElementById('pl-return').value.trim(),
       startDate: document.getElementById('pl-start').value,
@@ -126,6 +127,7 @@
     };
   }
   function scheduleDraftSave() {
+    try { renderChangeHint(); } catch (e) { /* 忽略 */ }
     clearTimeout(draftTimer);
     draftTimer = setTimeout(() => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraft())); } catch (e) {} }, 300);
   }
@@ -264,6 +266,62 @@
   function savePlan(vals, result) {
     saveLast({ vals, result });
   }
+  /* ---------- 增量修改：检测用户改了哪里 ---------- */
+  const CHANGE_LABELS = {
+    destinationName: { zh: '目的地', en: 'Destination' },
+    origin: { zh: '出发城市', en: 'Departure city' },
+    returnDest: { zh: '返回目的地', en: 'Return' },
+    startDate: { zh: '去程日期', en: 'Departure date' },
+    endDate: { zh: '返程日期', en: 'Return date' },
+    days: { zh: '天数', en: 'Days' },
+    transport: { zh: '交通方式', en: 'Transport' },
+    travelTime: { zh: '出行时段', en: 'Time of day' },
+    elderly: { zh: '老人', en: 'Seniors' },
+    adults: { zh: '成人', en: 'Adults' },
+    children: { zh: '儿童', en: 'Children' },
+    dietary: { zh: '忌口', en: 'Dietary' },
+    budget: { zh: '预算', en: 'Budget' },
+    pace: { zh: '节奏', en: 'Pace' },
+    accommodation: { zh: '住宿', en: 'Stay' },
+    interests: { zh: '兴趣', en: 'Interests' },
+    notes: { zh: '其他需求', en: 'Notes' }
+  };
+  const uiEnNow = () => !!(window.i18n && window.i18n.lang === 'en');
+  const fmtVal = (v) => (Array.isArray(v) ? (v.length ? v.join('、') : '—') : (v === '' || v == null ? '—' : String(v)));
+  function lastPlanRecord() {
+    try { return JSON.parse(sessionStorage.getItem('jyh_last_plan') || localStorage.getItem('jyh_last_plan') || 'null'); } catch (e) { return null; }
+  }
+  function diffVals(prev, next) {
+    if (!prev || !next) return [];
+    const out = [];
+    Object.keys(CHANGE_LABELS).forEach((k) => {
+      const a = fmtVal(prev[k]); const b = fmtVal(next[k]);
+      if (String(a) !== String(b)) out.push({ field: k, from: a, to: b });
+    });
+    return out;
+  }
+  /* 目的地/出发地变了 → 整套重生成；否则只改受影响部分 */
+  function patchDecision(vals, changes) {
+    const rec = lastPlanRecord();
+    if (!rec || !rec.result || !rec.vals) return null;
+    const regen = changes.some((c) => c.field === "destinationName" || c.field === "origin");
+    return { enabled: !regen, changes, prevVals: rec.vals, prevResult: rec.result };
+  }
+  function renderChangeHint() {
+    const el = document.getElementById('planChangeHint');
+    if (!el) return;
+    const en = uiEnNow();
+    let dec = null;
+    try { const v = planFormValues(); dec = patchDecision(v, diffVals((lastPlanRecord() || {}).vals, v)); } catch (e) { dec = null; }
+    if (!dec) { el.hidden = true; el.textContent = ""; return; }
+    const names = dec.changes.map((c) => { const L = CHANGE_LABELS[c.field]; return (en ? L.en : L.zh) + ': ' + c.from + ' → ' + c.to; }).join(en ? '; ' : '；');
+    const mode = dec.enabled
+      ? (en ? 'only the affected parts will be updated (the rest is kept)' : '将只修改相关部分（其余保留）')
+      : (en ? 'the destination changed, so the whole plan will be regenerated' : '目的地已变更，将重新规划整套行程');
+    el.textContent = '🔄 ' + (en ? 'Since last generation — ' : '相比上次生成：') + (names || (en ? 'no changes' : '没有改动')) + ' → ' + mode;
+    el.hidden = false;
+  }
+
   async function generatePlan() {
     const empty = document.getElementById('planEmpty');
     const bodyEl = document.getElementById('planBody');
@@ -297,7 +355,11 @@
     empty.hidden = true; bodyEl.hidden = false;
     bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>AI 主理人正在后台生成行程…<br/>你可以放心切到别的页面/标签页，回来会自动恢复显示结果</p>';
     try {
-      const st = await app.api('/api/plan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(app.aiPayload(vals)) });
+      const changes = diffVals((lastPlanRecord() || {}).vals, vals);
+      const dec = patchDecision(vals, changes);
+      const enNow = uiEnNow();
+      const patch = dec ? { enabled: dec.enabled, changes: dec.changes.map((x) => Object.assign({}, x, { label: (CHANGE_LABELS[x.field] || {})[enNow ? 'en' : 'zh'] || x.field })), previous: dec.enabled ? { vals: dec.prevVals, result: dec.prevResult } : null } : null;
+      const st = await app.api('/api/plan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(app.aiPayload(Object.assign({}, vals, { patch }))) });
       saveLast({ jobId: st.jobId, vals, result: null });
       app.pollJob(st.jobId, {
         onDone: (result) => { renderPlan(bodyEl, result, vals); savePlan(vals, result); },
