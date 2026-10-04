@@ -3,7 +3,7 @@
   const DAY_COLORS = ['#0d9488', '#f97316', '#2563eb', '#9333ea', '#dc2626', '#0891b2', '#65a30d', '#c2410c', '#7c3aed', '#db2777'];
   const TYPE_EN = { '主题': 'Theme', '行程': 'Itinerary', '餐饮': 'Food' };
   const GENERIC = /^(抵达|返回|返程|入住|退房|早餐|午餐|晚餐|自由活动|休息|出发|前往|市区|酒店|民宿|客栈|附近|当地|美食|城市漫步|市区漫步|夜景|行程结束|收拾行李|办理入住|回酒店|逛市区)$/;
-  const GENERIC_PREFIX = /^(抵达|返回|返程|入住|退房|出发|前往|自由活动|休息|收拾行李|办理入住|回酒店|逛市区|市区|夜景|附近|当地|美食)/;
+  const GENERIC_PREFIX = /^(抵达|返回|返程|入住|退房|出发|前往|自由活动|休息|收拾行李|办理入住|回酒店|逛市区|市区|夜景|附近|当地|美食|特色晚餐|享用早餐|就近午餐|整理行李)/;
   let amapPromise = null;
   let map = null;
   let infoWindow = null;
@@ -39,11 +39,12 @@
     s = s.replace(/[·・].*$/, '').trim();
     s = s.replace(/(慢逛|漫步|打卡|游玩|观光|体验|活动|安排|初体验)$/g, '').trim();
     s = s.split(/[，,。；;:：]/)[0].trim();
-    if (s.length > 26) s = s.slice(0, 26);
-    if (!s || GENERIC.test(s) || (GENERIC_PREFIX.test(s) && s.length < 18)) return '';
+    // 从「玉龙雪山乘大索道」「丽江古城石板路」这类描述中取地点主体
+    s = s.replace(/(乘|登|住|感受|观|游|逛|看|品尝|享用|前往|到达|游览|体验|漫步|慢逛|参观|打卡|拍照|高原湖泊|湖泊|古城石板路|石板路|小桥流水|湿地观鸟|骑马划船|特色客栈|特色晚餐).*$/, '').trim();
+    if (s.length > 18) s = s.slice(0, 18);
+    if (!s || GENERIC.test(s) || (GENERIC_PREFIX.test(s) && s.length < 20)) return '';
     return s;
   }
-
   function itineraryDays(data) {
     const out = [];
     (data && data.days || []).forEach((day) => {
@@ -53,7 +54,7 @@
         const keyword = keywordFrom(text);
         if (!keyword) return;
         const key = keyword.toLowerCase();
-        if (seen.has(key)) return;
+        if (seen.has(key) || stops.some((item) => item.keyword.includes(keyword) || keyword.includes(item.keyword))) return;
         seen.add(key);
         stops.push({ keyword, name: keyword, time: clean(time), type });
       };
