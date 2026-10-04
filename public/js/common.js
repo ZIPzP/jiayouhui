@@ -767,28 +767,138 @@
       if (actions) actions.style.display = prev;
     }
   }
-  /* 导出 Word：Word / WPS 可直接打开 .doc 的 HTML 文档，无需额外依赖 */
+  /* 导出 Word：生成真正的 .docx（OOXML），不再用 HTML 伪装成 .doc */
+  function docxEsc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+  }
+  function docxPara(text, style) {
+    const pPr = style ? '<w:pPr><w:pStyle w:val="' + style + '"/></w:pPr>' : '';
+    return '<w:p>' + pPr + '<w:r><w:t xml:space="preserve">' + docxEsc(text) + '</w:t></w:r></w:p>';
+  }
+  function crc32(buf) {
+    let c = 0xFFFFFFFF;
+    for (let i = 0; i < buf.length; i++) {
+      c ^= buf[i];
+      for (let j = 0; j < 8; j++) c = (c >>> 1) ^ (0xEDB88320 & -(c & 1));
+    }
+    return (c ^ 0xFFFFFFFF) >>> 0;
+  }
+  function zipStore(files) {
+    const enc = new TextEncoder();
+    const now = new Date();
+    const dosTime = ((now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1)) & 0xFFFF;
+    const dosDate = (((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate()) & 0xFFFF;
+    const chunks = [];
+    const central = [];
+    let offset = 0;
+    files.forEach((file) => {
+      const name = enc.encode(file.name);
+      const data = enc.encode(file.data);
+      const crc = crc32(data);
+      const local = new Uint8Array(30 + name.length);
+      const lv = new DataView(local.buffer);
+      lv.setUint32(0, 0x04034B50, true);
+      lv.setUint16(4, 20, true);
+      lv.setUint16(6, 0x0800, true);
+      lv.setUint16(8, 0, true);
+      lv.setUint16(10, dosTime, true);
+      lv.setUint16(12, dosDate, true);
+      lv.setUint32(14, crc, true);
+      lv.setUint32(18, data.length, true);
+      lv.setUint32(22, data.length, true);
+      lv.setUint16(26, name.length, true);
+      lv.setUint16(28, 0, true);
+      local.set(name, 30);
+      chunks.push(local, data);
+      const cen = new Uint8Array(46 + name.length);
+      const cv = new DataView(cen.buffer);
+      cv.setUint32(0, 0x02014B50, true);
+      cv.setUint16(4, 20, true);
+      cv.setUint16(6, 20, true);
+      cv.setUint16(8, 0x0800, true);
+      cv.setUint16(10, 0, true);
+      cv.setUint16(12, dosTime, true);
+      cv.setUint16(14, dosDate, true);
+      cv.setUint32(16, crc, true);
+      cv.setUint32(20, data.length, true);
+      cv.setUint32(24, data.length, true);
+      cv.setUint16(28, name.length, true);
+      cv.setUint16(30, 0, true);
+      cv.setUint16(32, 0, true);
+      cv.setUint16(34, 0, true);
+      cv.setUint16(36, 0, true);
+      cv.setUint32(38, 0, true);
+      cv.setUint32(42, offset, true);
+      cen.set(name, 46);
+      central.push(cen);
+      offset += local.length + data.length;
+    });
+    const centralSize = central.reduce((sum, item) => sum + item.length, 0);
+    const end = new Uint8Array(22);
+    const ev = new DataView(end.buffer);
+    ev.setUint32(0, 0x06054B50, true);
+    ev.setUint16(4, 0, true);
+    ev.setUint16(6, 0, true);
+    ev.setUint16(8, files.length, true);
+    ev.setUint16(10, files.length, true);
+    ev.setUint32(12, centralSize, true);
+    ev.setUint32(16, offset, true);
+    ev.setUint16(20, 0, true);
+    return new Blob(chunks.concat(central, [end]), { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+  }
   function saveAsWord(elId, filename) {
     const el = document.getElementById(elId);
     if (!el) return;
     const clone = el.cloneNode(true);
     const acts = clone.querySelector('.result-actions');
     if (acts) acts.remove();
-    const css = 'body{font-family:"Microsoft YaHei",sans-serif;font-size:10.5pt;line-height:1.65;color:#1E293B}' +
-      'h3{font-size:15pt;color:#0F766E;margin:0 0 8pt}h4{font-size:11.5pt;color:#0F766E;margin:10pt 0 6pt}' +
-      'p{margin:0 0 6pt}ul{margin:0 0 6pt 16pt}.provider-tag{color:#64748B;font-size:9pt}' +
-      '.day-card,.transport-box,.budget-box,.dietary-box,.tips-box,.weather-box{border:1px solid #E2E8F0;border-radius:6pt;padding:8pt 10pt;margin:0 0 8pt}' +
-      '.day-num{color:#0D9488;font-weight:bold;margin-right:6pt}.day-title{font-weight:bold;color:#0F766E}' +
-      '.schedule-item{margin:0 0 4pt}.schedule-time{color:#64748B;margin-right:6pt}' +
-      '.schedule-activity{font-weight:600}.schedule-detail{color:#64748B;font-size:9.5pt}' +
-      '.meal-pill,.prio,.rt-price{color:#64748B}.total{font-weight:bold;color:#0F766E}';
-    const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">' +
-      '<head><meta charset="utf-8"><style>' + css + '</style></head><body>' + clone.innerHTML + '</body></html>';
-    const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+    const norm = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
+    const titleSet = new Set([...clone.querySelectorAll('h3')].map((x) => norm(x.innerText || x.textContent)));
+    const headingSet = new Set([...clone.querySelectorAll('h4')].map((x) => norm(x.innerText || x.textContent)));
+    const bulletSet = new Set([...clone.querySelectorAll('li, .check-item')].map((x) => norm(x.innerText || x.textContent)));
+    const lines = String(clone.innerText || clone.textContent || '').split(/\n+/).map(norm).filter(Boolean);
+    const body = [];
+    lines.forEach((line, i) => {
+      const style = (i === 0 && titleSet.has(line)) ? 'Title' : (headingSet.has(line) ? 'Heading2' : '');
+      body.push(docxPara(bulletSet.has(line) ? '• ' + line : line, style));
+    });
+    const contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+      '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+      '<Default Extension="xml" ContentType="application/xml"/>' +
+      '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>' +
+      '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>' +
+      '</Types>';
+    const rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>' +
+      '</Relationships>';
+    const docRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' +
+      '</Relationships>';
+    const styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' +
+      '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:rPr><w:rFonts w:ascii="Microsoft YaHei" w:eastAsia="Microsoft YaHei" w:hAnsi="Microsoft YaHei"/><w:sz w:val="21"/></w:rPr></w:style>' +
+      '<w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:basedOn w:val="Normal"/><w:rPr><w:b/><w:color w:val="0F766E"/><w:sz w:val="30"/></w:rPr></w:style>' +
+      '<w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:pPr><w:spacing w:before="180" w:after="80"/></w:pPr><w:rPr><w:b/><w:color w:val="0F766E"/><w:sz w:val="23"/></w:rPr></w:style>' +
+      '</w:styles>';
+    const doc = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>' +
+      body.join('') +
+      '<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134"/></w:sectPr>' +
+      '</w:body></w:document>';
+    const blob = zipStore([
+      { name: '[Content_Types].xml', data: contentTypes },
+      { name: '_rels/.rels', data: rels },
+      { name: 'word/document.xml', data: doc },
+      { name: 'word/styles.xml', data: styles },
+      { name: 'word/_rels/document.xml.rels', data: docRels }
+    ]);
     const url = URL.createObjectURL(blob);
-    saveBlob(url, /\.docx?$/i.test(String(filename)) ? filename : String(filename || '家游汇').replace(/\.[a-z]+$/i, '') + '.doc');
+    saveBlob(url, String(filename || '家游汇').replace(/\.[a-z]+$/i, '') + '.docx');
     setTimeout(() => URL.revokeObjectURL(url), 4000);
-    toast('✅ Word 已导出，可用 Word / WPS 打开');
+    toast('✅ Word (.docx) 已导出');
   }
 
   window.__jyhImgFallback = imgFallback;

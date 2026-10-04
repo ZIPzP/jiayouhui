@@ -89,6 +89,7 @@
  "✅ 已导出 1 张拼图（三列并排，放大后左右滑动看）": "✅ Exported as one image (3 columns side by side — zoom in and swipe)",
  "导出失败，请用「打印 / 存为 PDF」": "Export failed — use Print / Save as PDF",
  "✅ Word 已导出，可用 Word / WPS 打开": "✅ Word file exported — open it in Word or WPS",
+ "✅ Word (.docx) 已导出": "✅ Word (.docx) exported",
  "家游汇.png": "FamilyTripHub.png",
  "北京": "Beijing",
  "杭州": "Hangzhou",
