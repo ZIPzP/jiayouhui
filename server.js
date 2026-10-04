@@ -81,6 +81,8 @@ setInterval(() => {
 }, 5 * 60 * 1000).unref();
 
 /* ---------- 响应安全头 ---------- */
+// 仅地图页放行高德插件的动态执行；其他页面继续使用严格 CSP
+const MAP_CSP = "default-src 'self'; img-src 'self' data: blob: https://*.amap.com https://*.autonavi.com; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval' https://webapi.amap.com https://*.amap.com; connect-src 'self' https://webapi.amap.com https://*.amap.com https://*.autonavi.com; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'";
 const SEC_HEADERS = {
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'SAMEORIGIN',
@@ -564,6 +566,10 @@ async function handleApi(req, res, pathname) {
 }
 
 const gzipCache = new Map(); // 静态文件 gzip 缓存（按 mtime 失效）
+function secHeaders(filePath) {
+  return filePath && /plan\.html$/i.test(filePath) ? Object.assign({}, SEC_HEADERS, { 'Content-Security-Policy': MAP_CSP }) : SEC_HEADERS;
+}
+
 function serveStatic(req, res, pathname) {
   let filePath = pathname === '/' ? path.join(PUBLIC, 'index.html') : path.normalize(path.join(PUBLIC, pathname));
   if (!filePath.startsWith(PUBLIC)) {
@@ -588,10 +594,10 @@ function serveStatic(req, res, pathname) {
         gz = { mtime: st.mtimeMs, data: zlib.gzipSync(fs.readFileSync(filePath)) };
         gzipCache.set(filePath, gz);
       }
-      res.writeHead(200, Object.assign({ 'Content-Type': mime, 'Cache-Control': cacheCtrl, 'Content-Encoding': 'gzip', 'Vary': 'Accept-Encoding' }, SEC_HEADERS));
+      res.writeHead(200, Object.assign({ 'Content-Type': mime, 'Cache-Control': cacheCtrl, 'Content-Encoding': 'gzip', 'Vary': 'Accept-Encoding' }, secHeaders(filePath)));
       return res.end(gz.data);
     }
-    res.writeHead(200, Object.assign({ 'Content-Type': mime, 'Cache-Control': cacheCtrl }, SEC_HEADERS));
+    res.writeHead(200, Object.assign({ 'Content-Type': mime, 'Cache-Control': cacheCtrl }, secHeaders(filePath)));
     fs.createReadStream(filePath).pipe(res);
   });
 }
