@@ -61,7 +61,6 @@
       add(day.title, '', '主题');
       (day.schedule || []).forEach((item) => {
         add(item.activity, item.time, '行程');
-        if (stops.length < 4 && item.detail) add(item.detail, item.time, '行程');
       });
       if (stops.length) out.push({ day: Number(day.day) || out.length + 1, title: day.title || '', stops: stops.slice(0, 5) });
     });
