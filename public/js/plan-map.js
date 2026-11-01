@@ -40,7 +40,7 @@
     s = s.replace(/^Day\s*\d+[·:：\s]*/i, '');
     s = s.replace(/^[（(].*?[）)]\s*/g, '').replace(/^[·•\-–—]\s*/, '');
     // 反复去掉句首的时间/动作词与分隔符，兼容「上午：游览」「午餐后自由活动」等写法
-    s = s.replace(/^(?:(?:上午|中午|下午|晚上|清晨|早上|推荐|安排|前往|游览|参观|打卡|体验|品尝|享用|乘坐|乘|去|到|逛|漫步|出发去|午餐后|早餐后|晚餐后|午饭后|早饭后|晚饭后|早餐|午餐|晚餐)[：:\s]*)+/, '');
+    s = s.replace(/^(?:(?:上午|中午|下午|晚上|清晨|早上|推荐|安排|前往|游览|参观|打卡|体验|品尝|享用|乘坐|乘|去|到|逛|观|看|游|漫步|出发去|午餐后|早餐后|晚餐后|午饭后|早饭后|晚饭后|早餐|午餐|晚餐)[：:\s]*)+/, '');
     s = s.replace(/[·・].*$/, '').trim();
     s = s.replace(/(慢逛|漫步|打卡|游玩|观光|体验|活动|安排|初体验)$/g, '').trim();
     // 「丽江古城石板路」保留古城，去掉尾部描述
@@ -49,7 +49,7 @@
     s = s.replace(/[（(][^）)]*[）)]\s*$/, '').trim();
     s = s.split(/[，,。；;:：\/、→]|->/)[0].trim();
     // 从「玉龙雪山乘大索道」「丽江古城石板路」这类描述中取地点主体
-    s = s.replace(/(.{1,})(乘|登|住|感受|观|游|逛|看|品尝|享用|前往|到达|游览|体验|漫步|慢逛|参观|打卡|拍照|高原湖泊|湖泊|小桥流水|湿地观鸟|骑马划船|特色客栈|特色晚餐).*$/, '$1').trim();
+    s = s.replace(/(.{1,})(乘|登|住|感受|品尝|享用|前往|到达|游览|体验|漫步|慢逛|参观|打卡|拍照|游船|游园|高原湖泊|湖泊|小桥流水|湿地观鸟|骑马划船|特色客栈|特色晚餐).*$/, '$1').trim();
     if (s.length > 18) s = s.slice(0, 18);
     if (!s || GENERIC.test(s) || GENERIC_ONLY.test(s) || (GENERIC_PREFIX.test(s) && s.length < 20)) return '';
     return s;
@@ -70,6 +70,7 @@
         const enMeal = !meal && raw.match(/^(breakfast|lunch|dinner|meal)[:\s]\s*(.+)$/i);
         const mealName = meal ? meal[2].trim() : (enMeal ? enMeal[2].trim() : '');
         const kind = (meal || enMeal) ? '餐饮' : (type || '行程');
+        const foodSpecific = !!(mealName && /(餐厅|菜馆|饭店|餐馆|酒楼|小吃店|茶馆|咖啡馆|火锅店|农家菜|斋|街|巷|村|镇|广场|楼|店)/.test(mealName));
         // 交通、住宿、休息行不是游玩地点，直接跳过，避免大量"未定位"
         if (!meal && !enMeal) {
           if (/(早餐|午餐|晚餐|用餐|早休息|休息|回酒店|入住|退房)/.test(raw)) return;
@@ -86,7 +87,7 @@
         if (seen.has(kind + ':' + key) || dupGlobal || stops.some((item) => item.type === kind && (item.keyword.includes(keyword) || keyword.includes(item.keyword)))) return;
         seen.add(kind + ':' + key);
         if (kind !== '餐饮') typeSeen.add(key);
-        stops.push({ keyword, name: keyword, time: clean(time), type: kind });
+        stops.push({ keyword, name: keyword, time: clean(time), type: kind, foodSpecific });
       };
       (day.schedule || []).forEach((item) => {
         add(item.activity, item.time, '行程');
@@ -204,6 +205,10 @@
       // 只有景点才尝试公园/景区别名
       if (keyword.length <= 10) tries.push(keyword + '公园', keyword + '景区', keyword + '风景区');
       if (/十景$/.test(keyword)) tries.push(keyword.replace(/十景$/, ''));
+      // 活动型名称回退到基础地名：漓江竹筏 → 漓江，长江索道 → 长江
+      const base = keyword.replace(/(竹筏|漂流|游船|索道|缆车|表演|演出|温泉|乐园)$/,'').trim();
+      if (base && base !== keyword) tries.push(base);
+      if (keyword.includes('秦淮河')) tries.push('夫子庙', '秦淮河');
     }
     for (const k of tries) {
       const poi = await searchPlace(AMap, city, k);
@@ -369,6 +374,7 @@
       if (token !== buildToken) return;
       const valid = located.filter((item) => item.poi);
       const unlocated = located.filter((item) => !item.poi);
+      const unlocatedShown = unlocated.filter((item) => item.type !== '餐饮' || item.foodSpecific);
       const center = dest && Number.isFinite(Number(dest.lon)) && Number.isFinite(Number(dest.lat))
         ? [Number(dest.lon), Number(dest.lat)]
         : (valid[0] && valid[0].poi ? [valid[0].poi.lng, valid[0].poi.lat] : [116.397, 39.908]);
@@ -408,7 +414,7 @@
         group.markers.push(marker);
         group.items.push({ ...item, index, name: (window.i18n && window.i18n.lang === 'en') ? (item.keyword || item.poi.name) : item.poi.name });
       });
-      unlocated.forEach((item) => {
+      unlocatedShown.forEach((item) => {
         const group = groupsByDay.get(item.day);
         if (group) group.items.push({ ...item, index: -1, name: item.keyword, unlocated: true });
       });
@@ -437,8 +443,10 @@
       renderStopList(stopList, groups, markerItems);
       if (markerObjects.length) map.setFitView(markerObjects, false, [40, 40, 40, 40], 15);
       const routedDays = groups.filter((group) => group.summary.routed).length;
-      const unlocatedText = unlocated.length ? (t(' · ' + unlocated.length + ' 个未定位', ' · ' + unlocated.length + ' not located')) : '';
-      status(t('已定位 ' + valid.length + '/' + items.length + ' 个地点' + unlocatedText + '，已完成 ' + routedDays + '/' + groups.length + ' 天路线计算。', 'Located ' + valid.length + '/' + items.length + ' places' + unlocatedText + '; routed ' + routedDays + '/' + groups.length + ' days.'));
+      const hiddenFood = unlocated.length - unlocatedShown.length;
+      const unlocatedText = unlocatedShown.length ? (t(' · ' + unlocatedShown.length + ' 个未定位', ' · ' + unlocatedShown.length + ' not located')) : '';
+      const hiddenText = hiddenFood ? (t(' · ' + hiddenFood + ' 条餐饮推荐未定位', ' · ' + hiddenFood + ' food recommendations not located')) : '';
+      status(t('已定位 ' + valid.length + '/' + items.length + ' 个地点' + unlocatedText + hiddenText + '，已完成 ' + routedDays + '/' + groups.length + ' 天路线计算。', 'Located ' + valid.length + '/' + items.length + ' places' + unlocatedText + hiddenText + '; routed ' + routedDays + '/' + groups.length + ' days.'));
     } catch (error) {
       if (error && error.message === 'NO_KEY') {
         status(t('未配置高德地图 Key，暂时无法生成地图。请在 config.local.json 的 map 段填写 Web端 JS API Key 和安全密钥。', 'AMap key is not configured. Add a Web JS API key and security code to the map section of config.local.json.'));
