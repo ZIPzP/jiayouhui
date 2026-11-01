@@ -1,7 +1,8 @@
 (() => {
   'use strict';
   const DAY_COLORS = ['#0d9488', '#f97316', '#2563eb', '#9333ea', '#dc2626', '#0891b2', '#65a30d', '#c2410c', '#7c3aed', '#db2777'];
-  const TYPE_EN = { '主题': 'Theme', '行程': 'Itinerary', '餐饮': 'Food', '自由活动': 'Free time' };
+  const TYPE_EN = { '主题': 'Theme', '行程': 'Itinerary', '餐饮': 'Food', '自由活动': 'Free time', '交通': 'Transit' };
+  const FOOD_SUFFIX = /(农家菜馆|农家菜|餐厅|饭店|餐馆|酒楼|菜馆|面馆|粉店|米线|食府|饭馆|餐吧|食肆|烧烤店|串串店|火锅店|小吃店|茶馆|咖啡馆|农家乐|斋)$/;
   const GENERIC = /^(抵达|返回|返程|入住|退房|早餐|午餐|晚餐|自由活动|休息|出发|前往|市区|酒店|民宿|客栈|附近|当地|美食|城市漫步|市区漫步|夜景|行程结束|收拾行李|办理入住|回酒店|逛市区)$/;
   const GENERIC_PREFIX = /^(抵达|返回|返程|入住|退房|出发|前往|自由活动|休息|收拾行李|办理入住|回酒店|逛市区|市区|夜景|附近|当地|美食|特色晚餐|享用早餐|就近午餐|整理行李)/;
   let amapPromise = null;
@@ -68,26 +69,38 @@
         const raw = clean(text);
         const meal = raw.match(/^(早餐|午餐|晚餐|用餐)[：:]\s*(.+)$/);
         const enMeal = !meal && raw.match(/^(breakfast|lunch|dinner|meal)[:\s]\s*(.+)$/i);
-        const mealName = meal ? meal[2].trim() : (enMeal ? enMeal[2].trim() : '');
-        const kind = (meal || enMeal) ? '餐饮' : (type || '行程');
-        const foodSpecific = !!(mealName && /(餐厅|菜馆|饭店|餐馆|酒楼|小吃店|茶馆|咖啡馆|火锅店|农家菜|斋|街|巷|村|镇|广场|楼|店)/.test(mealName));
-        // 交通、住宿、休息行不是游玩地点，直接跳过，避免大量"未定位"
-        if (!meal && !enMeal) {
+        const foodPlace = !meal && !enMeal && FOOD_SUFFIX.test(raw);
+        const mealName = meal ? meal[2].trim() : (enMeal ? enMeal[2].trim() : (foodPlace ? raw : ''));
+        const kind = (meal || enMeal || foodPlace) ? '餐饮' : (type || '行程');
+        const foodSpecific = !!(mealName && (FOOD_SUFFIX.test(mealName) || /(街|巷|村|镇|广场|楼|店|斋)/.test(mealName)));
+        const transportText = /(乘高铁|乘火车|高铁|动车|航班|飞机|机场|车站|南站|东站|西站|北站|乘车|自驾|大巴)/.test(raw);
+        const stationMatch = raw.match(/([\u4e00-\u9fa5A-Za-z]{2,12}(?:南站|东站|西站|北站|站|机场))/);
+        const push = (kw, k) => {
+          if (!kw) return;
+          const key = kw.toLowerCase();
+          const typeSeen = globalSeen[k] || (globalSeen[k] = new Set());
+          const dupGlobal = k === '餐饮' ? false : [...typeSeen].some((x) => x === key || (x.length >= 2 && key.length >= 2 && (x.includes(key) || key.includes(x))));
+          if (seen.has(k + ':' + key) || dupGlobal || stops.some((item) => item.type === k && (item.keyword.includes(kw) || kw.includes(item.keyword)))) return;
+          seen.add(k + ':' + key);
+          if (k !== '餐饮') typeSeen.add(key);
+          stops.push({ keyword: kw, name: kw, time: clean(time), type: k, foodSpecific: k === '餐饮' && foodSpecific });
+        };
+        if (!meal && !enMeal && !foodPlace) {
           if (/(早餐|午餐|晚餐|用餐|早休息|休息|回酒店|入住|退房)/.test(raw)) return;
-          if (/(乘高铁|乘火车|高铁|动车|航班|飞机|机场|车站|南站|东站|西站|北站|乘车|自驾|大巴)/.test(raw) && !/(景区|公园|博物馆|寺|塔|山|湖|街|古镇|古城)/.test(raw)) return;
+          if (transportText && stationMatch) {
+            const station = stationMatch[1].replace(/^(?:乘|坐|从|到|在|前往|抵达|高铁|动车|火车|航班|飞机|去)+/, '').trim();
+            push(keywordFrom(station), '交通');
+            return;
+          }
+          if (transportText) {
+            const dest = raw.match(/(?:前往|到达|去)\s*([^\s，。；;:：]+)/);
+            if (dest) push(keywordFrom(dest[1]), '行程');
+            return;
+          }
         }
         // 泛化的餐食行不标点；具体菜名/店名保留
         if (mealName && /^(当地|本地|特色|推荐|美食|小吃|家常菜|餐厅|酒店|素食餐厅|清真餐厅|food|local|restaurant|a local|vegetarian restaurant|halal restaurant)/i.test(mealName)) return;
-        const keyword = keywordFrom(mealName || raw);
-        if (!keyword) return;
-        const key = keyword.toLowerCase();
-        const typeSeen = globalSeen[kind] || (globalSeen[kind] = new Set());
-        // 景点跨天去重；餐饮按天保留（同一天内仍去重）
-        const dupGlobal = kind === '餐饮' ? false : [...typeSeen].some((k) => k === key || (k.length >= 2 && key.length >= 2 && (k.includes(key) || key.includes(k))));
-        if (seen.has(kind + ':' + key) || dupGlobal || stops.some((item) => item.type === kind && (item.keyword.includes(keyword) || keyword.includes(item.keyword)))) return;
-        seen.add(kind + ':' + key);
-        if (kind !== '餐饮') typeSeen.add(key);
-        stops.push({ keyword, name: keyword, time: clean(time), type: kind, foodSpecific });
+        push(keywordFrom(mealName || raw), kind);
       };
       (day.schedule || []).forEach((item) => {
         add(item.activity, item.time, '行程');
@@ -115,8 +128,8 @@
     const name = clean(poi.name);
     const typecode = String(poi.typecode || '');
     const addr = clean([poi.pname, poi.cityname, poi.adname, poi.address].filter(Boolean).join(''));
-    const foodKeyword = kind === '餐饮' || /咖啡|茶|餐厅|美食|小吃|火锅|面|饭|烧烤|甜品|早餐|午餐|晚餐|菜馆|农家菜|茶楼|菜/.test(keyword);
-    const area = keyword.replace(/(农家菜馆|农家菜|餐厅|饭店|餐馆|酒楼|菜馆|小吃店|茶馆|咖啡馆|火锅店|竹筏|漂流|游船|索道|缆车|表演|演出|温泉|乐园)$/,'').trim();
+    const foodKeyword = kind === '餐饮' || /咖啡|茶|餐厅|美食|小吃|火锅|面|饭|烧烤|甜品|早餐|午餐|晚餐|菜馆|面馆|农家菜|茶楼|菜/.test(keyword);
+    const area = keyword.replace(FOOD_SUFFIX, '').replace(/(竹筏|漂流|游船|索道|缆车|表演|演出|温泉|乐园)$/,'').trim();
     const areaHit = area && area !== keyword && (name.includes(area) || addr.includes(area));
     const nameScore = name === keyword ? 60 : name.includes(keyword) ? 40 : keyword.includes(name) ? 20 : 0;
     // 名称对不上但地址属于关键词所在片区（如梅家坞农家菜馆 → 梅家坞某餐馆）也接受
@@ -131,7 +144,7 @@
     // 用户找景点时排除同名的酒店/餐饮/商店；用户本身找咖啡/餐厅时不误伤
     if (!foodKeyword && /酒店|宾馆|民宿|客栈|公寓|停车场|售票处|超市|便利店|餐厅|饭店|小吃|咖啡|茶楼|茶馆|酒吧|甜品|商场|购物中心|百货|文创店|纪念品|地铁站|公交站|售票/.test(name)) score -= 50;
     // 主景点优先于北站、游客中心、售票处等子 POI
-    if (!foodKeyword && /(北站|南站|东站|西站|游客中心|售票处|停车场|码头|入口|出口|服务中心|导览中心|北门|南门|东门|西门)$/.test(name)) score -= 25;
+    if (!foodKeyword && kind !== '交通' && /(北站|南站|东站|西站|游客中心|售票处|停车场|码头|入口|出口|服务中心|导览中心|北门|南门|东门|西门)$/.test(name)) score -= 25;
     // 门牌号地址不要抢过片区/景点本体
     if (/\d+号$/.test(name)) score -= 15;
     const cityName = clean(city).replace(/[省市]$/, '');
@@ -207,14 +220,14 @@
     } catch (e) { /* localStorage 不可用时忽略 */ }
   }
   async function searchPlaceWithFallbacks(AMap, city, keyword, kind) {
-    if (/乘高铁|乘火车|高铁|动车|机场|车站|南站|东站|西站|北站/.test(keyword)) return null;
+    if (/^(乘|坐|搭|乘坐)|乘高铁|乘火车|高铁|动车|航班|飞机|^机场$/.test(keyword)) return null;
     let poi = await searchPlace(AMap, city, keyword, kind);
     if (poi) return poi;
     let fallback = keyword;
     if (kind === '餐饮') {
-      const area = keyword.replace(/(农家菜馆|农家菜|餐厅|饭店|餐馆|酒楼|菜馆|小吃店|茶馆|咖啡馆|火锅店)$/,'').trim();
+      const area = keyword.replace(FOOD_SUFFIX, '').trim();
       if (area && area !== keyword) fallback = area;
-    } else if (kind !== '自由活动') {
+    } else if (kind !== '自由活动' && kind !== '交通') {
       const base = keyword.replace(/(竹筏|漂流|游船|索道|缆车|表演|演出|温泉|乐园)$/,'').trim();
       if (base && base !== keyword) fallback = base;
       else if (/十景$/.test(keyword)) fallback = keyword.replace(/十景$/, '');
@@ -222,6 +235,16 @@
     }
     if (fallback && fallback !== keyword) {
       poi = await searchPlace(AMap, city, fallback, kind);
+      if (poi) return poi;
+    }
+    // 仍然找不到时，逐步截短关键词，在当前城市内找相近位置
+    const prefixes = [];
+    if (keyword.length > 6) prefixes.push(keyword.slice(0, 6));
+    if (keyword.length > 4) prefixes.push(keyword.slice(0, 4));
+    if (keyword.length > 3) prefixes.push(keyword.slice(0, 3));
+    for (const p of prefixes) {
+      if (p === keyword || p === fallback) continue;
+      poi = await searchPlace(AMap, city, p, kind);
       if (poi) return poi;
     }
     return searchPlaceLoose(AMap, city, fallback || keyword, kind);
@@ -302,7 +325,9 @@
 
   function renderStopList(container, groups, markers) {
     const foodLegend = groups.some((group) => group.items.some((item) => item.type === '餐饮')) ? `<span>🍜 ${t('餐饮', 'Food')}</span>` : '';
-    const legend = `<div class="plan-map-legend">${groups.map((group) => `<span><i style="background:${group.color}"></i>${t('第 ' + group.day + ' 天', 'Day ' + group.day)}</span>`).join('')}${foodLegend}</div>`;
+    const transitLegend = groups.some((group) => group.items.some((item) => item.type === '交通')) ? `<span>🚄 ${t('交通', 'Transit')}</span>` : '';
+    const approxLegend = groups.some((group) => group.items.some((item) => item.approx)) ? `<span>≈ ${t('近似位置', 'Approximate')}</span>` : '';
+    const legend = `<div class="plan-map-legend">${groups.map((group) => `<span><i style="background:${group.color}"></i>${t('第 ' + group.day + ' 天', 'Day ' + group.day)}</span>`).join('')}${foodLegend}${transitLegend}${approxLegend}</div>`;
     container.innerHTML = legend + groups.map((group) => {
       const summary = group.summary && group.summary.routed ? ' · ' + fmtDistance(group.summary.distance) + ' · ' + fmtDuration(group.summary.time) : '';
       const emptyText = /返程|返家|travel home|heading home/i.test(group.title || '')
@@ -312,7 +337,7 @@
         <div class="plan-map-day-title" data-map-day="${group.day}"><i style="background:${group.color}"></i><span>${t('第 ' + group.day + ' 天', 'Day ' + group.day)}</span><em>${summary}</em></div>
         ${group.items.map((item) => item.unlocated
           ? `<span class="plan-map-stop unlocated"><b>?</b><span>${escapeHtml(item.name)} · ${t('未定位', 'not located')}</span></span>`
-          : `<button class="plan-map-stop" type="button" data-map-index="${item.index}"><b>${item.index + 1}</b><span>${escapeHtml(item.name)}</span></button>`).join('') || `<p class="plan-map-foot">${emptyText}</p>`}
+          : `<button class="plan-map-stop" type="button" data-map-index="${item.index}"><b>${item.index + 1}</b><span>${item.approx ? '≈ ' : ''}${escapeHtml(item.name)}</span></button>`).join('') || `<p class="plan-map-foot">${emptyText}</p>`}
       </div>`;
     }).join('');
     container.querySelectorAll('[data-map-day]').forEach((title) => {
@@ -380,7 +405,17 @@
       if (token !== buildToken) return;
       const valid = located.filter((item) => item.poi);
       const unlocated = located.filter((item) => !item.poi);
-      const unlocatedShown = unlocated.filter((item) => item.type !== '餐饮' || item.foodSpecific);
+      const approxBase = dest && Number.isFinite(Number(dest.lon)) && Number.isFinite(Number(dest.lat))
+        ? { lng: Number(dest.lon), lat: Number(dest.lat) }
+        : null;
+      const approxItems = approxBase ? unlocated.filter((item) => item.type !== '餐饮' || item.foodSpecific) : [];
+      const approximate = approxItems.map((item) => ({
+        ...item,
+        approx: true,
+        poi: { name: item.keyword, address: '', lng: approxBase.lng, lat: approxBase.lat, typecode: '' }
+      }));
+      const unlocatedShown = unlocated.filter((item) => !approxItems.includes(item)).filter((item) => item.type !== '餐饮' || item.foodSpecific);
+      const mapped = valid.concat(approximate);
       const center = dest && Number.isFinite(Number(dest.lon)) && Number.isFinite(Number(dest.lat))
         ? [Number(dest.lon), Number(dest.lat)]
         : (valid[0] && valid[0].poi ? [valid[0].poi.lng, valid[0].poi.lat] : [116.397, 39.908]);
@@ -392,33 +427,38 @@
       days.forEach((day, dayIndex) => {
         groupsByDay.set(day.day, { day: day.day, title: day.title || '', color: DAY_COLORS[dayIndex % DAY_COLORS.length], path: [], markers: [], items: [] });
       });
-      valid.forEach((item, index) => {
+      mapped.forEach((item, index) => {
         const position = [item.poi.lng, item.poi.lat];
         const enNow = !!(window.i18n && window.i18n.lang === 'en');
+        const isApprox = !!item.approx;
         const popupName = item.keyword || item.poi.name;
-        const matchedName = !enNow && item.poi.name && item.poi.name !== popupName ? item.poi.name : '';
-        const popupAddress = enNow ? '' : (item.poi.address || '');
+        const matchedName = isApprox
+          ? (enNow ? 'Approximate location (city centre)' : '近似位置（城市中心）')
+          : (!enNow && item.poi.name && item.poi.name !== popupName ? item.poi.name : '');
+        const popupAddress = isApprox || enNow ? '' : (item.poi.address || '');
+        const matchLabel = enNow ? 'Map match: ' : '地图匹配：';
         const popup = '<b>' + escapeHtml(popupName) + '</b><br>' + escapeHtml(item.time || '')
-          + (matchedName ? '<br><span class="plan-map-match">地图匹配：' + escapeHtml(matchedName) + '</span>' : '')
+          + (matchedName ? '<br><span class="plan-map-match">' + matchLabel + escapeHtml(matchedName) + '</span>' : '')
           + (popupAddress ? '<br>' + escapeHtml(popupAddress) : '');
-        const typeLabel = enNow ? (TYPE_EN[item.type] || item.type || '') : (item.type || '');
+        const typeLabel = isApprox ? (enNow ? 'Approx.' : '近似') : (enNow ? (TYPE_EN[item.type] || item.type || '') : (item.type || ''));
         const isFood = item.type === '餐饮';
         const isFree = item.type === '自由活动';
+        const isTransit = item.type === '交通';
         const marker = new AMap.Marker({
           position,
           title: item.poi.name,
-          content: `<div class="plan-map-pin${isFood ? ' food' : ''}${isFree ? ' free' : ''}" style="--c:${item.color}">${isFree ? '☕' : (isFood ? '🍜' : item.day)}</div>`,
+          content: `<div class="plan-map-pin${isApprox ? ' approx' : ''}${isFood ? ' food' : ''}${isFree ? ' free' : ''}${isTransit ? ' transit' : ''}" style="--c:${item.color}">${isApprox ? '≈' : (isTransit ? '🚄' : (isFree ? '☕' : (isFood ? '🍜' : item.day)))}</div>`,
           offset: new AMap.Pixel(-13, -13),
           label: { content: `<span class="plan-map-label">D${item.day} · ${typeLabel}</span>`, direction: 'top' }
         });
         marker.on('click', () => { infoWindow.setContent(popup); infoWindow.open(map, position); });
         map.add(marker);
         markerObjects.push(marker);
-        markerItems[index] = { ...item, ...item.poi, lng: item.poi.lng, lat: item.poi.lat, position, popup };
+        markerItems[index] = { ...item, ...item.poi, lng: item.poi.lng, lat: item.poi.lat, position, popup, approx: item.approx };
         const group = groupsByDay.get(item.day);
         group.path.push(position);
         group.markers.push(marker);
-        group.items.push({ ...item, index, name: (window.i18n && window.i18n.lang === 'en') ? (item.keyword || item.poi.name) : item.poi.name });
+        group.items.push({ ...item, index, name: (window.i18n && window.i18n.lang === 'en') ? (item.keyword || item.poi.name) : item.poi.name, approx: item.approx });
       });
       unlocatedShown.forEach((item) => {
         const group = groupsByDay.get(item.day);
@@ -449,10 +489,11 @@
       renderStopList(stopList, groups, markerItems);
       if (markerObjects.length) map.setFitView(markerObjects, false, [40, 40, 40, 40], 15);
       const routedDays = groups.filter((group) => group.summary.routed).length;
-      const hiddenFood = unlocated.length - unlocatedShown.length;
+      const hiddenFood = unlocated.length - approximate.length - unlocatedShown.length;
       const unlocatedText = unlocatedShown.length ? (t(' · ' + unlocatedShown.length + ' 个未定位', ' · ' + unlocatedShown.length + ' not located')) : '';
+      const approxText = approximate.length ? (t(' · ' + approximate.length + ' 个近似位置', ' · ' + approximate.length + ' approximate locations')) : '';
       const hiddenText = hiddenFood ? (t(' · ' + hiddenFood + ' 条餐饮推荐未定位', ' · ' + hiddenFood + ' food recommendations not located')) : '';
-      status(t('已定位 ' + valid.length + '/' + items.length + ' 个地点' + unlocatedText + hiddenText + '，已完成 ' + routedDays + '/' + groups.length + ' 天路线计算。', 'Located ' + valid.length + '/' + items.length + ' places' + unlocatedText + hiddenText + '; routed ' + routedDays + '/' + groups.length + ' days.'));
+      status(t('已标记 ' + mapped.length + '/' + items.length + ' 个地点' + unlocatedText + approxText + hiddenText + '，已完成 ' + routedDays + '/' + groups.length + ' 天路线计算。', 'Marked ' + mapped.length + '/' + items.length + ' places' + unlocatedText + approxText + hiddenText + '; routed ' + routedDays + '/' + groups.length + ' days.'));
     } catch (error) {
       if (error && error.message === 'NO_KEY') {
         status(t('未配置高德地图 Key，暂时无法生成地图。请在 config.local.json 的 map 段填写 Web端 JS API Key 和安全密钥。', 'AMap key is not configured. Add a Web JS API key and security code to the map section of config.local.json.'));
