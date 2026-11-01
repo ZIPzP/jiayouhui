@@ -40,7 +40,7 @@
     s = s.replace(/^Day\s*\d+[·:：\s]*/i, '');
     s = s.replace(/^[（(].*?[）)]\s*/g, '').replace(/^[·•\-–—]\s*/, '');
     // 反复去掉句首的时间/动作词与分隔符，兼容「上午：游览」「午餐后自由活动」等写法
-    s = s.replace(/^(?:(?:上午|中午|下午|晚上|清晨|早上|推荐|安排|前往|游览|参观|打卡|体验|品尝|享用|乘坐|乘|去|到|逛|漫步|出发去|午餐后|早餐后|晚餐后|午饭后|早饭后|晚饭后)[：:\s]*)+/, '');
+    s = s.replace(/^(?:(?:上午|中午|下午|晚上|清晨|早上|推荐|安排|前往|游览|参观|打卡|体验|品尝|享用|乘坐|乘|去|到|逛|漫步|出发去|午餐后|早餐后|晚餐后|午饭后|早饭后|晚饭后|早餐|午餐|晚餐)[：:\s]*)+/, '');
     s = s.replace(/[·・].*$/, '').trim();
     s = s.replace(/(慢逛|漫步|打卡|游玩|观光|体验|活动|安排|初体验)$/g, '').trim();
     // 「丽江古城石板路」保留古城，去掉尾部描述
@@ -65,7 +65,11 @@
       const stops = [];
       const seen = new Set();
       const add = (text, time, type) => {
-        const keyword = keywordFrom(text);
+        const raw = clean(text);
+        // 餐食行不是景点：跳过「晚餐：北京烤鸭」「Lunch: ...」这类内容，避免把餐厅标到地图上
+        if (/^(早餐|午餐|晚餐|用餐)[：:]/.test(raw)) return;
+        if (/^(breakfast|lunch|dinner|meal)[:\s]/i.test(raw)) return;
+        const keyword = keywordFrom(raw);
         if (!keyword) return;
         const key = keyword.toLowerCase();
         const dupGlobal = [...globalSeen].some((k) => k === key || (k.length >= 2 && key.length >= 2 && (k.includes(key) || key.includes(k))));
