@@ -1427,6 +1427,7 @@ html.lang-en .btn-lg { font-size: 1rem; }
 .plan-map-pin.free { background: #f8fafc; color: #64748b; border-color: var(--c); font-size: 14px; }
 .plan-map-pin.transit { background: #eff6ff; color: #1d4ed8; border-color: var(--c); font-size: 14px; }
 .plan-map-pin.approx { background: #f8fafc; color: #64748b; border-color: #94a3b8; border-style: dashed; font-size: 14px; }
+.map-hotel { width: 34px; height: 34px; border-radius: 10px; background: #fff; border: 2px solid var(--primary); display: grid; place-items: center; font-size: 16px; box-shadow: 0 3px 10px rgba(15,23,42,.2); }
 .plan-map-label { display: inline-block; padding: 2px 6px; border-radius: 5px; background: rgba(255,255,255,.94); border: 1px solid #e2e8f0; color: #334155; font-size: 10px; font-weight: 800; white-space: nowrap; }
 .plan-map-match { color: var(--ink-soft); font-size: .8rem; }
 .amap-marker-label { border: 0 !important; background: transparent !important; padding: 0 !important; }
@@ -1444,3 +1445,63 @@ html.lang-en .btn-lg { font-size: 1rem; }
   .plan-map-stops { max-height: 220px; }
 }
 @media print { .plan-map-cta, .plan-map-shell { display: none !important; } }
+
+/* ===== 正式行程规划：电脑端地图工作台 ===== */
+.desktop-plan-workspace { max-width: 1500px; margin: 0 auto; padding: 0 20px 40px; }
+.desktop-plan-workspace[hidden] { display: none; }
+body.plan-workspace-mode .plan-layout { display: none !important; }
+.dpw-topbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 14px 0 12px; }
+.dpw-topbar h2 { margin: 0; font-size: 20px; color: var(--primary-dark); }
+.dpw-topbar p { margin: 0; color: var(--ink-soft); font-size: 12px; line-height: 1.6; }
+.dpw-topbar .dpw-spacer { flex: 1; }
+.dpw-grid { display: grid; grid-template-columns: 288px minmax(0, 1fr) 268px; gap: 12px; height: calc(100vh - var(--nav-h) - 130px); min-height: 560px; }
+.dpw-itinerary, .dpw-info { min-height: 0; overflow-y: auto; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 14px; box-shadow: var(--shadow); }
+.dpw-map { min-width: 0; min-height: 0; border-radius: 18px; overflow: hidden; background: #e8eef0; }
+.dpw-map-shell { height: 100%; display: flex; flex-direction: column; }
+.dpw-map-head { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: #fff; border-bottom: 1px solid var(--line); font-size: 13px; }
+.dpw-map-head .plan-map-status { margin-left: auto; max-width: 72%; text-align: right; font-size: 10px; line-height: 1.45; }
+.dpw-map-canvas { flex: 1; min-height: 0; width: 100%; height: 100%; }
+.dpw-day { margin-bottom: 12px; }
+.dpw-day-head { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px 10px 0 0; background: #f8fafc; border: 1px solid var(--line); border-bottom: 0; font-size: 12px; font-weight: 800; }
+.dpw-day-head .dpw-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+.dpw-day-body { border: 1px solid var(--line); border-radius: 0 0 10px 10px; padding: 4px 6px; min-height: 36px; }
+.dpw-stop { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 6px; align-items: start; padding: 7px 4px; border-bottom: 1px dashed #f1f5f9; cursor: pointer; }
+.dpw-stop:last-child { border-bottom: 0; }
+.dpw-stop:hover { background: #f8fafc; }
+.dpw-stop.active { background: var(--primary-light); border-radius: 7px; }
+.dpw-drag { color: #94a3b8; cursor: grab; font-size: 14px; line-height: 1.3; user-select: none; }
+.dpw-drag:active { cursor: grabbing; }
+.dpw-stop b { display: block; font-size: 12px; line-height: 1.35; }
+.dpw-stop small { display: block; margin-top: 2px; color: var(--ink-soft); font-size: 10px; line-height: 1.4; }
+.dpw-stop-del { width: 20px; height: 20px; border: 0; border-radius: 5px; background: transparent; color: #94a3b8; cursor: pointer; }
+.dpw-stop-del:hover { background: #fef2f2; color: #dc2626; }
+.dpw-pool { margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 10px; }
+.dpw-pool-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.dpw-pool h4 { flex: 1; margin: 0; font-size: 12px; }
+.dpw-pool-head select { height: 24px; border: 1px solid var(--line); border-radius: 5px; font-size: 10px; }
+.dpw-pool-row { display: flex; align-items: center; gap: 6px; padding: 6px 0; border-bottom: 1px dashed #f1f5f9; font-size: 11px; cursor: pointer; }
+.dpw-pool-row input { flex: 0 0 auto; }
+.dpw-pool-row span { flex: 1; min-width: 0; }
+.dpw-pool-row button { height: 24px; padding: 0 7px; border-radius: 6px; border: 1px solid #a7f3d0; background: var(--primary-light); color: var(--primary-dark); font-size: 10px; font-weight: 800; cursor: pointer; }
+.dpw-add-selected { width: 100%; height: 28px; margin-top: 8px; border: 0; border-radius: 7px; background: var(--primary); color: #fff; font-size: 11px; font-weight: 800; cursor: pointer; }
+.dpw-add-selected:disabled { opacity: .45; cursor: default; }
+.dpw-tabs { display: flex; gap: 3px; background: #f1f5f9; padding: 3px; border-radius: 9px; margin-bottom: 10px; }
+.dpw-tabs button { flex: 1; border: 0; border-radius: 7px; background: transparent; color: var(--ink-soft); font-size: 11px; font-weight: 800; padding: 6px 2px; cursor: pointer; }
+.dpw-tabs button.active { background: #fff; color: var(--primary-dark); box-shadow: 0 2px 6px rgba(15,23,42,.08); }
+.dpw-info .transport-box, .dpw-info .budget-box, .dpw-info .dietary-box, .dpw-info .tips-box { margin-bottom: 10px; }
+.dpw-info .rt-list li { padding: 6px 8px; }
+.dpw-info .rt-price { font-size: .78rem; }
+.dpw-weather-row { display: flex; justify-content: space-between; gap: 8px; padding: 7px 0; border-bottom: 1px dashed #f1f5f9; font-size: 11px; }
+.dpw-weather-row span { color: var(--ink-soft); }
+.dpw-hotel-search { display: flex; gap: 5px; margin-bottom: 8px; }
+.dpw-hotel-search input { flex: 1; min-width: 0; height: 30px; border: 1px solid var(--line); border-radius: 7px; font-size: 11px; padding: 0 7px; }
+.dpw-hotel-search button { height: 30px; border: 0; border-radius: 7px; background: var(--primary); color: #fff; font-size: 11px; font-weight: 800; padding: 0 8px; cursor: pointer; }
+.dpw-hotel-row { padding: 7px 0; border-top: 1px dashed #f1f5f9; font-size: 11px; }
+.dpw-hotel-row b { display: block; }
+.dpw-hotel-row small { display: block; color: var(--ink-soft); margin-top: 2px; }
+.dpw-hotel-row button { margin-top: 5px; height: 23px; border: 1px solid #a7f3d0; border-radius: 6px; background: var(--primary-light); color: var(--primary-dark); font-size: 10px; font-weight: 800; cursor: pointer; }
+.dpw-empty { color: var(--ink-soft); font-size: 11px; line-height: 1.6; }
+@media (max-width: 900px) {
+  .desktop-plan-workspace { display: none !important; }
+  body.plan-workspace-mode .plan-layout { display: grid !important; }
+}

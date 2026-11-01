@@ -5,6 +5,15 @@
   let planWeatherTimer = null;
   let planWeatherToken = 0;
   const planWeatherCache = new Map();
+  let desktopData = null;
+  let desktopVals = null;
+  let desktopCtx = null;
+  let desktopSortables = [];
+  let desktopBound = false;
+  let dpwInfoTab = 'transport';
+  let dpwWeatherCache = null;
+  let desktopHighlights = [];
+  let desktopHighlightsToken = 0;
   window.pageInit = async function () {
     bindEvents();
     restoreDraft();
@@ -589,6 +598,337 @@
     return data;
   }
 
+  /* ---------- 电脑端：地图工作台 ---------- */
+  function renderDesktopWorkspace(data, vals, ctx) {
+    desktopData = data;
+    desktopVals = vals;
+    desktopCtx = ctx || {};
+    dpwWeatherCache = null;
+    desktopHighlights = [];
+    desktopHighlightsToken += 1;
+    const shell = document.getElementById('desktopPlanWorkspace');
+    if (!shell) return;
+    document.body.classList.add('plan-workspace-mode');
+    const bodyEl = document.getElementById('planBody');
+    if (bodyEl) bodyEl.hidden = true;
+    const topbar = document.getElementById('dpwTopbar');
+    if (topbar) {
+      topbar.innerHTML = `
+        <div><h2>${app.esc(data.title || '行程规划')}</h2><p>${app.esc(data.summary || '')}</p></div>
+        <span class="dpw-spacer"></span>
+        <button class="btn btn-ghost" type="button" data-dpw-back>← 返回修改</button>
+        <button class="btn btn-ghost" type="button" data-dpw-word>导出 Word</button>
+        <button class="btn btn-ghost" type="button" data-dpw-image>保存图片</button>`;
+    }
+    const mapHost = document.getElementById('dpwMapHost');
+    if (mapHost) {
+      mapHost.innerHTML = `<div class="plan-map-shell dpw-map-shell" id="planMapShell">
+        <div class="dpw-map-head"><b>🗺️ 行程地图</b><span id="planMapStatus" class="plan-map-status"></span></div>
+        <div id="planMap" class="dpw-map-canvas"></div>
+        <div id="planMapStops" hidden></div>
+      </div>`;
+    }
+    renderDesktopItinerary();
+    renderDesktopInfo(dpwInfoTab);
+    shell.hidden = false;
+    bindDesktopWorkspace();
+    const token = desktopHighlightsToken;
+    loadDesktopHighlights(vals.destinationId, token);
+    setTimeout(() => {
+      if (window.planMap && desktopData) {
+        Promise.resolve(window.planMap.build(desktopData, desktopVals)).then(() => loadDesktopHotspots(vals, token));
+      }
+    }, 80);
+  }
+
+  function loadDesktopHighlights(destinationId, token) {
+    if (!destinationId || destinationId === 'custom') { renderDesktopItinerary(); return; }
+    app.api('/api/destinations/' + encodeURIComponent(destinationId)).then((data) => {
+      if (token !== desktopHighlightsToken || !desktopData) return;
+      const base = (data.destination && data.destination.highlights) || [];
+      const seen = new Set(base.map((item) => String(item.title || '')));
+      desktopHighlights = base.concat(desktopHighlights.filter((item) => !seen.has(String(item.title || '')))).slice(0, 10);
+      renderDesktopItinerary();
+    }).catch(() => { renderDesktopItinerary(); });
+  }
+
+  function loadDesktopHotspots(vals, token) {
+    if (!window.AMap || !desktopData) return;
+    const city = vals.destinationName || ((app.state.destinations.find((d) => d.id === vals.destinationId) || {}).name || '');
+    if (!city) return;
+    const used = (desktopData.days || []).flatMap((day) => (day.schedule || []).map((item) => String(item.activity || '').trim())).filter(Boolean);
+    AMap.plugin(['AMap.PlaceSearch'], () => {
+      try {
+        const search = new AMap.PlaceSearch({ city, citylimit: true, type: '110000', pageSize: 20, extensions: 'all' });
+        search.search('景点', (status, result) => {
+          if (token !== desktopHighlightsToken || !desktopData || status !== 'complete') return;
+          const seen = new Set(desktopHighlights.map((item) => String(item.title || '').replace(/\s+/g, '')));
+          const extra = ((result.poiList && result.poiList.pois) || [])
+            .filter((poi) => poi && poi.name && !/酒店|宾馆|停车场|游客中心|售票处|地铁站|公交站/.test(poi.name))
+            .filter((poi) => !used.some((name) => name.includes(poi.name) || poi.name.includes(name)))
+            .sort((a, b) => (Number(b.biz_ext && b.biz_ext.rating) || 0) - (Number(a.biz_ext && a.biz_ext.rating) || 0))
+            .filter((poi) => {
+              const key = String(poi.name).replace(/\s+/g, '');
+              if (seen.has(key)) return false;
+              seen.add(key);
+              return true;
+            })
+            .slice(0, 8)
+            .map((poi) => ({ title: poi.name, text: poi.address || '地图热门景点' }));
+          if (!extra.length) return;
+          desktopHighlights = desktopHighlights.concat(extra).slice(0, 10);
+          renderDesktopItinerary();
+        });
+      } catch (e) { /* 高德搜索不可用时保留目的地精选 */ }
+    });
+  }
+
+  function renderDesktopItinerary() {
+    const box = document.getElementById('dpwItinerary');
+    if (!box || !desktopData) return;
+    const colors = ['#0f766e', '#f97316', '#2563eb', '#9333ea', '#dc2626'];
+    const dayHtml = (desktopData.days || []).map((d, di) => {
+      const color = colors[di % colors.length];
+      const stops = (d.schedule || []).map((s, si) => `
+        <div class="dpw-stop" data-dpw-stop data-day-index="${di}" data-schedule-index="${si}" data-activity="${app.esc(s.activity)}">
+          <span class="dpw-drag" title="拖动排序">⠿</span>
+          <div><b>${app.esc(s.activity)}</b><small>${app.esc(s.time || '')}${s.detail ? ' · ' + app.esc(s.detail) : ''}</small></div>
+          <button class="dpw-stop-del" type="button" data-dpw-del data-day-index="${di}" data-schedule-index="${si}" title="移除">×</button>
+        </div>`).join('');
+      return `<div class="dpw-day" style="--c:${color}">
+        <div class="dpw-day-head"><span class="dpw-dot"></span>D${d.day} · ${app.esc(d.title || '')}</div>
+        <div class="dpw-day-body" data-day-index="${di}">${stops || '<p class="dpw-empty">暂无安排</p>'}</div>
+      </div>`;
+    }).join('');
+    const dayOptions = (desktopData.days || []).map((_, i) => `<option value="${i}">Day ${i + 1}</option>`).join('');
+    const pool = `<div class="dpw-pool">
+      <div class="dpw-pool-head"><h4>✨ 热门景点备选</h4><select id="dpwAddDay">${dayOptions}</select></div>
+      ${desktopHighlights.length ? desktopHighlights.map((h, i) => `<label class="dpw-pool-row"><input type="checkbox" data-dpw-hl="${i}" /><span>${app.esc(h.title || '')}</span><button type="button" data-dpw-add data-hl-index="${i}">加入</button></label>`).join('') : '<p class="dpw-empty">正在读取当前城市备选景点…</p>'}
+      ${desktopHighlights.length ? '<button class="dpw-add-selected" type="button" data-dpw-add-selected disabled>加入所选</button>' : ''}
+    </div>`;
+    box.innerHTML = dayHtml + pool;
+    box.querySelectorAll('[data-dpw-hl]').forEach((input) => {
+      input.addEventListener('change', updateDesktopPoolSelection);
+    });
+    initDesktopSortables();
+  }
+
+  function updateDesktopPoolSelection() {
+    const box = document.getElementById('dpwItinerary');
+    if (!box) return;
+    const checked = box.querySelectorAll('[data-dpw-hl]:checked').length;
+    const btn = box.querySelector('[data-dpw-add-selected]');
+    if (btn) {
+      btn.disabled = checked === 0;
+      btn.textContent = checked ? `加入所选（${checked}）` : '加入所选';
+    }
+  }
+
+  function initDesktopSortables() {
+    desktopSortables.forEach((s) => { try { s.destroy(); } catch (e) { /* ignore */ } });
+    desktopSortables = [];
+    if (!window.Sortable) return;
+    document.querySelectorAll('#dpwItinerary .dpw-day-body').forEach((el) => {
+      desktopSortables.push(new Sortable(el, {
+        group: 'dpw-stops',
+        handle: '.dpw-drag',
+        draggable: '.dpw-stop',
+        animation: 150,
+        onEnd: (evt) => {
+          const from = Number(evt.from.dataset.dayIndex);
+          const to = Number(evt.to.dataset.dayIndex);
+          if (!Number.isInteger(from) || !Number.isInteger(to) || !desktopData) return;
+          const item = desktopData.days[from].schedule.splice(evt.oldIndex, 1)[0];
+          if (!item) return;
+          desktopData.days[to].schedule.splice(evt.newIndex, 0, item);
+          savePlan(desktopVals, desktopData);
+          renderDesktopItinerary();
+          if (window.planMap) window.planMap.build(desktopData, desktopVals);
+        }
+      }));
+    });
+  }
+
+  function renderDesktopInfo(tab = dpwInfoTab) {
+    dpwInfoTab = tab;
+    const box = document.getElementById('dpwInfo');
+    if (!box || !desktopData) return;
+    const tabs = `<div class="dpw-tabs">
+      ${[['transport', '交通'], ['hotel', '酒店'], ['budget', '预算'], ['weather', '天气'], ['tips', '建议']].map(([k, l]) => `<button type="button" data-dpw-tab="${k}" class="${tab === k ? 'active' : ''}">${l}</button>`).join('')}
+    </div>`;
+    let body = '';
+    let needWeather = false;
+    if (tab === 'transport') {
+      const rtHtml = (desktopCtx && desktopCtx.rtHtml) || '';
+      const tp = (desktopCtx && desktopCtx.tp) || {};
+      const tpHtml = tp.outbound || tp.inbound || tp.local ? `<div class="transport-box"><h4>🚄 交通安排</h4>${tp.outbound ? `<p><b>去程：</b>${app.esc(tp.outbound)}</p>` : ''}${tp.inbound ? `<p><b>返程：</b>${app.esc(tp.inbound)}</p>` : ''}${tp.local ? `<p><b>当地：</b>${app.esc(tp.local)}</p>` : ''}</div>` : '';
+      body = (rtHtml || '<p class="dpw-empty">暂无 12306 实时车次数据。</p>') + tpHtml;
+    } else if (tab === 'budget') {
+      const b = desktopData.budget || {};
+      body = `<div class="budget-box"><h4>💰 费用估算（人均）</h4>${b.transport ? `<p>🚄 ${app.esc(b.transport)}</p>` : ''}${b.accommodation ? `<p>🏨 ${app.esc(b.accommodation)}</p>` : ''}${b.meals ? `<p>🍜 ${app.esc(b.meals)}</p>` : ''}${b.tickets ? `<p>🎫 ${app.esc(b.tickets)}</p>` : ''}${b.totalPerPerson ? `<p class="total">合计：${app.esc(b.totalPerPerson)}</p>` : ''}${b.note ? `<p style="font-size:.85rem">${app.esc(b.note)}</p>` : ''}</div>`;
+    } else if (tab === 'weather') {
+      body = '<p class="dpw-empty">正在获取天气…</p>';
+      needWeather = true;
+    } else if (tab === 'tips') {
+      const d = desktopData.dietaryNotes || [];
+      const t = desktopData.tips || [];
+      body = `${d.length ? `<div class="dietary-box"><h4>🥢 忌食与用餐提醒</h4><ul>${d.map((n) => `<li>${app.esc(n)}</li>`).join('')}</ul></div>` : ''}${t.length ? `<div class="tips-box"><strong>💡 出行提醒</strong><ul>${t.map((n) => `<li>${app.esc(n)}</li>`).join('')}</ul></div>` : '<p class="dpw-empty">暂无额外建议。</p>'}`;
+    } else if (tab === 'hotel') {
+      body = `<p class="dpw-empty">只搜索当前城市的酒店；选中后定位到地图。</p><div class="dpw-hotel-search"><input id="dpwHotelSearch" placeholder="输入酒店名，如 王府井 / 国贸" /><button type="button" id="dpwHotelSearchBtn">搜索</button></div><div id="dpwHotelResults"><p class="dpw-empty">输入关键词搜索，或直接搜“酒店”。</p></div>`;
+    }
+    box.innerHTML = tabs + `<div id="dpwInfoBody">${body}</div>`;
+    if (needWeather) loadDesktopWeather();
+    if (tab === 'hotel') {
+      const input = document.getElementById('dpwHotelSearch');
+      const btn = document.getElementById('dpwHotelSearchBtn');
+      const run = () => searchDesktopHotels(input ? input.value.trim() : '');
+      if (btn) btn.onclick = run;
+      if (input) input.onkeydown = (e) => { if (e.key === 'Enter') run(); };
+    }
+  }
+
+  function loadDesktopWeather() {
+    const body = document.getElementById('dpwInfoBody');
+    if (!body || !desktopVals) return;
+    const dest = app.state.destinations.find((d) => d.id === desktopVals.destinationId);
+    if (!dest || !dest.id) { body.innerHTML = '<p class="dpw-empty">当前目的地暂无天气数据。</p>'; return; }
+    const finish = (data) => {
+      if (dpwInfoTab !== 'weather') return;
+      let days = data.days || [];
+      if (desktopVals.startDate && desktopVals.endDate) days = days.filter((d) => d.date >= desktopVals.startDate && d.date <= desktopVals.endDate);
+      days = days.slice(0, 6);
+      body.innerHTML = days.length ? days.map((d) => `<div class="dpw-weather-row"><span>${app.esc(d.date.slice(5))} ${app.esc(d.weekday)}</span><span>${d.icon} ${app.esc(d.label)}</span><b>${d.tmin}°~${d.tmax}°</b></div>`).join('') : '<p class="dpw-empty">所选日期暂无预报。</p>';
+    };
+    if (dpwWeatherCache) { finish(dpwWeatherCache); return; }
+    app.api('/api/weather?id=' + encodeURIComponent(dest.id)).then((data) => { dpwWeatherCache = data; finish(data); }).catch(() => {
+      if (dpwInfoTab === 'weather') body.innerHTML = '<p class="dpw-empty">天气暂时获取失败。</p>';
+    });
+  }
+
+  function searchDesktopHotels(keyword) {
+    const box = document.getElementById('dpwHotelResults');
+    if (!box || !desktopVals) return;
+    const dest = app.state.destinations.find((d) => d.id === desktopVals.destinationId);
+    if (!dest || !dest.name) { box.innerHTML = '<p class="dpw-empty">当前目的地不支持酒店搜索。</p>'; return; }
+    if (!window.AMap) { box.innerHTML = '<p class="dpw-empty">高德地图尚未加载，请稍后再试。</p>'; return; }
+    box.innerHTML = '<p class="dpw-empty">正在搜索当前城市酒店…</p>';
+    let done = false;
+    const timer = setTimeout(() => {
+      if (done) return;
+      done = true;
+      box.innerHTML = '<p class="dpw-empty">酒店搜索超时，请稍后再试。</p>';
+    }, 5000);
+    AMap.plugin(['AMap.PlaceSearch'], () => {
+      try {
+        const search = new AMap.PlaceSearch({ city: dest.name, citylimit: true, type: '100000', pageSize: 10, extensions: 'all' });
+        search.search(keyword || '酒店', (status, result) => {
+          clearTimeout(timer);
+          if (done) return;
+          done = true;
+          if (status !== 'complete') { box.innerHTML = '<p class="dpw-empty">酒店搜索暂不可用，请稍后再试。</p>'; return; }
+          const pois = (result.poiList && result.poiList.pois) || [];
+          const hotels = pois.map((p) => {
+            const loc = p.location || {};
+            const lng = Number(typeof loc.getLng === 'function' ? loc.getLng() : loc.lng);
+            const lat = Number(typeof loc.getLat === 'function' ? loc.getLat() : loc.lat);
+            return { name: p.name || '酒店', address: p.address || p.cityname || '', lng, lat };
+          }).filter((h) => Number.isFinite(h.lat) && Number.isFinite(h.lng));
+          box.innerHTML = hotels.length ? hotels.map((h) => `<div class="dpw-hotel-row"><b>${app.esc(h.name)}</b><small>${app.esc(h.address)}</small><button type="button" data-dpw-hotel data-lng="${h.lng}" data-lat="${h.lat}" data-name="${encodeURIComponent(h.name)}">定位到地图</button></div>`).join('') : '<p class="dpw-empty">没有找到当前城市的酒店。</p>';
+        });
+      } catch (e) {
+        clearTimeout(timer);
+        done = true;
+        box.innerHTML = '<p class="dpw-empty">酒店搜索失败，请稍后再试。</p>';
+      }
+    });
+  }
+
+  function backToForm() {
+    document.body.classList.remove('plan-workspace-mode');
+    const ws = document.getElementById('desktopPlanWorkspace');
+    if (ws) ws.hidden = true;
+    const body = document.getElementById('planBody');
+    if (body) {
+      body.hidden = false;
+      body.innerHTML = '<div class="result-empty"><p>行程已生成，修改后可重新打开地图工作台。</p><button class="btn btn-primary" type="button" data-open-workspace>打开地图工作台</button></div>';
+      const btn = body.querySelector('[data-open-workspace]');
+      if (btn) btn.addEventListener('click', () => renderDesktopWorkspace(desktopData, desktopVals, desktopCtx));
+    }
+    const layout = document.querySelector('.plan-layout');
+    if (layout) layout.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function bindDesktopWorkspace() {
+    if (desktopBound) return;
+    const ws = document.getElementById('desktopPlanWorkspace');
+    if (!ws) return;
+    desktopBound = true;
+    ws.addEventListener('click', (e) => {
+      if (e.target.closest('[data-dpw-back]')) { backToForm(); return; }
+      if (e.target.closest('[data-dpw-word]')) { app.saveAsWord('dpwItinerary', '家游汇-行程规划'); return; }
+      if (e.target.closest('[data-dpw-image]')) { app.saveAsImage('dpwItinerary', '家游汇-行程规划.png'); return; }
+      const del = e.target.closest('[data-dpw-del]');
+      if (del) {
+        const di = Number(del.dataset.dayIndex);
+        const si = Number(del.dataset.scheduleIndex);
+        if (desktopData && desktopData.days[di] && desktopData.days[di].schedule) {
+          desktopData.days[di].schedule.splice(si, 1);
+          savePlan(desktopVals, desktopData);
+          renderDesktopItinerary();
+          if (window.planMap) window.planMap.build(desktopData, desktopVals);
+        }
+        return;
+      }
+      const stop = e.target.closest('[data-dpw-stop]');
+      if (stop && !e.target.closest('button')) {
+        document.querySelectorAll('#dpwItinerary .dpw-stop').forEach((el) => el.classList.toggle('active', el === stop));
+        if (window.planMap && window.planMap.focusStop) {
+          window.planMap.focusStop(Number(stop.dataset.dayIndex) + 1, stop.dataset.activity || '');
+        }
+        return;
+      }
+      const add = e.target.closest('[data-dpw-add]');
+      if (add) {
+        const dest = app.state.destinations.find((d) => d.id === desktopVals.destinationId) || {};
+        const h = (dest.highlights || [])[Number(add.dataset.hlIndex)];
+        const to = Number(document.getElementById('dpwAddDay').value) || 0;
+        if (!h || !h.title || (desktopData.days[to].schedule || []).some((s) => String(s.activity || '').trim() === h.title)) return;
+        desktopData.days[to].schedule.push({ time: '上午', activity: h.title, detail: h.text || '' });
+        savePlan(desktopVals, desktopData);
+        renderDesktopItinerary();
+        if (window.planMap) window.planMap.build(desktopData, desktopVals);
+        return;
+      }
+      if (e.target.closest('[data-dpw-add-selected]')) {
+        const dest = app.state.destinations.find((d) => d.id === desktopVals.destinationId) || {};
+        const to = Number(document.getElementById('dpwAddDay').value) || 0;
+        const indexes = [...document.querySelectorAll('[data-dpw-hl]:checked')].map((el) => Number(el.dataset.dpwHl));
+        const seen = new Set((desktopData.days[to].schedule || []).map((s) => String(s.activity || '').trim()));
+        indexes.forEach((index) => {
+          const h = desktopHighlights[index];
+          if (!h || !h.title || seen.has(h.title)) return;
+          desktopData.days[to].schedule.push({ time: '上午', activity: h.title, detail: h.text || '' });
+          seen.add(h.title);
+        });
+        if (indexes.length) {
+          savePlan(desktopVals, desktopData);
+          renderDesktopItinerary();
+          if (window.planMap) window.planMap.build(desktopData, desktopVals);
+        }
+        return;
+      }
+      const tab = e.target.closest('[data-dpw-tab]');
+      if (tab) { renderDesktopInfo(tab.dataset.dpwTab); return; }
+      const hotel = e.target.closest('[data-dpw-hotel]');
+      if (hotel) {
+        const lng = Number(hotel.dataset.lng);
+        const lat = Number(hotel.dataset.lat);
+        const name = decodeURIComponent(hotel.dataset.name || '');
+        if (window.planMap && window.planMap.focusHotel) window.planMap.focusHotel(lng, lat, name);
+      }
+    });
+  }
+
   function renderPlan(el, data, vals) {
     data = dedupePlanData(data);
     renderedPlan = { data, vals };
@@ -650,6 +990,13 @@
         ${rtIn}
         <p class="rt-foot">数据来自 12306 实时官方查询，请以 12306 实际为准</p>
       </div>` : '';
+    if (window.innerWidth > 900) {
+      renderDesktopWorkspace(data, vals, { rtHtml, bg, tp, rt });
+      return;
+    }
+    const mapHost = document.getElementById('dpwMapHost');
+    if (mapHost) mapHost.innerHTML = '';
+    document.body.classList.remove('plan-workspace-mode');
     el.innerHTML = `
       <div class="result-head">
         <h3>🗺️ ${app.esc(data.title || '行程规划')}</h3>

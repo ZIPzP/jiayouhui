@@ -5,9 +5,12 @@
   const FOOD_SUFFIX = /(农家菜馆|农家菜|餐厅|饭店|餐馆|酒楼|菜馆|面馆|粉店|米线|食府|饭馆|餐吧|食肆|烧烤店|串串店|火锅店|小吃店|茶馆|咖啡馆|农家乐|斋)$/;
   const GENERIC = /^(抵达|返回|返程|入住|退房|早餐|午餐|晚餐|自由活动|休息|出发|前往|市区|酒店|民宿|客栈|附近|当地|美食|城市漫步|市区漫步|夜景|行程结束|收拾行李|办理入住|回酒店|逛市区)$/;
   const GENERIC_PREFIX = /^(抵达|返回|返程|入住|退房|出发|前往|自由活动|休息|收拾行李|办理入住|回酒店|逛市区|市区|夜景|附近|当地|美食|特色晚餐|享用早餐|就近午餐|整理行李)/;
+  const GENERIC_MEAL_PLACE = /^(就近|附近|周边|当地|市区|城区|特色|简餐|随便|自行)(?:吃|用|用餐|就餐|解决|午餐|晚餐)?$/;
   let amapPromise = null;
   let map = null;
   let infoWindow = null;
+  let hotelMarker = null;
+  let currentStops = [];
   let buildToken = 0;
   const POI_CACHE_KEY = 'jyh_map_poi_cache_v2';
   const POI_CACHE_MAX = 300;
@@ -52,7 +55,7 @@
     // 从「玉龙雪山乘大索道」「丽江古城石板路」这类描述中取地点主体
     s = s.replace(/(.{1,})(乘|登|住|感受|品尝|享用|前往|到达|游览|体验|漫步|慢逛|参观|打卡|拍照|游船|游园|高原湖泊|湖泊|小桥流水|湿地观鸟|骑马划船|特色客栈|特色晚餐).*$/, '$1').trim();
     if (s.length > 18) s = s.slice(0, 18);
-    if (!s || GENERIC.test(s) || GENERIC_ONLY.test(s) || (GENERIC_PREFIX.test(s) && s.length < 20)) return '';
+    if (!s || GENERIC.test(s) || GENERIC_ONLY.test(s) || GENERIC_MEAL_PLACE.test(s) || (GENERIC_PREFIX.test(s) && s.length < 20)) return '';
     return s;
   }
   function looksLikePlace(text) {
@@ -93,7 +96,7 @@
               .replace(/[+＋、，,。；;：\/\s]+$/, '')
               .replace(/(吃|品尝|享用|逛)$/, '')
               .trim();
-            if (place && !/^(酒店|民宿|客栈|房间|住处|市区|城区|附近|周边)$/.test(place)) {
+            if (place && !/^(酒店|民宿|客栈|房间|住处|市区|城区|附近|周边)$/.test(place) && !GENERIC_MEAL_PLACE.test(place)) {
               push(keywordFrom(place), '餐饮', true);
             }
             return;
@@ -375,6 +378,7 @@
     const stopList = document.getElementById('planMapStops');
     if (!shell || !canvas || !stopList) return;
     const token = ++buildToken;
+    currentStops = [];
     shell.hidden = false;
     canvas.innerHTML = '';
     stopList.innerHTML = '';
@@ -498,6 +502,7 @@
         if (group.routePath.length > 1) map.add(new AMap.Polyline({ path: group.routePath, strokeColor: group.color, strokeWeight: 5, strokeOpacity: 0.9, strokeStyle: group.summary.routed ? 'solid' : 'dashed', lineJoin: 'round' }));
       });
       renderStopList(stopList, groups, markerItems);
+      currentStops = markerItems;
       if (markerObjects.length) map.setFitView(markerObjects, false, [40, 40, 40, 40], 15);
       const routedDays = groups.filter((group) => group.summary.routed).length;
       const hiddenFood = unlocated.length - approximate.length - unlocatedShown.length;
@@ -514,5 +519,38 @@
     }
   }
 
-  window.planMap = { build };
+  function focusHotel(lng, lat, name) {
+    const x = Number(lng), y = Number(lat);
+    if (!map || !window.AMap || !Number.isFinite(x) || !Number.isFinite(y)) return;
+    if (hotelMarker) { try { map.remove(hotelMarker); } catch (e) { /* ignore */ } }
+    hotelMarker = new AMap.Marker({
+      position: [x, y],
+      content: '<div class="map-hotel">🏨</div>',
+      offset: new AMap.Pixel(-17, -17),
+      title: name || '酒店'
+    });
+    map.add(hotelMarker);
+    map.setZoomAndCenter(15, [x, y]);
+    if (infoWindow) {
+      infoWindow.setContent('<b>' + escapeHtml(name || '酒店') + '</b><br>' + t('酒店', 'Hotel'));
+      infoWindow.open(map, [x, y]);
+    }
+  }
+
+  function focusStop(day, activity) {
+    if (!map || !currentStops.length) return;
+    const dayNumber = Number(day);
+    const text = String(activity || '').trim().toLowerCase();
+    const target = currentStops.find((item) => Number(item.day) === dayNumber && text && (
+      String(item.keyword || '').toLowerCase().includes(text) || text.includes(String(item.keyword || '').toLowerCase())
+    )) || currentStops.find((item) => Number(item.day) === dayNumber);
+    if (!target) return;
+    map.setZoomAndCenter(16, target.position);
+    if (infoWindow) {
+      infoWindow.setContent(target.popup || ('<b>' + escapeHtml(target.keyword || target.name || '') + '</b>'));
+      infoWindow.open(map, target.position);
+    }
+  }
+
+  window.planMap = { build, focusHotel, focusStop };
 })();
