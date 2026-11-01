@@ -1426,6 +1426,7 @@ html.lang-en .btn-lg { font-size: 1rem; }
 .plan-map-pin.food { background: #fff7ed; color: #c2410c; border-color: var(--c); font-size: 14px; }
 .plan-map-pin.free { background: #f8fafc; color: #64748b; border-color: var(--c); font-size: 14px; }
 .plan-map-label { display: inline-block; padding: 2px 6px; border-radius: 5px; background: rgba(255,255,255,.94); border: 1px solid #e2e8f0; color: #334155; font-size: 10px; font-weight: 800; white-space: nowrap; }
+.plan-map-match { color: var(--ink-soft); font-size: .8rem; }
 .amap-marker-label { border: 0 !important; background: transparent !important; padding: 0 !important; }
 .plan-map-stop { display: flex; gap: 8px; width: 100%; text-align: left; border: 0; background: #f8fafc; color: var(--ink); padding: 6px 8px; border-radius: 8px; margin-bottom: 4px; cursor: pointer; font: inherit; font-size: .8rem; }
 .plan-map-stop:hover { background: var(--primary-light); }

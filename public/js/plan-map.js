@@ -275,7 +275,10 @@
         const item = markers[Number(button.dataset.mapIndex)];
         if (!item || !map) return;
         map.setZoomAndCenter(15, [item.lng, item.lat]);
-        if (infoWindow) infoWindow.open(map, [item.lng, item.lat]);
+        if (infoWindow) {
+          if (item.popup) infoWindow.setContent(item.popup);
+          infoWindow.open(map, [item.lng, item.lat]);
+        }
       });
     });
   }
@@ -340,9 +343,12 @@
       valid.forEach((item, index) => {
         const position = [item.poi.lng, item.poi.lat];
         const enNow = !!(window.i18n && window.i18n.lang === 'en');
-        const popupName = enNow ? (item.keyword || item.poi.name) : item.poi.name;
+        const popupName = item.keyword || item.poi.name;
+        const matchedName = !enNow && item.poi.name && item.poi.name !== popupName ? item.poi.name : '';
         const popupAddress = enNow ? '' : (item.poi.address || '');
-        const popup = '<b>' + escapeHtml(popupName) + '</b><br>' + escapeHtml(item.time || '') + (popupAddress ? '<br>' + escapeHtml(popupAddress) : '');
+        const popup = '<b>' + escapeHtml(popupName) + '</b><br>' + escapeHtml(item.time || '')
+          + (matchedName ? '<br><span class="plan-map-match">地图匹配：' + escapeHtml(matchedName) + '</span>' : '')
+          + (popupAddress ? '<br>' + escapeHtml(popupAddress) : '');
         const typeLabel = enNow ? (TYPE_EN[item.type] || item.type || '') : (item.type || '');
         const isFood = item.type === '餐饮';
         const isFree = item.type === '自由活动';
@@ -356,7 +362,7 @@
         marker.on('click', () => { infoWindow.setContent(popup); infoWindow.open(map, position); });
         map.add(marker);
         markerObjects.push(marker);
-        markerItems[index] = { ...item, ...item.poi, lng: item.poi.lng, lat: item.poi.lat, position };
+        markerItems[index] = { ...item, ...item.poi, lng: item.poi.lng, lat: item.poi.lat, position, popup };
         const group = groupsByDay.get(item.day);
         group.path.push(position);
         group.markers.push(marker);
