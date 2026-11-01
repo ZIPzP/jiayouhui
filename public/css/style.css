@@ -1812,3 +1812,38 @@ body.plan-workspace-mode .plan-layout { display: none !important; }
     display: block;
   }
 }
+
+@media (min-width: 901px) {
+  body.plan-page .plan-layout {
+    display: block;
+    max-width: 1080px;
+  }
+
+  body.plan-page .plan-layout .form-card {
+    position: static;
+    width: 100%;
+  }
+
+  body.plan-page .plan-flow-guide {
+    max-width: 1080px;
+  }
+
+  body.plan-page .result-card {
+    display: none;
+    min-height: 0;
+    margin-top: 18px;
+    padding: 18px;
+  }
+
+  body.plan-page.plan-has-result .result-card {
+    display: block;
+  }
+
+  body.plan-page:not(.plan-workspace-mode) #assistant {
+    display: none;
+  }
+
+  body.plan-page.plan-has-result:not(.plan-workspace-mode) .result-card .result-empty {
+    padding: 24px 20px;
+  }
+}

@@ -461,6 +461,7 @@
     if (!document.getElementById('pl-start').value) problems.push(uiEn ? 'departure date missing' : '去程日期没选择');
     if (!document.getElementById('pl-end').value) problems.push(uiEn ? 'return date missing' : '返程日期没选择');
     if (problems.length) {
+      document.body.classList.add('plan-has-result');
       empty.hidden = true; bodyEl.hidden = false;
       bodyEl.innerHTML = uiEn
         ? `<div class="ai-feedback">🐱 AI planner: ${problems.map((x) => '“' + x + '”').join(', ')} — please fill these in and generate again.</div>`
@@ -471,6 +472,7 @@
     const originRaw2 = document.getElementById('pl-origin').value.trim();
     const destRaw2 = document.getElementById('pl-dest').value.trim();
     if (originRaw2 && destRaw2 && app.normCity(originRaw2) === app.normCity(destRaw2)) {
+      document.body.classList.add('plan-has-result');
       empty.hidden = true; bodyEl.hidden = false;
       bodyEl.innerHTML = uiEn
         ? `<div class="ai-feedback">🐱 AI planner: your departure city and destination are both “${app.esc(destRaw2)}” — please choose a different destination.</div>`
@@ -484,6 +486,7 @@
     const vals = planFormValues();
     saveHistoryEntry(collectDraft()); // 记录这次的问题概要（最多 20 条）
     renderHistory(); // 立即刷新历史列表（否则要刷新页面才看得到）
+    document.body.classList.add('plan-has-result');
     empty.hidden = true; bodyEl.hidden = false;
     bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>AI 主理人正在后台生成行程…<br/>你可以放心切到别的页面/标签页，回来会自动恢复显示结果</p>';
     try {
@@ -910,6 +913,7 @@
   function renderPlan(el, data, vals, options = {}) {
     data = dedupePlanData(data);
     renderedPlan = { data, vals };
+    document.body.classList.add('plan-has-result');
     const dest = app.state.destinations.find((d) => d.id === vals.destinationId) || {};
     const dayHtml = (data.days || []).map((d, i) => `
       <div class="day-card" style="animation-delay:${(0.05 + i * 0.12).toFixed(2)}s">
