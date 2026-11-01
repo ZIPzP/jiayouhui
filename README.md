@@ -1,155 +1,339 @@
-# 🏡 家游汇 · 家庭旅游推荐与攻略选择
+<div align="center">
 
-面向家庭的旅游网页应用：**43 个精选国内目的地**，由 AI 大模型根据「出行时段 + 出发地/目的地 + 同行人 + 其他需求」生成**逐日行程规划**与**出行打包清单**，内置**长辈模式**（大字体 / 高对比 / 大按钮 / 语音朗读）。
+# 🏡 家游汇 · Family Trip Hub
 
-- 纯原生实现，**零依赖**，无需 `npm install`
-- 已上线：**https://familytravelhublz.top** （阿里云 2 核 2G + Cloudflare 隧道，24 小时在线，电脑可关机）
-- 43 城真实地点照片（340+ 张本地图片，按城市分目录）
-- 无 AI Key 时自动降级为内置规则引擎，开箱即用
+**面向中国家庭的 AI 旅行规划与攻略平台**
 
----
+把行程、12306 车次、天气、地图路线和出行清单，放进同一条家庭旅行链路。
 
-## 快速开始（本地开发）
+![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A518-339933?logo=node.js&logoColor=white)
+![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
+![AI](https://img.shields.io/badge/AI-DeepSeek%20%2F%20OpenAI%20Compatible-4d6bfe)
+![Map](https://img.shields.io/badge/map-AMap-1677ff)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Demo](https://img.shields.io/badge/demo-online-success)
 
-```bash
-# 启动（需要 Node.js 18+）
-node server.js
+[🌐 在线体验](https://familytravelhublz.top) ·
+[核心能力](#核心能力) ·
+[技术架构](#技术架构) ·
+[快速开始](#快速开始) ·
+[环境配置](#环境配置)
+
+</div>
+
+> [!IMPORTANT]
+> 家游汇不是只给出一段旅行文案的聊天机器人。它会结合家庭成员的实际情况，生成逐日行程，并继续查询天气、火车班次、地图位置和出行清单。
+>
+> AI 服务不可用时，内置规则引擎会自动接管，核心流程仍然可以完整使用。
+
+## 项目简介
+
+家庭旅行通常要同时考虑老人和孩子的体力、饮食忌口、预算、交通、天气和每天的节奏。信息分散在多个平台时，规划一趟旅行往往比旅行本身更累。
+
+**家游汇**将这些问题收进一个清晰的产品流程：
+
+```text
+选择目的地与同行人
+        ↓
+生成个性化逐日行程
+        ↓
+查询 12306 车次与所选日期天气
+        ↓
+在地图上查看每日地点与路线
+        ↓
+生成与本次行程匹配的出行清单
 ```
 
-访问 http://localhost:3000 即可。
+项目使用 **原生 HTML / CSS / JavaScript + Node.js** 实现，不需要前端框架和 npm 运行时依赖，部署简单，也适合低配置服务器运行。
 
-## 功能
+## 核心能力
 
-| 功能 | 说明 |
+| 能力 | 说明 |
 | --- | --- |
-| AI 行程规划 | 选项式表单（去返日期 / 天数 / 交通 / 忌食 / 预算 / 节奏 / 返回目的地等），AI 生成逐日详细行程（含交通、人均费用、忌食提醒）；「其他需求」AI 严格遵循；**高铁/火车自动查询 12306 真实车次**（不编造班次票价）；表单草稿自动保存，切页不丢 |
-| 热门目的地 | 43 个国内家庭游目的地，真实照片、特色亮点、**15 天天气预报**、当地美食（辣度 / 适合人群标签）、适老提示 |
-| AI 出行清单 | 目的地 + 出行月份 + 天数 + 同行人数 + 兴趣；支持「📦 简略 / 🧳 超详细（懒人配套：防晒→清洁乳、湿巾→纸巾…）」模式 + 用户要求填写框 |
-| 地图行程规划 | 行程生成后点击「生成地图规划」，用高德地图显示逐日地点、驾车/步行路线、每日距离与时间；失败时降级为顺序示意线；未配置 Key 时显示配置提示，不影响文字行程 |
-| AI 旅行攻略 | 目的地详情一键生成家庭攻略 |
-| 平台热度 | 按**当月**动态排名的热门目的地 |
-| 老年人模式 | 一键切换：字体放大、高对比、大按钮、语音朗读 |
+| 🤖 AI 家庭行程规划 | 根据出发地、目的地、日期、老人儿童、预算、节奏、兴趣和特殊要求生成逐日行程 |
+| 🚄 12306 真实车次 | 高铁与火车方案优先使用真实车次、时刻和票价，避免让 AI 编造班次 |
+| 🗺️ 高德地图路线 | 按天展示景点、餐饮、车站和自由活动点，支持步行、驾车路线与地点详情 |
+| 🌤️ 目的地天气 | 结合所选出行日期展示天气预报，主数据源失败时自动切换备用数据源 |
+| 🎒 AI 出行清单 | 支持短期、中期、长期和超详细模式，并可关联最近一次行程规划 |
+| 🏞️ 家庭目的地库 | 40+ 国内家庭旅行目的地，包含实景图片、当地美食和适老提示 |
+| 🌏 中英双语 | 页面、表单、提示和主要生成内容支持中英文切换 |
+| 👵 长辈模式 | 大字体、高对比、大按钮和语音朗读，降低家庭成员的使用门槛 |
+| 🛟 多级降级 | AI、天气或地图异常时给出明确提示，文字行程与规则引擎仍可继续工作 |
+
+## 在线体验
+
+**演示地址：** <https://familytravelhublz.top>
+
+推荐体验顺序：
+
+1. 在首页浏览精选家庭目的地。
+2. 进入目的地详情，查看亮点、美食、天气和适老提示。
+3. 打开「行程规划」，填写家庭出行需求。
+4. 生成逐日行程，查看天气与 12306 车次。
+5. 点击「生成地图规划」，检查每日地点与路线。
+6. 前往「出行清单」，生成与行程关联的打包方案。
+7. 切换中英文和长辈模式，检查不同家庭成员的体验。
 
 ## 技术架构
 
-- **前端**：原生 HTML + CSS + 原生 JavaScript（零构建、零依赖），共 7 个页面（首页 / 目的地 / 行程规划 / 出行清单 / 平台热度 / 抽取 / 关于），响应式适配桌面与移动端，支持中英双语切换。
-- **服务端**：Node.js（CommonJS，≥18），单文件入口 `server.js`，模块化分层：
-  - `lib/ai.js` —— AI 配置加载、密钥来源判定、OpenAI 兼容接口调用、SSRF 防护、JSON 稳健提取、邀请码与长期设备令牌
-  - `lib/planner.js` —— 逐日行程规划、AI 问答（带行程上下文与历史）、局部修改模式、内置规则引擎兜底
-  - `lib/recommend.js` —— 出行打包清单、目的地家庭攻略（可关联最近一次行程规划）
-  - `lib/train.js` / `lib/weather.js` / `lib/collector.js` —— 12306 实时车次票价、天气预报、平台热度数据
-- **AI 接入**：OpenAI 兼容 `/chat/completions` 协议，默认 DeepSeek，可切换 OpenAI / 通义千问 / Moonshot 等；采用 JSON 结构化输出 + 后台任务轮询，服务端 Key 永不下发浏览器。
-- **数据**：`data/*.json` 内置目的地 / 城市拼音 / 打包清单 / 中英翻译等结构化数据，未配置 AI 时自动降级为规则引擎，保证开箱即用。
-- **安全**：浏览器自定义 baseUrl 仅放行 HTTPS 公网地址（防 SSRF）、AI 接口按 IP 限流、登录失败锁定、邀请码换取可吊销的长期设备令牌、AI 调用失败自动兜底、外部请求超时控制。
+```mermaid
+flowchart LR
+  U[浏览器 / 桌面 / 手机] --> F[原生 HTML + CSS + JavaScript]
 
-## 团队信息（传智杯 AI Web 网页开发挑战赛）
+  subgraph NODE[Node.js 服务端]
+    S[server.js<br/>静态服务 + REST API]
+    A[lib/ai.js<br/>AI 接入与安全]
+    P[lib/planner.js<br/>行程规划与规则降级]
+    R[lib/recommend.js<br/>清单与攻略]
+    T[lib/train.js<br/>12306 车次]
+    W[lib/weather.js<br/>天气预报]
+    C[lib/collector.js<br/>平台热度]
+    D[data/*.json<br/>目的地与规则数据]
+  end
 
-- 学校：【请填写学校全称】
-- 成员：【成员 1 姓名】（角色/分工：__）、【成员 2 姓名】（角色/分工：__）、【成员 3 姓名】（角色/分工：__）
-- 指导老师：【请填写，1–2 名】
+  F --> S
+  S --> A
+  S --> P
+  S --> R
+  S --> T
+  S --> W
+  S --> C
+  S --> D
 
-## 接入 DeepSeek（AI 主理人）
+  F --> M[高德地图 JS API<br/>POI / 标记 / 路线]
+  A --> L[DeepSeek / OpenAI 兼容模型]
+  T --> X[12306 公开查询服务]
+  W --> Y[中国天气网 / Open-Meteo]
+```
 
-**服务器内置 Key（推荐，Key 只属于你，不入 git）：**
-- 服务器终端：`node tools/set-key.js sk-你的key`
-- 清除：`node tools/set-key.js --clear`
-- Key 写入 `config.local.json`（已被 `.gitignore` 排除），浏览器不保存
+### 技术栈
 
-**浏览器本地 Key（可选）：**
-- 页面「⚙️ 设置 → AI 设置」输入 Key，仅保存在该浏览器 localStorage
+| 层级 | 技术方案 |
+| --- | --- |
+| 前端 | 原生 HTML、CSS、JavaScript，响应式布局，无构建步骤 |
+| 服务端 | Node.js 18+，CommonJS，原生 `http` 服务 |
+| AI | OpenAI 兼容 `/chat/completions`，默认 DeepSeek |
+| 地图 | 高德地图 Web 端 JS API |
+| 数据 | 本地 JSON 数据与规则库 |
+| 部署 | PM2 + Nginx + HTTPS |
 
-> 支持 OpenAI 兼容协议的其他模型（OpenAI / 通义千问 / Moonshot 等），也可用环境变量 `AI_API_KEY` / `AI_BASE_URL` / `AI_MODEL`。
-> 浏览器自定义 AI 接口地址默认只允许 HTTPS 公网域名，防止服务端被当作内网探测跳板；如确需连接本机/内网模型，在 `config.local.json` 设置 `ai.allowPrivateBaseUrl: true`。
-> 未配置 Key 或调用失败时自动使用内置规则引擎（`data/packing-db.json` / `lib/planner.js`）。
+## 一次 AI 行程如何生成
 
-## 接入高德地图（地图行程规划）
+1. 浏览器提交目的地、日期、家庭偏好和交通要求。
+2. 服务端校验城市、日期与人数等参数。
+3. 查询 12306 车次与票价，并准备天气等上下文。
+4. 通过 OpenAI 兼容接口生成结构化逐日行程。
+5. 对 AI 结果进行 JSON 清洗、景点去重与语言规范化。
+6. 后台任务返回结果，前端刷新逐日行程卡。
+7. AI 超时或失败时，由内置规则引擎生成可执行的备用方案。
 
-地图功能使用高德地图 Web端 JS API。请在 `config.local.json` 中增加 `map` 段（或使用环境变量）：
+## 快速开始
 
-推荐使用配置工具（不会把 Key 打印出来）：
+### 环境要求
+
+- Node.js 18 或更高版本
+- 现代浏览器：Chrome、Edge、Safari 或 Firefox
+- AI 与地图能力为可选配置；不配置时仍可使用规则引擎和文字行程
+
+### 本地运行
+
+```bash
+git clone https://github.com/ZIPzP/jiayouhui.git
+cd jiayouhui
+node server.js
+```
+
+浏览器打开：
+
+```text
+http://localhost:3000
+```
+
+项目不需要执行 `npm install`。
+
+## 环境配置
+
+复制配置模板：
+
+```bash
+cp config.local.example.json config.local.json
+```
+
+Windows PowerShell：
+
+```powershell
+Copy-Item config.local.example.json config.local.json
+```
+
+`config.local.json` 已被 `.gitignore` 排除，**不要提交到仓库**。
+
+### 环境变量
+
+| 变量 | 用途 |
+| --- | --- |
+| `AI_API_KEY` | AI 服务端 API Key |
+| `AI_BASE_URL` | OpenAI 兼容接口地址 |
+| `AI_MODEL` | 模型名称 |
+| `AI_TIMEOUT_MS` | AI 请求超时时间 |
+| `AMAP_JS_KEY` | 高德地图 Web 端 JS API Key |
+| `AMAP_SECURITY_CODE` | 高德地图安全密钥 |
+| `PORT` | 服务端口，默认 `3000` |
+
+## AI 配置
+
+默认配置：
+
+```text
+Base URL: https://api.deepseek.com/v1
+Model:    deepseek-chat
+```
+
+也支持其他 OpenAI 兼容服务。推荐将服务端 Key 写入本地配置，而不是提交到代码中：
+
+```bash
+node tools/set-key.js 你的APIKey
+```
+
+清除服务端 Key：
+
+```bash
+node tools/set-key.js --clear
+```
+
+页面「⚙️ 设置 → AI 设置」也支持填写个人 Key，仅保存在当前浏览器。
+
+### 服务端邀请码
+
+如果需要限制匿名用户消耗服务端 AI 额度，可以启用邀请码：
+
+```bash
+node tools/set-invite.js 你的邀请码
+```
+
+邀请码只用于换取签名设备令牌，**服务端 API Key 不会下发到浏览器**。
+
+## 高德地图配置
+
+在[高德开放平台](https://lbs.amap.com/)创建 Web 端 JS API Key 和安全密钥，然后执行：
 
 ```bash
 node tools/set-map.js 你的高德JSKey 你的安全密钥
-# 清除
+```
+
+清除地图配置：
+
+```bash
 node tools/set-map.js --clear
 ```
 
-```json
-{
-  "map": {
-    "amapJsKey": "你的 Web端 JS API Key",
-    "amapSecurityCode": "你的安全密钥"
-  }
-}
-```
+建议在高德控制台将 Key 限制到实际使用的域名。
 
-也可使用环境变量 `AMAP_JS_KEY` / `AMAP_SECURITY_CODE`。地图 Key 和高德地图服务条款请在高德开放平台配置，并建议按域名限制 Key。
+## 安全与可靠性
 
-## 邀请码 / 服务端 AI
-
-- 入口口令门禁已按产品需求关闭，不再弹出进入网页密码。
-- 服务端 AI 仍可选启用邀请码解锁，避免匿名用户消耗服务器 AI 额度：
-  ```bash
-  node tools/set-invite.js 你的邀请码
-  # 清除
-  node tools/set-invite.js --clear
-  ```
-- 用户输入邀请码后获得默认 365 天的 AI 解锁令牌（同一浏览器下次无需重输）；改邀请码或递增 `ai.tokenVersion` 可让全部旧令牌立即失效，服务端 Key 不会下发到浏览器。
-- 如需重新启用整站入口口令，需先修改 `lib/auth.js` 的 `accessConfig()`，仅改配置文件不会生效。
-
-## 部署（阿里云）
-
-- 一键脚本：`deploy/server-setup.sh`（装 Node → pm2 → 拉代码 → 填 Key/口令 → Nginx + HTTPS）
-- 进程管理：pm2（`ecosystem.config.js`，重启自启）
-- 公网：Cloudflare 隧道或域名直连；详细步骤见 **阿里云服务器部署指南.md** 与 **运维手册.md**
+- API Key 优先从服务端环境变量或 `config.local.json` 读取。
+- 服务端已有 Key 时，不使用浏览器传入的 Key。
+- 浏览器自定义模型地址只允许 HTTPS 公网域名，降低 SSRF 风险。
+- AI 接口按 IP 限流，并设置请求超时。
+- 邀请码换取可失效的签名令牌。
+- 服务端提供 CSP、安全响应头和静态文件路径保护。
+- AI、天气和地图均设计失败提示或降级路径。
+- `config.local.json`、日志和本地调试文件不应进入 Git。
 
 ## 项目结构
 
-```
-家庭旅游篇/
-├── server.js              # 零依赖 Node 服务器（静态页 + REST API）
-├── config.json            # 端口 / AI / 图片域名等配置
-├── config.local.json      # 【不入 git】服务端 Key / 邀请码 / 地图配置
-├── package.json
+```text
+jiayouhui/
+├── server.js                  # HTTP 服务、静态资源与 REST API
+├── config.json                # 默认配置
+├── config.local.example.json  # 本地配置模板
+├── ecosystem.config.js        # PM2 进程配置
 ├── data/
-│   ├── destinations.json  # 43 城目的地（照片、亮点、美食、天气坐标）
-│   ├── packing-db.json    # 内置打包清单规则库
-│   ├── cities.json        # 中国城市名单（384 城，输入提示/校验）
-│   ├── weather-codes.json # 中国天气网城市代码
-│   └── trending.json      # 本地趋势库（演示热度）
+│   ├── destinations.json      # 目的地数据
+│   ├── cities.json            # 城市名单
+│   ├── packing-db.json        # 打包清单规则
+│   ├── weather-codes.json     # 天气城市代码
+│   └── trending.json          # 平台热度数据
 ├── lib/
-│   ├── ai.js              # OpenAI 兼容接口客户端
-│   ├── planner.js         # 行程规划引擎（AI + 规则降级，含 12306 车次）
-│   ├── recommend.js       # 出行清单引擎（AI + 规则降级，超详细配套）
-│   ├── weather.js         # 15 天天气（中国天气网，Open-Meteo 备用）
-│   ├── train.js           # 12306 真实车次查询
-│   └── auth.js / collector.js
-├── deploy/                # 阿里云一键部署脚本 + nginx 配置
-├── tools/                 # set-key / set-invite / set-map / 图片工具等
-└── public/
-    ├── index.html         # 首页（桌面版轮播 Hero + 3×2 精选）
-    ├── destinations.html / plan.html / packing.html / hot.html / about.html
-    ├── css/style.css
-    ├── js/                # common / home / destinations / plan / plan-map / packing / hot / detail
-    └── images/            # 43 城本地真实照片（346 张）
+│   ├── ai.js                  # OpenAI 兼容客户端
+│   ├── planner.js             # 行程规划与规则引擎
+│   ├── recommend.js           # 清单与攻略
+│   ├── train.js               # 12306 车次查询
+│   ├── weather.js             # 天气查询
+│   └── collector.js           # 热度聚合
+├── public/
+│   ├── *.html                 # 正式页面
+│   ├── css/style.css          # 全站样式
+│   ├── js/                    # 页面脚本与地图逻辑
+│   └── images/                # 目的地实景图片
+├── tools/                     # 配置与数据维护脚本
+└── deploy/                    # 部署配置
 ```
 
 ## API 一览
 
 | 方法 | 路径 | 说明 |
 | --- | --- | --- |
-| GET | `/api/destinations` | 目的地列表 |
-| GET | `/api/destinations/:id` | 目的地详情 |
-| GET | `/api/images` | 全部实景照片（首页轮播用） |
-| GET | `/api/cities` | 中国城市名单 |
-| GET | `/api/weather?id=` | 15 天天气预报 |
-| GET | `/api/hot-data` | 平台热门数据 |
-| POST | `/api/recommend` | 生成出行打包清单（简略/超详细 + 用户要求） |
-| POST | `/api/plan` | AI 主理人：生成逐日行程（含 12306 真实车次） |
-| POST | `/api/chat` | AI 主理人：自由问答 |
-| GET | `/api/map/config` | 地图配置（高德 JS API Key / 安全密钥，未配置时前端降级提示） |
-| GET | `/api/health` | 健康检查 |
+| `GET` | `/api/destinations` | 目的地列表 |
+| `GET` | `/api/destinations/:id` | 目的地详情 |
+| `GET` | `/api/images` | 实景图片列表 |
+| `GET` | `/api/cities` | 城市名称与拼音 |
+| `GET` | `/api/weather?id=` | 目的地天气预报 |
+| `GET` | `/api/hot-data` | 平台热度数据 |
+| `GET` | `/api/job?id=` | 查询后台任务 |
+| `POST` | `/api/plan` | 生成家庭行程 |
+| `POST` | `/api/recommend` | 生成出行清单 |
+| `POST` | `/api/ai-guide` | 生成目的地攻略 |
+| `POST` | `/api/chat` | AI 主理人问答 |
+| `GET` | `/api/map/config` | 地图前端配置 |
+| `GET` | `/api/health` | 健康检查 |
+
+## 部署
+
+推荐生产环境：
+
+```text
+用户浏览器
+    ↓ HTTPS
+Nginx
+    ↓
+PM2 托管的 Node.js 服务
+    ↓
+data / lib / 外部数据服务
+```
+
+部署后可检查：
+
+```bash
+curl -s https://familytravelhublz.top/api/health
+```
+
+项目还提供阿里云部署脚本、Nginx 配置与运维文档。
+
+## 团队
+
+| 成员 | 负责内容 |
+| --- | --- |
+| 朱祺鹏 | 全栈与 AI 接入 |
+| 严晟辰 | 前端与视觉 |
+| 宋雅丽 | 测试与文档 |
+
+学校：江西软件职业技术大学
+
+## 后续计划
+
+- 扩充更多适合家庭出行的国内目的地。
+- 改进景点顺序与每日路线的时间、距离约束。
+- 增强中英文生成内容的一致性。
+- 增加更多合规的交通、天气和城市数据源。
+- 完善无障碍与长辈模式。
+- 增加自动化回归测试和部署检查。
 
 ## 免责声明
 
-本应用仅供学习与演示。出行信息、热度数据、天气与 AI 生成内容请以官方渠道和实际为准；火车/飞机班次与票价请以 12306 / 航司官方实时查询为准；请尊重第三方平台条款与图片版权。
+本项目用于学习、研究与技术交流。AI 生成内容、天气、地图、车次和票价仅供参考，请以 12306、航司、气象部门和地图服务商的官方信息为准。
+
+请遵守第三方平台服务条款、图片版权和相关法律法规。
+
+## License
+
+[MIT](LICENSE)
