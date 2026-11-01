@@ -498,6 +498,7 @@
  "中期": "Medium trip",
  "长期": "Long trip",
  "🧭 发现": "🧭 Discover",
+ "发现": "Discover",
  "发现下一站": "Discover Your Next Stop",
  "没有主见也没关系。随机抽一个目的地，或限定几个候选城市，让旅行从一点未知开始。": "No idea where to go? Draw a destination at random, or set a shortlist and let a little surprise lead the way.",
  "今天去哪里？": "Where to next?",

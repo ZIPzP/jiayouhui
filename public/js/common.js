@@ -418,7 +418,7 @@
         inlineNav.innerHTML = [
           ['/', 'home', '首页'], ['/destinations.html', 'destinations', '目的地'],
           ['/plan.html', 'plan', '行程规划'], ['/packing.html', 'packing', '出行清单'],
-          ['/draw.html', 'discovery', '🧭 发现']
+          ['/draw.html', 'discovery', '发现']
         ].map(([href, k, label]) => '<a href="' + href + '" data-nav="' + k + '">' + label + '</a>').join('');
         inner.insertBefore(inlineNav, actions);
       }
