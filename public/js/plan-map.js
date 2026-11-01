@@ -154,6 +154,35 @@
     });
   }
 
+  // 宽松搜索：不限城市，但只接受地址属于当前城市的 POI，主要用于村/片区/餐馆名
+  function searchPlaceLoose(AMap, city, keyword) {
+    return new Promise((resolve) => {
+      AMap.plugin(['AMap.PlaceSearch'], () => {
+        const search = new AMap.PlaceSearch({ city: '', citylimit: false, pageSize: 10, pageIndex: 1, extensions: 'base' });
+        search.search(keyword, (state, result) => {
+          if (state !== 'complete') return resolve(null);
+          const pois = (result && result.poiList && result.poiList.pois) || [];
+          if (!pois.length) return resolve(null);
+          const cityName = clean(city).replace(/[省市]$/, '');
+          const best = pois
+            .filter((poi) => {
+              const addr = clean([poi.pname, poi.cityname, poi.adname, poi.address].filter(Boolean).join(''));
+              return !cityName || addr.includes(cityName);
+            })
+            .map((poi) => ({ poi, score: scorePoi(poi, keyword, city) }))
+            .sort((a, b) => b.score - a.score)[0];
+          if (!best || best.score < 20) return resolve(null);
+          const poi = best.poi;
+          const location = poi.location;
+          const lng = Number(location && (location.lng != null ? location.lng : location.getLng && location.getLng()));
+          const lat = Number(location && (location.lat != null ? location.lat : location.getLat && location.getLat()));
+          if (!Number.isFinite(lng) || !Number.isFinite(lat)) return resolve(null);
+          resolve({ name: poi.name || keyword, address: poi.address || poi.district || '', lng, lat, typecode: poi.typecode || '' });
+        });
+      });
+    });
+  }
+
   function readPoiCache() {
     try { const value = JSON.parse(localStorage.getItem(POI_CACHE_KEY) || '{}'); return value && typeof value === 'object' ? value : {}; } catch (e) { return {}; }
   }
@@ -167,13 +196,21 @@
   async function searchPlaceWithFallbacks(AMap, city, keyword, kind) {
     if (/乘高铁|乘火车|高铁|动车|机场|车站|南站|东站|西站|北站/.test(keyword)) return null;
     const tries = [keyword];
-    // 只有景点才尝试公园/景区别名；餐饮和自由活动只用原名，避免无意义请求
-    if (kind !== '餐饮' && kind !== '自由活动') {
+    if (kind === '餐饮') {
+      // 梅家坞农家菜馆 → 梅家坞，找不到餐馆时退回搜片区
+      const area = keyword.replace(/(农家菜馆|农家菜|餐厅|饭店|餐馆|酒楼|菜馆|小吃店|茶馆|咖啡馆|火锅店)$/,'').trim();
+      if (area && area !== keyword) tries.push(area);
+    } else if (kind !== '自由活动') {
+      // 只有景点才尝试公园/景区别名
       if (keyword.length <= 10) tries.push(keyword + '公园', keyword + '景区', keyword + '风景区');
       if (/十景$/.test(keyword)) tries.push(keyword.replace(/十景$/, ''));
     }
     for (const k of tries) {
       const poi = await searchPlace(AMap, city, k);
+      if (poi) return poi;
+    }
+    for (const k of tries) {
+      const poi = await searchPlaceLoose(AMap, city, k);
       if (poi) return poi;
     }
     return null;
