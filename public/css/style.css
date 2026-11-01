@@ -831,6 +831,127 @@ body::before {
 /* 区块背景半透明，让动态背景微微透出 */
 .section-alt { background: rgba(243, 239, 232, .72); }
 
+/* 行程规划 / 出行清单：轻量旅行工作台背景 */
+body.plan-page #plan,
+body.packing-page #packing {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 8% 8%, rgba(13, 148, 136, .14), transparent 27rem),
+    radial-gradient(ellipse at 94% 18%, rgba(249, 115, 22, .12), transparent 24rem),
+    linear-gradient(180deg, rgba(251, 250, 246, .44), rgba(242, 239, 231, .76) 48%, rgba(242, 249, 247, .62));
+}
+
+body.plan-page #plan::before,
+body.packing-page #packing::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(13, 148, 136, .045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(13, 148, 136, .045) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, rgba(0,0,0,.42) 42%, transparent 78%);
+  mask-image: linear-gradient(to bottom, #000 0, rgba(0,0,0,.42) 42%, transparent 78%);
+}
+
+body.plan-page #plan::after,
+body.packing-page #packing::after {
+  content: "";
+  position: absolute;
+  top: 72px;
+  right: -190px;
+  z-index: 0;
+  width: 580px;
+  height: 580px;
+  border: 1px dashed rgba(13, 148, 136, .20);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 74px rgba(13, 148, 136, .035),
+    0 0 0 148px rgba(13, 148, 136, .025),
+    0 0 0 222px rgba(13, 148, 136, .018);
+  pointer-events: none;
+  animation: travelOrbit 48s linear infinite;
+}
+
+body.packing-page #packing::after {
+  top: 20px;
+  right: -150px;
+  border-color: rgba(249, 115, 22, .18);
+  box-shadow:
+    0 0 0 74px rgba(249, 115, 22, .028),
+    0 0 0 148px rgba(249, 115, 22, .020);
+}
+
+body.plan-page #plan > *,
+body.packing-page #packing > * {
+  position: relative;
+  z-index: 1;
+}
+
+body.plan-page #plan .section-head,
+body.packing-page #packing .section-head {
+  padding: 28px 24px;
+  border: 1px solid rgba(255, 255, 255, .78);
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(255,255,255,.76), rgba(255,255,255,.30));
+  box-shadow: 0 14px 38px rgba(15, 23, 42, .05);
+  backdrop-filter: blur(14px);
+  overflow: hidden;
+}
+
+body.plan-page #plan .section-head::after,
+body.packing-page #packing .section-head::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 160px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--primary), #f59e0b, transparent);
+  transform: translateX(-50%);
+}
+
+body.plan-page .form-card,
+body.plan-page .result-card,
+body.plan-page .chat-card,
+body.packing-page .form-card,
+body.packing-page .result-card {
+  background: rgba(255, 255, 255, .84);
+  border-color: rgba(255, 255, 255, .72);
+  backdrop-filter: blur(16px);
+}
+
+@keyframes travelOrbit {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 900px) {
+  body.plan-page #plan::after,
+  body.packing-page #packing::after {
+    width: 380px;
+    height: 380px;
+    right: -230px;
+  }
+
+  body.plan-page #plan .section-head,
+  body.packing-page #packing .section-head {
+    padding: 20px 16px;
+    border-radius: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.plan-page #plan::after,
+  body.packing-page #packing::after {
+    animation: none;
+  }
+}
+
 /* 滚动入场：元素进入视口淡入上浮 */
 html.js [data-reveal] { opacity: 0; transform: translateY(20px); transition: opacity .65s ease, transform .65s cubic-bezier(.22, .61, .36, 1); }
 html.js [data-reveal].in { opacity: 1; transform: none; }
