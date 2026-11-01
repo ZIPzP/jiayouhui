@@ -418,7 +418,7 @@
         inlineNav.innerHTML = [
           ['/', 'home', '首页'], ['/destinations.html', 'destinations', '目的地'],
           ['/plan.html', 'plan', '行程规划'], ['/packing.html', 'packing', '出行清单'],
-          ['/hot.html', 'hot', '平台热度'], ['/draw.html', 'draw', '🎲 抽取']
+          ['/draw.html', 'discovery', '🧭 发现']
         ].map(([href, k, label]) => '<a href="' + href + '" data-nav="' + k + '">' + label + '</a>').join('');
         inner.insertBefore(inlineNav, actions);
       }
@@ -441,9 +441,25 @@
   }
   function navActive() {
     const p = location.pathname.split('/').pop() || 'index.html';
-    const map = { 'index.html': 'home', 'destinations.html': 'destinations', 'plan.html': 'plan', 'packing.html': 'packing', 'hot.html': 'hot', 'draw.html': 'draw', 'about.html': 'about' };
+    const map = { 'index.html': 'home', 'destinations.html': 'destinations', 'plan.html': 'plan', 'packing.html': 'packing', 'hot.html': 'hot', 'draw.html': 'discovery', 'draw-mobile.html': 'draw', 'about.html': 'about' };
     const key = map[p] || 'home';
     $$('#navLinks a, .nav-links-inline a').forEach((a) => a.classList.toggle('active', a.dataset.nav === key));
+  }
+
+  function adaptLegacyMobileNav() {
+    if (!window.matchMedia('(max-width: 900px)').matches) return;
+    $$('a[data-nav="discovery"]').forEach((link) => {
+      if (link.dataset.mobileExpanded === '1') return;
+      const hot = document.createElement('a');
+      hot.href = '/hot.html';
+      hot.dataset.nav = 'hot';
+      hot.textContent = '🔥 平台热度';
+      const draw = document.createElement('a');
+      draw.href = '/draw.html';
+      draw.dataset.nav = 'draw';
+      draw.textContent = '🎲 抽取';
+      link.replaceWith(hot, draw);
+    });
   }
 
   /* ---------------- 导航毛玻璃两态：滚动后加深 + 阴影 ---------------- */
@@ -609,6 +625,7 @@
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     ensureShell();
     applyElderly();
+    adaptLegacyMobileNav();
     navActive();
     bindNav();
     bindNavScroll();

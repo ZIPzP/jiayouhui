@@ -3,34 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>家游汇 · 抽取热门家庭目的地</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>" />
-  <link rel="stylesheet" href="/css/style.css?v=20261101r" />
+  <script>if (window.matchMedia('(max-width: 900px)').matches) location.replace('/draw-mobile.html' + location.search + location.hash);</script>
+  <title>家游汇 · 发现下一站</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>" />
+  <link rel="stylesheet" href="/css/style.css?v=20261101x" />
+  <link rel="stylesheet" href="/css/discovery.css?v=20261101" />
 </head>
-<body class="draw-page">    <header class="nav" id="topnav">
+<body class="discovery-lab-page">
+  <header class="nav" id="topnav">
     <div class="nav-inner">
-      <a class="brand" href="/"><svg class="brand-svg" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#0D9488"/><path d="M6 22 L13 12 L17 18 L21 13 L27 22 Z" fill="#fff"/></svg><span class="brand-emoji">🏡</span><span>家游汇</span></a>
-    <nav class="nav-links-inline">
-      <a href="/" data-nav="home">首页</a>
-      <a href="/destinations.html" data-nav="destinations">目的地</a>
-      <a href="/plan.html" data-nav="plan">行程规划</a>
-      <a href="/packing.html" data-nav="packing">出行清单</a>
-      <a href="/hot.html" data-nav="hot">平台热度</a>
-      <a href="/draw.html" data-nav="draw">🎲 抽取</a>
-    </nav>
+      <a class="brand" href="/">
+        <svg class="brand-svg" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#0D9488"/><path d="M6 22 L13 12 L17 18 L21 13 L27 22 Z" fill="#fff"/></svg>
+        <span class="brand-emoji">🏡</span><span>家游汇</span>
+      </a>
+      <nav class="nav-links-inline">
+        <a href="/" data-nav="home">首页</a>
+        <a href="/destinations.html" data-nav="destinations">目的地</a>
+        <a href="/plan.html" data-nav="plan">行程规划</a>
+        <a href="/packing.html" data-nav="packing">出行清单</a>
+        <a href="/draw.html" data-nav="discovery" class="active">🧭 发现</a>
+      </nav>
       <div class="nav-actions">
-      <div class="settings-wrap">
-        <button class="nav-toggle" id="navToggle" type="button" aria-label="打开菜单" aria-expanded="false" title="菜单">☰</button>
-        <button id="settingsBtn" class="btn btn-ghost" type="button">⚙️ 设置</button>
-        <div class="settings-menu" id="settingsMenu" hidden>
-          <button id="menuElderly" type="button">👴 <span>长辈模式</span></button>
-          <button id="menuAi" type="button">🐱 AI 设置</button>
-          <button id="menuMobile" type="button">📱 手机预览</button>
-          <a href="/about.html">📖 关于</a>
+        <div class="settings-wrap">
+          <button class="nav-toggle" id="navToggle" type="button" aria-label="打开菜单" aria-expanded="false" title="菜单">☰</button>
+          <button id="settingsBtn" class="btn btn-ghost" type="button">⚙️ 设置</button>
+          <div class="settings-menu" id="settingsMenu" hidden>
+            <button id="menuElderly" type="button">👴 <span>长辈模式</span></button>
+            <button id="menuAi" type="button">🐱 AI 设置</button>
+            <button id="menuMobile" type="button">📱 手机预览</button>
+            <a href="/about.html">📖 关于</a>
+          </div>
         </div>
+        <a class="btn btn-primary btn-start-desktop" href="/plan.html">开始规划</a>
       </div>
-      <a class="btn btn-primary btn-start-desktop" href="/plan.html">开始规划</a>
-    </div>
     </div>
   </header>
   <div class="nav-drawer" id="navDrawer" aria-hidden="true">
@@ -40,39 +45,150 @@
       <a href="/destinations.html" data-nav="destinations">🗺️ 目的地</a>
       <a href="/plan.html" data-nav="plan">🐱 行程规划</a>
       <a href="/packing.html" data-nav="packing">🎒 出行清单</a>
-      <a href="/hot.html" data-nav="hot">🔥 平台热度</a>
-      <a href="/draw.html" data-nav="draw">🎲 抽取</a>
+      <a href="/draw.html" data-nav="discovery">🧭 发现</a>
     </nav>
   </div>
   <div class="nav-backdrop" id="navBackdrop"></div>
 
-  <main class="draw-wrap" id="drawWrap">
-    <div class="draw-box" data-reveal>
-      <div class="section-head" data-reveal>
-        <h2><span class="tt-emoji">🎲</span> <span class="tt-grad">抽取热门家庭目的地</span></h2>
-        <p>不知道去哪玩？点一下，让缘分帮你决定下一站全家之旅</p>
+  <main class="disc-lab">
+    <section class="disc-hero">
+      <div>
+        <span class="disc-kicker">TRAVEL DISCOVERY</span>
+        <h1>发现下一站</h1>
+        <p>没有主见也没关系。随机抽一个目的地，或限定几个候选城市，让旅行从一点未知开始。</p>
       </div>
-      <div class="draw-machine">
-        <div class="draw-screen" id="drawScreen">
-          <span class="draw-emoji" id="drawEmoji">🏡</span>
-          <span class="draw-name" id="drawName">点击下方按钮开始抽取</span>
+      <div class="disc-hero-mark" aria-hidden="true">🧭</div>
+    </section>
+
+    <div class="disc-grid">
+      <section class="card disc-draw-card">
+        <div class="disc-card-head">
+          <div>
+            <span class="disc-eyebrow">01 · DRAW</span>
+            <h2>今天去哪里？</h2>
+          </div>
+          <div class="disc-mode-tabs" role="tablist" aria-label="抽取模式">
+            <button type="button" class="active" data-mode="random">精选随机</button>
+            <button type="button" data-mode="limited">范围随机</button>
+          </div>
+        </div>
+
+        <div class="disc-workbench">
+          <div class="disc-source-panel">
+            <div class="disc-featured-panel" id="discFeaturedPanel">
+              <div class="disc-source-title">
+                <b>精选城市</b>
+                <span>从平台精选目的地中随机遇见</span>
+              </div>
+              <div class="disc-featured-chips" id="discFeaturedCities"></div>
+              <p class="disc-featured-note">抽中后可直接查看目的地攻略，或生成旅行海报。</p>
+            </div>
+            <div class="disc-limit-panel" id="discLimitPanel" hidden>
+              <label for="discCityInput">添加随机范围</label>
+              <div class="disc-city-add">
+                <input id="discCityInput" class="input" list="discCityOptions" maxlength="20" placeholder="输入城市，如 长沙 / 泉州 / 太原" />
+                <datalist id="discCityOptions"></datalist>
+                <button class="btn btn-ghost" id="discCityAdd" type="button">＋ 添加</button>
+              </div>
+              <div class="disc-city-chips" id="discCityChips"></div>
+              <p class="disc-field-note">最多 12 个城市。精选库没有的城市也可以加入，抽中后会作为自定义目的地。</p>
+            </div>
+          </div>
+
+          <div class="disc-draw-stage">
+            <div class="disc-machine">
+              <div class="disc-screen" id="discScreen">
+                <span class="disc-emoji" id="discEmoji">🎲</span>
+                <strong id="discName">等待抽取</strong>
+                <small id="discSub">点击按钮，看看缘分安排去哪</small>
+              </div>
+            </div>
+            <button class="btn btn-primary disc-draw-btn" id="discDrawBtn" type="button">🎲 开始抽取</button>
+            <p class="disc-draw-meta" id="discDrawMeta"></p>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card disc-hot-card">
+        <div class="disc-card-head">
+          <div>
+            <span class="disc-eyebrow">02 · HOT</span>
+            <h2>本月热点</h2>
+          </div>
+          <span class="disc-live-dot">实时热度</span>
+        </div>
+        <p class="disc-hot-meta" id="discHotMeta">正在读取热门数据…</p>
+        <div class="disc-hot-list" id="discHotList"></div>
+      </aside>
+    </div>
+
+    <section class="card disc-feedback-card">
+      <div class="disc-feedback-head">
+        <div>
+          <span class="disc-eyebrow">03 · FEEDBACK</span>
+          <h2>旅行热点反馈</h2>
+          <p>告诉其他家庭：你想去哪、去过哪里，或者哪里不值得去。</p>
+        </div>
+        <span class="disc-local-note">体验版 · 反馈保存在本设备</span>
+      </div>
+
+      <div class="disc-feedback-layout">
+        <form class="disc-feedback-form" id="discFeedbackForm">
+          <div class="disc-form-row">
+            <label>
+              <span>目的地</span>
+              <input class="input" id="discFbDestination" maxlength="20" required placeholder="例如 杭州" />
+            </label>
+            <label>
+              <span>昵称（可选）</span>
+              <input class="input" id="discFbNickname" maxlength="16" placeholder="匿名旅人" />
+            </label>
+          </div>
+          <div class="disc-form-row">
+            <label>
+              <span>反馈类型</span>
+              <select class="input" id="discFbType">
+                <option value="想去">我想去</option>
+                <option value="去过推荐">去过了，推荐</option>
+                <option value="不推荐">去过，但不推荐</option>
+              </select>
+            </label>
+            <label>
+              <span>推荐指数</span>
+              <select class="input" id="discFbRating">
+                <option value="5">★★★★★ 5 分</option>
+                <option value="4">★★★★☆ 4 分</option>
+                <option value="3">★★★☆☆ 3 分</option>
+                <option value="2">★★☆☆☆ 2 分</option>
+                <option value="1">★☆☆☆☆ 1 分</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            <span>留言</span>
+            <textarea class="input" id="discFbText" rows="4" maxlength="200" required placeholder="分享交通、老人孩子体验、避坑建议…"></textarea>
+          </label>
+          <button class="btn btn-primary" type="submit">发布旅行反馈</button>
+        </form>
+
+        <div class="disc-feedback-board">
+          <div class="disc-feedback-board-head">
+            <b>最新旅行反馈</b>
+            <span id="discFbCount">0 条</span>
+          </div>
+          <div id="discFeedbackList"></div>
         </div>
       </div>
-      <button class="btn btn-primary draw-btn" id="drawBtn" type="button">🎲 开始抽取</button>
-      <p class="draw-stats" id="drawStats"></p>
-      <div class="draw-pool" id="drawPool"></div>
-      <div class="draw-recent" id="drawRecent"></div>
-    </div>
-    
-  </main>
-<svg class="footer-wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0,28 C240,52 480,8 720,24 C960,40 1200,52 1440,28 L1440,60 L0,60 Z" fill="#1E293B"/></svg>
+    </section>
 
-  <div class="lightbox" id="lightbox" hidden>
-    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="关闭">✕</button>
-    <button class="lightbox-nav prev" id="lightboxPrev" type="button" aria-label="上一张">‹</button>
-    <img id="lightboxImg" alt="" />
-    <button class="lightbox-nav next" id="lightboxNext" type="button" aria-label="下一张">›</button>
-    <div class="lightbox-caption" id="lightboxCaption"></div>
+    <p class="disc-lab-disclaimer">旅行海报与反馈当前保存在当前浏览器；AI 纸感插画与公开反馈将在后续版本接入。</p>
+  </main>
+
+  <div class="modal-backdrop" id="discResultModal" hidden>
+    <div class="modal disc-result-modal" role="dialog" aria-modal="true" aria-label="抽取结果">
+      <button class="modal-close" id="discResultClose" type="button" aria-label="关闭">✕</button>
+      <div id="discResultBody"></div>
+    </div>
   </div>
 
   <div class="modal-backdrop" id="detailModal" hidden>
@@ -82,20 +198,22 @@
     </div>
   </div>
 
-  <div class="modal-backdrop" id="drawModal" hidden>
-    <div class="modal draw-result" role="dialog" aria-modal="true" aria-label="抽取结果">
-      <button class="modal-close" id="drawModalClose" type="button" aria-label="关闭">✕</button>
-      <div id="drawResultBody"></div>
-      <div class="draw-result-actions">
-        <button class="btn btn-ghost" id="drawAgain" type="button">🎲 再抽一次</button>
-        <button class="btn btn-primary" id="drawDetail" type="button">📖 查看完整攻略</button>
-      </div>
-    </div>
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="关闭">✕</button>
+    <button class="lightbox-nav prev" id="lightboxPrev" type="button" aria-label="上一张">‹</button>
+    <img id="lightboxImg" alt="" />
+    <button class="lightbox-nav next" id="lightboxNext" type="button" aria-label="下一张">›</button>
+    <div class="lightbox-caption" id="lightboxCaption"></div>
   </div>
-  <footer class="footer"><p class="footer-slogan">🏡 家游汇 · 让每一次家庭旅行都充满美好回忆</p><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习研究与技术交流，严禁商业用途；请遵守中国法律法规及 12306 官方相关规定，合理合规使用</p><p class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener"><img class="beian-icon" src="/images/beian-icon.png" alt="备案图标" />赣ICP备2026019601号-1</a></p></footer>  <script src="/js/i18n.js?v=20261101r"></script>
-  <script src="/js/common.js?v=20261101r"></script>
+
+  <footer class="footer">
+    <p>🏡 家游汇 · 发现下一站</p>
+    <p class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener"><img class="beian-icon" src="/images/beian-icon.png" alt="备案图标" />赣ICP备2026019601号-1</a></p>
+  </footer>
+
+  <script src="/js/i18n.js?v=20261101y"></script>
+  <script src="/js/common.js?v=20261101z"></script>
   <script src="/js/detail.js?v=20261101r"></script>
-  <script src="/js/draw.js?v=20261101r"></script>
+  <script src="/js/discovery.js?v=20261101d"></script>
 </body>
 </html>
-

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>家游汇 · 抽取热门家庭目的地</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>" />
+  <link rel="stylesheet" href="/css/style.css?v=20261101r" />
+</head>
+<body class="draw-page">    <header class="nav" id="topnav">
+    <div class="nav-inner">
+      <a class="brand" href="/"><svg class="brand-svg" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#0D9488"/><path d="M6 22 L13 12 L17 18 L21 13 L27 22 Z" fill="#fff"/></svg><span class="brand-emoji">🏡</span><span>家游汇</span></a>
+    <nav class="nav-links-inline">
+      <a href="/" data-nav="home">首页</a>
+      <a href="/destinations.html" data-nav="destinations">目的地</a>
+      <a href="/plan.html" data-nav="plan">行程规划</a>
+      <a href="/packing.html" data-nav="packing">出行清单</a>
+      <a href="/hot.html" data-nav="hot">平台热度</a>
+      <a href="/draw.html" data-nav="draw">🎲 抽取</a>
+    </nav>
+      <div class="nav-actions">
+      <div class="settings-wrap">
+        <button class="nav-toggle" id="navToggle" type="button" aria-label="打开菜单" aria-expanded="false" title="菜单">☰</button>
+        <button id="settingsBtn" class="btn btn-ghost" type="button">⚙️ 设置</button>
+        <div class="settings-menu" id="settingsMenu" hidden>
+          <button id="menuElderly" type="button">👴 <span>长辈模式</span></button>
+          <button id="menuAi" type="button">🐱 AI 设置</button>
+          <button id="menuMobile" type="button">📱 手机预览</button>
+          <a href="/about.html">📖 关于</a>
+        </div>
+      </div>
+      <a class="btn btn-primary btn-start-desktop" href="/plan.html">开始规划</a>
+    </div>
+    </div>
+  </header>
+  <div class="nav-drawer" id="navDrawer" aria-hidden="true">
+    <div class="nav-drawer-head">🏡 家游汇</div>
+    <nav class="nav-links" id="navLinks">
+      <a href="/" data-nav="home">🏠 首页</a>
+      <a href="/destinations.html" data-nav="destinations">🗺️ 目的地</a>
+      <a href="/plan.html" data-nav="plan">🐱 行程规划</a>
+      <a href="/packing.html" data-nav="packing">🎒 出行清单</a>
+      <a href="/hot.html" data-nav="hot">🔥 平台热度</a>
+      <a href="/draw.html" data-nav="draw">🎲 抽取</a>
+    </nav>
+  </div>
+  <div class="nav-backdrop" id="navBackdrop"></div>
+
+  <main class="draw-wrap" id="drawWrap">
+    <div class="draw-box" data-reveal>
+      <div class="section-head" data-reveal>
+        <h2><span class="tt-emoji">🎲</span> <span class="tt-grad">抽取热门家庭目的地</span></h2>
+        <p>不知道去哪玩？点一下，让缘分帮你决定下一站全家之旅</p>
+      </div>
+      <div class="draw-machine">
+        <div class="draw-screen" id="drawScreen">
+          <span class="draw-emoji" id="drawEmoji">🏡</span>
+          <span class="draw-name" id="drawName">点击下方按钮开始抽取</span>
+        </div>
+      </div>
+      <button class="btn btn-primary draw-btn" id="drawBtn" type="button">🎲 开始抽取</button>
+      <p class="draw-stats" id="drawStats"></p>
+      <div class="draw-pool" id="drawPool"></div>
+      <div class="draw-recent" id="drawRecent"></div>
+    </div>
+    
+  </main>
+<svg class="footer-wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0,28 C240,52 480,8 720,24 C960,40 1200,52 1440,28 L1440,60 L0,60 Z" fill="#1E293B"/></svg>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="关闭">✕</button>
+    <button class="lightbox-nav prev" id="lightboxPrev" type="button" aria-label="上一张">‹</button>
+    <img id="lightboxImg" alt="" />
+    <button class="lightbox-nav next" id="lightboxNext" type="button" aria-label="下一张">›</button>
+    <div class="lightbox-caption" id="lightboxCaption"></div>
+  </div>
+
+  <div class="modal-backdrop" id="detailModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-label="目的地详情">
+      <button class="modal-close" id="modalClose" type="button" aria-label="关闭">✕</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="drawModal" hidden>
+    <div class="modal draw-result" role="dialog" aria-modal="true" aria-label="抽取结果">
+      <button class="modal-close" id="drawModalClose" type="button" aria-label="关闭">✕</button>
+      <div id="drawResultBody"></div>
+      <div class="draw-result-actions">
+        <button class="btn btn-ghost" id="drawAgain" type="button">🎲 再抽一次</button>
+        <button class="btn btn-primary" id="drawDetail" type="button">📖 查看完整攻略</button>
+      </div>
+    </div>
+  </div>
+  <footer class="footer"><p class="footer-slogan">🏡 家游汇 · 让每一次家庭旅行都充满美好回忆</p><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习研究与技术交流，严禁商业用途；请遵守中国法律法规及 12306 官方相关规定，合理合规使用</p><p class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener"><img class="beian-icon" src="/images/beian-icon.png" alt="备案图标" />赣ICP备2026019601号-1</a></p></footer>  <script src="/js/i18n.js?v=20261101r"></script>
+  <script src="/js/common.js?v=20261101r"></script>
+  <script src="/js/detail.js?v=20261101r"></script>
+  <script src="/js/draw.js?v=20261101r"></script>
+</body>
+</html>
+

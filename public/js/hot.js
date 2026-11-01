@@ -1,6 +1,10 @@
 (() => {
   'use strict';
   window.pageInit = async function () {
+    if (window.matchMedia('(min-width: 901px)').matches) {
+      location.replace('/draw.html' + location.search + location.hash);
+      return;
+    }
     const meta = document.getElementById('hotMeta');
     const list = document.getElementById('hotList');
     try {
