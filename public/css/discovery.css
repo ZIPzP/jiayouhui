@@ -610,9 +610,19 @@
 }
 
 .disc-result-modal {
+  display: flex;
+  flex-direction: column;
+  width: min(680px, calc(100vw - 40px));
   max-width: 680px;
-  max-height: min(90vh, 900px);
+  max-height: calc(100vh - 40px);
+  margin: auto;
+  overflow: hidden;
+}
+
+.disc-result-modal #discResultBody {
+  min-height: 0;
   overflow-y: auto;
+  scrollbar-gutter: stable;
 }
 
 .disc-result-hero {
