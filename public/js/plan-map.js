@@ -217,7 +217,8 @@
   }
 
   function renderStopList(container, groups, markers) {
-    container.innerHTML = groups.map((group) => {
+    const legend = `<div class="plan-map-legend">${groups.map((group) => `<span><i style="background:${group.color}"></i>${t('第 ' + group.day + ' 天', 'Day ' + group.day)}</span>`).join('')}</div>`;
+    container.innerHTML = legend + groups.map((group) => {
       const summary = group.summary && group.summary.routed ? ' · ' + fmtDistance(group.summary.distance) + ' · ' + fmtDuration(group.summary.time) : '';
       return `<div class="plan-map-day">
         <div class="plan-map-day-title" data-map-day="${group.day}"><i style="background:${group.color}"></i><span>${t('第 ' + group.day + ' 天', 'Day ' + group.day)}</span><em>${summary}</em></div>
@@ -287,7 +288,14 @@
         const popupName = enNow ? (item.keyword || item.poi.name) : item.poi.name;
         const popupAddress = enNow ? '' : (item.poi.address || '');
         const popup = '<b>' + escapeHtml(popupName) + '</b><br>' + escapeHtml(item.time || '') + (popupAddress ? '<br>' + escapeHtml(popupAddress) : '');
-        const marker = new AMap.Marker({ position, title: item.poi.name, label: { content: 'D' + item.day + ' · ' + (window.i18n && window.i18n.lang === 'en' ? (TYPE_EN[item.type] || item.type || '') : (item.type || '')), direction: 'top' } });
+        const typeLabel = enNow ? (TYPE_EN[item.type] || item.type || '') : (item.type || '');
+        const marker = new AMap.Marker({
+          position,
+          title: item.poi.name,
+          content: `<div class="plan-map-pin" style="--c:${item.color}">${item.day}</div>`,
+          offset: new AMap.Pixel(-13, -13),
+          label: { content: `<span class="plan-map-label">D${item.day} · ${typeLabel}</span>`, direction: 'top' }
+        });
         marker.on('click', () => { infoWindow.setContent(popup); infoWindow.open(map, position); });
         map.add(marker);
         markerObjects.push(marker);
@@ -318,7 +326,7 @@
         }
       });
       groups.forEach((group) => {
-        if (group.routePath.length > 1) map.add(new AMap.Polyline({ path: group.routePath, strokeColor: group.color, strokeWeight: 4, strokeOpacity: 0.8, strokeStyle: group.summary.routed ? 'solid' : 'dashed', lineJoin: 'round' }));
+        if (group.routePath.length > 1) map.add(new AMap.Polyline({ path: group.routePath, strokeColor: group.color, strokeWeight: 5, strokeOpacity: 0.9, strokeStyle: group.summary.routed ? 'solid' : 'dashed', lineJoin: 'round' }));
       });
       renderStopList(stopList, groups, markerItems);
       if (markerObjects.length) map.setFitView(markerObjects, false, [40, 40, 40, 40], 15);
