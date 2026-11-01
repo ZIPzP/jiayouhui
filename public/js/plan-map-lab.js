@@ -371,27 +371,35 @@
     };
     const timer = setTimeout(() => finish(SAMPLE_HOTELS, '高德搜索超时，先显示示例酒店。'), 5000);
     try {
-      const search = new AMap.PlaceSearch({ city: CITY, citylimit: true, type: '100000', pageSize: 10, extensions: 'all' });
-      search.search(keyword || '酒店', (status, result) => {
-        clearTimeout(timer);
-        if (status !== 'complete') {
-          finish(SAMPLE_HOTELS, '高德搜索暂不可用，先显示示例酒店。');
-          return;
+      AMap.plugin(['AMap.PlaceSearch'], () => {
+        if (done) return;
+        try {
+          const search = new AMap.PlaceSearch({ city: CITY, citylimit: true, type: '100000', pageSize: 10, extensions: 'all' });
+          search.search(keyword || '酒店', (status, result) => {
+            clearTimeout(timer);
+            if (status !== 'complete') {
+              finish(SAMPLE_HOTELS, '高德搜索暂不可用，先显示示例酒店。');
+              return;
+            }
+            const pois = (result.poiList && result.poiList.pois) || [];
+            const hotels = pois.map((p) => {
+              const loc = p.location || {};
+              const lng = Number(typeof loc.getLng === 'function' ? loc.getLng() : loc.lng);
+              const lat = Number(typeof loc.getLat === 'function' ? loc.getLat() : loc.lat);
+              return {
+                name: p.name || '酒店',
+                address: p.address || p.cityname || '',
+                lat,
+                lon: lng,
+                rating: p.biz_ext && p.biz_ext.rating ? String(p.biz_ext.rating) : ''
+              };
+            }).filter((h) => Number.isFinite(h.lat) && Number.isFinite(h.lon));
+            finish(hotels.length ? hotels : SAMPLE_HOTELS, hotels.length ? '' : '没有搜到当前城市酒店，先显示示例酒店。');
+          });
+        } catch (e) {
+          clearTimeout(timer);
+          finish(SAMPLE_HOTELS, '高德搜索失败，先显示示例酒店。');
         }
-        const pois = (result.poiList && result.poiList.pois) || [];
-        const hotels = pois.map((p) => {
-          const loc = p.location || {};
-          const lng = Number(typeof loc.getLng === 'function' ? loc.getLng() : loc.lng);
-          const lat = Number(typeof loc.getLat === 'function' ? loc.getLat() : loc.lat);
-          return {
-            name: p.name || '酒店',
-            address: p.address || p.cityname || '',
-            lat,
-            lon: lng,
-            rating: p.biz_ext && p.biz_ext.rating ? String(p.biz_ext.rating) : ''
-          };
-        }).filter((h) => Number.isFinite(h.lat) && Number.isFinite(h.lon));
-        finish(hotels.length ? hotels : SAMPLE_HOTELS, hotels.length ? '' : '没有搜到当前城市酒店，先显示示例酒店。');
       });
     } catch (e) {
       clearTimeout(timer);
@@ -700,6 +708,10 @@
       zoom: map ? map.getZoom() : null
     })
   };
+  if (!/^(localhost|127\.0\.0\.1)$/i.test(location.hostname)) {
+    const localTip = document.querySelector('.map-tip');
+    if (localTip) localTip.hidden = true;
+  }
   renderEditor();
   const initialTab = new URLSearchParams(location.search).get('tab');
   const validTab = ['transport', 'hotel', 'budget', 'weather', 'tips'].includes(initialTab) ? initialTab : 'transport';
