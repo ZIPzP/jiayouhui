@@ -550,7 +550,47 @@
     } catch (e) { return null; }
   }
 
+  // 旧缓存/AI 输出都再兜底去重一次：同一景点跨天只保留第一次
+  function dedupePlanData(data) {
+    if (!data || !Array.isArray(data.days)) return data;
+    const en = !!(window.i18n && window.i18n.lang === 'en');
+    const norm = (s) => String(s || '')
+      .replace(/^(上午|中午|下午|晚上|清晨|早上)[：:\s]*/, '')
+      .replace(/[（(][^）)]*[）)]/g, '')
+      .replace(/[\s·・\-—_，,。；;:：\/]/g, '')
+      .replace(/(博物院|博物馆|风景区|景区|旅游区|公园|广场|古城|古镇|老街|步行街)$/g, '')
+      .toLowerCase();
+    const place = (raw) => {
+      let t = String(raw || '').trim();
+      t = t.replace(/^(上午|中午|下午|晚上|清晨|早上)[：:\s]*/, '');
+      t = t.replace(/^(morning|midday|afternoon|evening)[:\s-]*/i, '');
+      t = t.replace(/^(前往|游览|参观|打卡|体验|漫步|慢逛)[：:\s]*/, '');
+      t = t.replace(/^(visit|explore|walk|stroll|tour|discover|enjoy)\s+/i, '');
+      if (!t) return '';
+      if (/^(早餐|午餐|晚餐|用餐|抵达|返回|返程|入住|退房|自由活动|休息|出发|前往酒店|回酒店|市区漫步|周边漫步|城市慢游|夜景|美食街|购物|乘车|高铁|飞机|自驾|办理入住|行程结束)/.test(t)) return '';
+      if (/^(breakfast|lunch|dinner|arrive|return|check in|check out|free time|rest|depart|head back|travel home|pack)/i.test(t)) return '';
+      return t;
+    };
+    const seen = [];
+    data.days.forEach((day) => {
+      (day.schedule || []).forEach((item) => {
+        const at = place(item.activity);
+        if (!at) return;
+        const key = norm(at);
+        if (!key) return;
+        if (seen.some((x) => x === key || (x.length >= 2 && key.length >= 2 && (x.includes(key) || key.includes(x))))) {
+          item.activity = en ? 'Free time / neighbourhood stroll' : '自由活动 / 周边漫步';
+          item.detail = en ? 'No repeat visits — time left for rest and a relaxed stroll.' : '为避免重复景点，留出自由活动与休息时间。';
+        } else {
+          seen.push(key);
+        }
+      });
+    });
+    return data;
+  }
+
   function renderPlan(el, data, vals) {
+    data = dedupePlanData(data);
     renderedPlan = { data, vals };
     const dest = app.state.destinations.find((d) => d.id === vals.destinationId) || {};
     const dayHtml = (data.days || []).map((d, i) => `

@@ -60,6 +60,7 @@
   }
   function itineraryDays(data) {
     const out = [];
+    const globalSeen = new Set();
     (data && data.days || []).forEach((day) => {
       const stops = [];
       const seen = new Set();
@@ -67,8 +68,10 @@
         const keyword = keywordFrom(text);
         if (!keyword) return;
         const key = keyword.toLowerCase();
-        if (seen.has(key) || stops.some((item) => item.keyword.includes(keyword) || keyword.includes(item.keyword))) return;
+        const dupGlobal = [...globalSeen].some((k) => k === key || (k.length >= 2 && key.length >= 2 && (k.includes(key) || key.includes(k))));
+        if (seen.has(key) || dupGlobal || stops.some((item) => item.keyword.includes(keyword) || keyword.includes(item.keyword))) return;
         seen.add(key);
+        globalSeen.add(key);
         stops.push({ keyword, name: keyword, time: clean(time), type });
       };
       (day.schedule || []).forEach((item) => {
