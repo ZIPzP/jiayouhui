@@ -2,10 +2,14 @@
   'use strict';
   let chatHistory = [];
   let renderedPlan = null;
+  let planWeatherTimer = null;
+  let planWeatherToken = 0;
+  const planWeatherCache = new Map();
   window.pageInit = async function () {
     bindEvents();
     restoreDraft();
     initDateFields();
+    refreshPlanWeather();
     renderHistory();
     bindHistory();
     restorePlan();
@@ -71,6 +75,73 @@
     });
   }
 
+  function schedulePlanWeather() {
+    clearTimeout(planWeatherTimer);
+    planWeatherTimer = setTimeout(refreshPlanWeather, 350);
+  }
+
+  // 根据用户选择的去返日期，展示目的地在这段时间内的天气预报
+  async function refreshPlanWeather() {
+    const box = document.getElementById('planDateWeather');
+    const body = document.getElementById('planWeatherBody');
+    const note = document.getElementById('planDateWeatherNote');
+    const title = document.getElementById('planDateWeatherTitle');
+    if (!box || !body || !note) return;
+    const en = uiEnNow();
+    const start = document.getElementById('pl-start').value;
+    const end = document.getElementById('pl-end').value;
+    const destRaw = document.getElementById('pl-dest').value.trim();
+    if (!start || !end || !destRaw || new Date(end) < new Date(start)) {
+      box.hidden = true;
+      return;
+    }
+    const cityHit = app.resolveCity ? app.resolveCity(destRaw) : null;
+    const destName = app.normCity(cityHit ? cityHit.name : destRaw);
+    const dest = (app.state.destinations || []).find((d) => app.normCity(d.name) === destName);
+    box.hidden = false;
+    if (title) title.textContent = en ? '🌤️ Weather for your dates' : '🌤️ 所选日期天气';
+    if (!dest || !dest.id) {
+      body.innerHTML = '';
+      note.textContent = en ? 'Weather is available for built-in destinations only.' : '自定义目的地暂不支持天气预报。';
+      return;
+    }
+    body.innerHTML = `<p class="form-hint">${en ? 'Loading weather…' : '正在获取天气…'}</p>`;
+    note.textContent = '';
+    const token = ++planWeatherToken;
+    try {
+      let data = planWeatherCache.get(dest.id);
+      if (!data) {
+        data = await app.api('/api/weather?id=' + encodeURIComponent(dest.id));
+        planWeatherCache.set(dest.id, data);
+      }
+      if (token !== planWeatherToken) return;
+      const days = (data.days || []).filter((x) => x.date >= start && x.date <= end);
+      if (!days.length) {
+        body.innerHTML = '';
+        note.textContent = en
+          ? 'No forecast covers these dates yet (forecasts cover the next 15 days).'
+          : '所选日期暂时没有预报（仅支持未来 15 天）。';
+        return;
+      }
+      body.innerHTML = `<div class="wf-scroll">${days.map((x) => `
+        <div class="wf-day">
+          <div class="wf-week">${app.esc(x.weekday)}</div>
+          <div class="wf-date">${app.esc(x.date.slice(5))}</div>
+          <div class="wf-icon">${x.icon}</div>
+          <div class="wf-label">${app.esc(x.label)}</div>
+          <div class="wf-temp">${x.tmin}° ~ ${x.tmax}°</div>
+        </div>`).join('')}</div>`;
+      const selectedDays = Math.round((new Date(end) - new Date(start)) / 86400000) + 1;
+      note.textContent = days.length < selectedDays
+        ? (en ? `Showing ${days.length} of ${selectedDays} days — the rest are beyond the 15-day forecast.` : `已显示 ${days.length}/${selectedDays} 天，其余日期超出 15 天预报范围。`)
+        : (en ? 'Based on the latest 15-day forecast.' : '基于最新 15 天预报。');
+    } catch (e) {
+      if (token !== planWeatherToken) return;
+      body.innerHTML = '';
+      note.textContent = en ? 'Weather is temporarily unavailable.' : '天气暂时获取失败，请稍后再试。';
+    }
+  }
+
   function bindEvents() {
     // 选项 chips
     // 城市自动补全（支持中文名与拼音/英文，如 pingxiang、Beijing）
@@ -114,6 +185,13 @@
     };
     document.getElementById('pl-start').addEventListener('change', syncDays);
     document.getElementById('pl-end').addEventListener('change', syncDays);
+    document.getElementById('pl-start').addEventListener('change', schedulePlanWeather);
+    document.getElementById('pl-end').addEventListener('change', schedulePlanWeather);
+    const destInput = document.getElementById('pl-dest');
+    if (destInput) {
+      destInput.addEventListener('input', schedulePlanWeather);
+      destInput.addEventListener('change', schedulePlanWeather);
+    }
     // 生成
     document.getElementById('pl-submit').addEventListener('click', generatePlan);
     // 结果区 打印/朗读

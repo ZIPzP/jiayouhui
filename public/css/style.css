@@ -497,6 +497,14 @@ html.elderly .lightbox-nav { width: 64px; height: 64px; font-size: 2.2rem; }
 .wf-label { font-size: .78rem; color: var(--ink-soft); margin: 4px 0; }
 .wf-temp { font-size: .82rem; font-weight: 700; }
 html.elderly .wf-day { flex-basis: 104px; }
+.plan-date-weather { margin: 4px 0 14px; padding: 12px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 14px; }
+.plan-date-weather-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; font-size: .86rem; font-weight: 800; color: var(--primary-dark); }
+.plan-date-weather-note { font-size: .76rem; font-weight: 600; color: var(--ink-soft); }
+.plan-date-weather .wf-day { flex-basis: 74px; padding: 8px 5px; }
+.plan-date-weather .wf-scroll { padding-bottom: 2px; }
+.plan-date-weather .wf-body { min-height: 0; }
+.plan-date-weather .wf-icon { font-size: 1.35rem; }
+.plan-date-weather .wf-temp { font-size: .78rem; }
 
 /* 当地美食 */
 .food-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 6px 0 18px; }

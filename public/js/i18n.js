@@ -254,6 +254,7 @@
  "AI 主理人 · 行程规划": "AI Planner · Trip Planner",
  "输入城市名会自动提示补全；出发城市和目的地必填。AI 自动生成含价格估算、交通安排、忌食提醒的逐日详细行程；页面下方还能直接向 AI 主理人提问": "Type a city name for suggestions; departure city and destination are required. AI generates a detailed day-by-day itinerary with cost estimates, transport and dietary notes — and you can chat with the AI planner below.",
  "出发城市": "Departure city",
+ "所选日期天气": "Weather for your dates",
  "返回目的地（可选）": "Return destination (optional)",
  "去程日期": "Departure date",
  "返程日期": "Return date",
