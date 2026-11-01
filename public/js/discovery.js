@@ -164,7 +164,7 @@
       return;
     }
     box.innerHTML = state.selected.map((name) =>
-      `<span class="disc-city-chip">📍 ${app.esc(name)}<button type="button" data-remove-city="${app.esc(name)}" aria-label="移除 ${app.esc(name)}">×</button></span>`
+      `<span class="disc-city-chip">📍 ${app.esc(tr(name))}<button type="button" data-remove-city="${app.esc(name)}" aria-label="${uiEn() ? 'Remove ' : '移除 '}${app.esc(name)}">×</button></span>`
     ).join('');
     box.querySelectorAll('[data-remove-city]').forEach((btn) => {
       btn.addEventListener('click', () => removeCity(btn.dataset.removeCity));
@@ -257,7 +257,8 @@
     const body = document.getElementById('discResultBody');
     const en = uiEn();
     const tags = (d.tags || []).slice(0, 5).map((tag) => `<span class="disc-result-tag">${app.esc(tr(tag))}</span>`).join('');
-    const meta = [d.province, d.suggestDays ? '建议 ' + d.suggestDays : '', (d.bestSeasons || []).length ? '最佳 ' + d.bestSeasons.join('/') : '']
+    const suggestedDays = String(d.suggestDays || '').replace(/(\d+)\s*-\s*(\d+)\s*天/, '$1–$2 days').replace(/(\d+)\s*天/, '$1 days');
+    const meta = [tr(d.province), d.suggestDays ? (en ? 'Suggested ' : '建议 ') + suggestedDays : '', (d.bestSeasons || []).length ? (en ? 'Best ' : '最佳 ') + d.bestSeasons.map((x) => tr(x)).join('/') : '']
       .filter(Boolean).join(' · ');
     body.innerHTML = `
       <div class="disc-result-hero" id="discResultHero">
@@ -274,7 +275,7 @@
           <button class="btn btn-ghost" id="discModalAgain" type="button">${en ? '🎲 Draw again' : '🎲 再抽一次'}</button>
         </div>
         <div class="disc-poster-box" id="discPosterBox" hidden>
-          <img id="discPosterImg" alt="${app.esc(d.name)}旅行海报" />
+          <img id="discPosterImg" alt="${app.esc(en ? tr(d.name) + ' travel poster' : d.name + '旅行海报')}" />
           <div class="disc-poster-actions">
           <a class="btn btn-primary" id="discPosterDownload" download="家游汇-${app.esc(d.name)}-旅行海报.png" href="#">${en ? 'Download poster' : '下载高清海报'}</a>
           </div>
@@ -349,8 +350,9 @@
       const data = await app.api('/api/hot-data');
       state.hot = (data.items || []).slice(0, 8);
       renderFeaturedCities();
+      const monthEn = new Date(data.collectedAt || Date.now()).toLocaleString('en-US', { month: 'long' });
       meta.textContent = uiEn()
-        ? `${data.monthLabel || ((new Date().getMonth() + 1) + '月')} family travel heat · click for details`
+        ? `${monthEn} family travel heat · click for details`
         : `${data.monthLabel || ((new Date().getMonth() + 1) + '月')}家庭旅行热度 · 点击查看攻略`;
       list.innerHTML = state.hot.map((item, index) => {
         const hit = state.destinations.find((d) => d.name === item.name);
@@ -379,16 +381,21 @@
       const arr = JSON.parse(localStorage.getItem(FEEDBACK_KEY) || '[]');
       if (Array.isArray(arr) && arr.length) return arr;
     } catch (e) { /* ignore */ }
-    return [
-      { nickname: '小满一家', destination: '杭州', type: '去过推荐', rating: 5, text: '西湖边推婴儿车很方便，坐游船老人也不累。', ts: Date.now() - 86400000 },
-      { nickname: '阿柚', destination: '长沙', type: '想去', rating: 5, text: '想带爸妈去橘子洲，顺便吃一顿不辣的湘菜。', ts: Date.now() - 3600000 }
-    ];
+    return uiEn()
+      ? [
+          { nickname: 'Xiaoman family', destination: '杭州', type: '去过推荐', rating: 5, text: 'West Lake is stroller-friendly, and the boat ride is easy for seniors.', ts: Date.now() - 86400000 },
+          { nickname: 'A-You', destination: '长沙', type: '想去', rating: 5, text: 'I want to take my parents to Orange Isle and find a non-spicy Hunan meal.', ts: Date.now() - 3600000 }
+        ]
+      : [
+          { nickname: '小满一家', destination: '杭州', type: '去过推荐', rating: 5, text: '西湖边推婴儿车很方便，坐游船老人也不累。', ts: Date.now() - 86400000 },
+          { nickname: '阿柚', destination: '长沙', type: '想去', rating: 5, text: '想带爸妈去橘子洲，顺便吃一顿不辣的湘菜。', ts: Date.now() - 3600000 }
+        ];
   }
 
   function renderFeedback() {
     const items = loadFeedback();
     const list = document.getElementById('discFeedbackList');
-    document.getElementById('discFbCount').textContent = items.length + ' 条';
+    document.getElementById('discFbCount').textContent = uiEn() ? items.length + ' items' : items.length + ' 条';
     list.innerHTML = items.slice(0, 8).map((item) => `
       <article class="disc-feedback-item">
         <div class="disc-feedback-avatar">🧳</div>

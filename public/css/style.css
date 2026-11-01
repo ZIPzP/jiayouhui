@@ -654,7 +654,7 @@ html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; 
   .brand { font-size: 22px; gap: 10px; }
   .brand-svg { display: block; flex: none; }
   .brand-emoji { display: none; }
-  .nav-links-inline { display: flex; align-items: center; gap: 8px; margin-left: clamp(34px, 4vw, 62px); flex: none; }
+  .nav-links-inline { display: flex; align-items: center; gap: clamp(18px, 2.4vw, 32px); margin-left: clamp(34px, 4vw, 62px); flex: none; }
   .nav-links-inline a { padding: 8px 12px; border-radius: 10px; color: #64748B; font-weight: 600; font-size: 14px; text-decoration: none; white-space: nowrap; }
   .nav-links-inline a:hover { background: rgba(13,148,136,.08); color: #0D9488; }
   .nav-links-inline a.active { color: #0D9488; background: rgba(13,148,136,.1); font-weight: 700; }
