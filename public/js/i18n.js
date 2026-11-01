@@ -540,7 +540,16 @@
  "下载高清海报": "Download poster",
  "当前为真实照片杂志排版；AI 纸感插画将在后续版本接入。": "This version uses a real-photo editorial layout. AI paper-cut illustration is coming later.",
  "旅行海报与反馈当前保存在当前浏览器；AI 纸感插画与公开反馈将在后续版本接入。": "Travel posters and feedback are currently stored in this browser. AI illustrations and public feedback will be added in a later release.",
- "🏡 家游汇 · 发现下一站": "🏡 Family Trip Hub · Discover Your Next Stop"
+ "🏡 家游汇 · 发现下一站": "🏡 Family Trip Hub · Discover Your Next Stop",
+ "🛠️ AI 行程管家": "🛠️ AI Itinerary Steward",
+ "💬 AI 主理人问答": "💬 AI Travel Assistant",
+ "修改行程": "Modify trip",
+ "解释规划": "Explain plan",
+ "AI 行程管家模式": "AI itinerary steward mode",
+ "可以问“为什么这样安排”，也可以指定第几天和时段进行修改。修改先生成预览，确认后才会同步到行程、左侧日程和地图。": "Ask why the itinerary is arranged this way, or specify a day and time to revise it. Changes are previewed first and only applied after confirmation.",
+ "你好，我可以解释当前规划，也可以修改某一天。例如：“把第 2 天下午换成适合老人的室内景点”。": "Hi! I can explain the current itinerary or revise a specific day. For example: “Replace Day 2 afternoon with an indoor attraction suitable for seniors.”",
+ "例如：把第 2 天下午换成室内景点…": "e.g. Replace Day 2 afternoon with an indoor attraction…",
+ "应用修改": "Preview change"
 };
   // 英文 -> 中文反查（地图搜索需要中文 POI 名，界面仍显示英文）
   const EN2ZH = {};

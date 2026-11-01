@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>家游汇 · 家庭旅游推荐与攻略</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>" />
-  <link rel="stylesheet" href="/css/style.css?v=20261101nav" />
+  <link rel="stylesheet" href="/css/style.css?v=20261101steward" />
 </head>
 <body>    <header class="nav" id="topnav">
     <div class="nav-inner">
@@ -222,21 +222,35 @@
     </section>
 
     <div class="card chat-card" id="assistant">
-      <div class="chat-head">💬 AI 主理人问答 <span class="provider-tag" id="chatModeTag">演示模式</span></div>
+      <div class="chat-head chat-head-steward">
+        <div class="chat-title-wrap">
+          <span class="chat-desktop-only">🛠️ AI 行程管家</span>
+          <span class="chat-mobile-only">💬 AI 主理人问答</span>
+          <span class="provider-tag" id="chatModeTag">修改行程</span>
+        </div>
+        <div class="chat-mode-tabs" id="chatModeTabs" aria-label="AI 行程管家模式">
+          <button type="button" data-chat-mode="explain">解释规划</button>
+          <button type="button" class="active" data-chat-mode="modify">修改行程</button>
+        </div>
+      </div>
+      <div class="chat-guide chat-desktop-only" id="chatGuide">
+        可以问“为什么这样安排”，也可以指定第几天和时段进行修改。修改先生成预览，确认后才会同步到行程、左侧日程和地图。
+      </div>
       <div class="chat-body" id="chatBody">
-        <div class="chat-msg ai">你好呀，我是「家游汇」的 AI 主理人 🏡 可以问我任何家庭旅行问题，比如「带老人孩子去西安怎么安排 5 天？」</div>
+        <div class="chat-msg ai chat-desktop-only">你好，我可以解释当前规划，也可以修改某一天。例如：“把第 2 天下午换成适合老人的室内景点”。</div>
+        <div class="chat-msg ai chat-mobile-only">你好呀，我是「家游汇」的 AI 主理人 🏡 可以问我任何家庭旅行问题，比如「带老人孩子去西安怎么安排 5 天？」</div>
       </div>
       <div class="chat-input-row">
-        <input id="chatInput" class="input" placeholder="输入你的问题，回车发送…" />
-        <button id="chatSend" class="btn btn-primary" type="button">发送</button>
+        <input id="chatInput" class="input" placeholder="例如：把第 2 天下午换成室内景点…" />
+        <button id="chatSend" class="btn btn-primary" type="button">应用修改</button>
       </div>
     </div>
-  </section>  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习研究与技术交流，严禁商业用途；请遵守中国法律法规及 12306 官方相关规定，合理合规使用</p><p class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener"><img class="beian-icon" src="/images/beian-icon.png" alt="备案图标" />赣ICP备2026019601号-1</a></p></footer>  <script src="/js/i18n.js?v=20261101nav"></script>
+  </section>  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习研究与技术交流，严禁商业用途；请遵守中国法律法规及 12306 官方相关规定，合理合规使用</p><p class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener"><img class="beian-icon" src="/images/beian-icon.png" alt="备案图标" />赣ICP备2026019601号-1</a></p></footer>  <script src="/js/i18n.js?v=20261101steward2"></script>
   <script src="/js/common.js?v=20261101nav"></script>
   <script src="/js/html2canvas.min.js?v=20261101r"></script>
   <script src="/js/plan-map.js?v=20261101s"></script>
   <script src="/js/Sortable.min.js?v=20261101s"></script>
-  <script src="/js/plan.js?v=20261101z"></script>
+  <script src="/js/plan.js?v=20261101steward2"></script>
 </body>
 </html>
 

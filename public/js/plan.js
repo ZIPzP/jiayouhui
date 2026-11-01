@@ -14,6 +14,10 @@
   let dpwWeatherCache = null;
   let desktopHighlights = [];
   let desktopHighlightsToken = 0;
+  let chatMode = 'modify';
+  let revisionBusy = false;
+  let revisionToken = 0;
+  const planUndoStack = [];
   window.pageInit = async function () {
     bindEvents();
     restoreDraft();
@@ -217,6 +221,10 @@
     // 问答
     document.getElementById('chatSend').addEventListener('click', sendChat);
     document.getElementById('chatInput').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); } });
+    document.querySelectorAll('[data-chat-mode]').forEach((btn) => {
+      btn.addEventListener('click', () => setChatMode(btn.dataset.chatMode));
+    });
+    setChatMode(chatMode);
     const planForm = document.getElementById('planForm');
     if (planForm) { planForm.addEventListener('input', scheduleDraftSave); planForm.addEventListener('change', scheduleDraftSave); }
   }
@@ -469,6 +477,10 @@
         : `<div class="ai-feedback">🐱 AI 主理人：出发城市和目的地是同一个城市「${app.esc(destRaw2)}」，行程没有参考价值，请换个目的地。</div>`;
       return;
     }
+    revisionToken += 1;
+    setRevisionBusy(false);
+    planUndoStack.length = 0;
+    document.querySelectorAll('.chat-revision-preview').forEach((el) => el.remove());
     const vals = planFormValues();
     saveHistoryEntry(collectDraft()); // 记录这次的问题概要（最多 20 条）
     renderHistory(); // 立即刷新历史列表（否则要刷新页面才看得到）
@@ -539,12 +551,40 @@
     const el = document.getElementById('planResult');
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
+  function currentPlanData() {
+    if (renderedPlan && renderedPlan.data && Array.isArray(renderedPlan.data.days)) return renderedPlan.data;
+    const last = loadLast();
+    return last && last.result && Array.isArray(last.result.days) ? last.result : null;
+  }
+  function compactCurrentPlan(plan) {
+    if (!plan || !Array.isArray(plan.days)) return null;
+    return {
+      title: plan.title,
+      summary: plan.summary,
+      transportPlan: plan.transportPlan,
+      budget: plan.budget,
+      dietaryNotes: plan.dietaryNotes,
+      tips: plan.tips,
+      realTrains: plan.realTrains,
+      days: plan.days.map((d) => ({
+        day: d.day,
+        dateLabel: d.dateLabel,
+        title: d.title,
+        schedule: d.schedule,
+        meals: d.meals,
+        transport: d.transport,
+        accommodation: d.accommodation,
+        costPerPerson: d.costPerPerson
+      }))
+    };
+  }
   /* 问答上下文：把上方表单的行程信息 + 最近生成的方案一起送给 AI */
   function buildTripContext() {
     try {
       const v = planFormValues();
       let last = null;
-    try { last = JSON.parse(sessionStorage.getItem(LAST_KEY) || localStorage.getItem(LAST_KEY) || 'null'); } catch (e) { /* 忽略 */ }
+      try { last = JSON.parse(sessionStorage.getItem(LAST_KEY) || localStorage.getItem(LAST_KEY) || 'null'); } catch (e) { /* 忽略 */ }
+      const plan = currentPlanData() || (last && last.result) || null;
       return {
         destinationId: v.destinationId,
         destinationName: document.getElementById('pl-dest').value.trim(),
@@ -554,7 +594,8 @@
         elderly: v.elderly, adults: v.adults, children: v.children,
         dietary: v.dietary, budget: v.budget, pace: v.pace,
         accommodation: v.accommodation, interests: v.interests, notes: v.notes,
-        planTitle: (last && last.result && last.result.title) || ''
+        planTitle: (plan && plan.title) || '',
+        currentPlan: compactCurrentPlan(plan)
       };
     } catch (e) { return null; }
   }
@@ -993,22 +1034,176 @@
     body.scrollTop = body.scrollHeight;
     return div;
   }
-  async function sendChat() {
+
+  function isDesktopChat() {
+    return window.innerWidth > 900;
+  }
+
+  function setChatMode(mode) {
+    chatMode = mode === 'explain' ? 'explain' : 'modify';
+    document.querySelectorAll('[data-chat-mode]').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.chatMode === chatMode);
+    });
+    const tag = document.getElementById('chatModeTag');
     const input = document.getElementById('chatInput');
-    const msg = input.value.trim();
-    if (!msg) return;
-    input.value = '';
-    addChatMsg('user', msg);
-    const typing = addChatMsg('ai', '正在思考…');
-    typing.classList.add('chat-typing');
+    const send = document.getElementById('chatSend');
+    if (!isDesktopChat()) {
+      if (tag) tag.textContent = uiEnNow() ? 'Q&A' : '问答';
+      if (input) input.placeholder = uiEnNow() ? 'Ask a question and press Enter…' : '输入你的问题，回车发送…';
+      if (send) send.textContent = uiEnNow() ? 'Send' : '发送';
+      return;
+    }
+    if (tag) tag.textContent = chatMode === 'modify' ? (uiEnNow() ? 'Modify trip' : '修改行程') : (uiEnNow() ? 'Explain plan' : '解释规划');
+    if (input) input.placeholder = chatMode === 'modify'
+      ? (uiEnNow() ? 'e.g. Replace Day 2 afternoon with an indoor attraction…' : '例如：把第 2 天下午换成室内景点…')
+      : (uiEnNow() ? 'e.g. Why is Day 2 arranged this way?' : '例如：为什么第 2 天这样安排？');
+    if (send) send.textContent = chatMode === 'modify' ? (uiEnNow() ? 'Preview change' : '预览修改') : (uiEnNow() ? 'Ask' : '询问');
+  }
+
+  function setRevisionBusy(value) {
+    revisionBusy = !!value;
+    const send = document.getElementById('chatSend');
+    if (send) send.disabled = revisionBusy;
+    document.querySelectorAll('[data-chat-mode]').forEach((btn) => { btn.disabled = revisionBusy; });
+  }
+
+  async function sendExplainChat(msg, typing) {
     try {
-      const data = await app.api('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(app.aiPayload({ message: msg, history: chatHistory, tripContext: buildTripContext() })) });
+      const data = await app.api('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(app.aiPayload({ message: msg, history: chatHistory, tripContext: buildTripContext() }))
+      });
       chatHistory.push({ role: 'user', content: msg }, { role: 'assistant', content: data.reply });
       typing.classList.remove('chat-typing');
       typing.textContent = data.reply;
     } catch (e) {
       typing.classList.remove('chat-typing');
-      typing.textContent = '出错了：' + e.message;
+      typing.textContent = (uiEnNow() ? 'Error: ' : '出错了：') + e.message;
+    }
+  }
+
+  async function sendPlanRevision(msg, typing) {
+    const plan = currentPlanData();
+    if (!plan) {
+      typing.classList.remove('chat-typing');
+      typing.textContent = uiEnNow() ? 'Generate a full itinerary before changing it.' : '请先生成完整行程，再修改其中的某一天。';
+      return;
+    }
+    if (!/(?:第|Day\s*)[0-9一二三四五六七八九十两]+\s*天?/i.test(msg)) {
+      typing.classList.remove('chat-typing');
+      typing.textContent = uiEnNow() ? 'Please specify the day and time, for example “Day 2 afternoon”.' : '请说明要修改第几天和时段，例如“第 2 天下午”。';
+      return;
+    }
+    const vals = renderedPlan && renderedPlan.vals ? renderedPlan.vals : planFormValues();
+    const token = ++revisionToken;
+    setRevisionBusy(true);
+    document.querySelectorAll('.chat-revision-preview').forEach((el) => el.remove());
+    try {
+      const job = await app.api('/api/plan/revise', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(app.aiPayload({
+          message: msg,
+          currentPlan: compactCurrentPlan(plan),
+          tripContext: buildTripContext()
+        }))
+      });
+      await app.pollJob(job.jobId, {
+        onDone: (result) => {
+          if (token !== revisionToken) return;
+          setRevisionBusy(false);
+          typing.classList.remove('chat-typing');
+          typing.textContent = result.reply || (uiEnNow() ? 'The revision could not be applied.' : '本次修改未应用。');
+          if (result.changed && result.plan && result.beforeDay && result.afterDay) {
+            showRevisionPreview(result, vals, typing);
+          }
+        },
+        onError: (message) => {
+          if (token !== revisionToken) return;
+          setRevisionBusy(false);
+          typing.classList.remove('chat-typing');
+          typing.textContent = (uiEnNow() ? 'Revision failed: ' : '修改失败：') + message;
+        }
+      });
+    } catch (e) {
+      if (token !== revisionToken) return;
+      setRevisionBusy(false);
+      typing.classList.remove('chat-typing');
+      typing.textContent = (uiEnNow() ? 'Revision failed: ' : '修改失败：') + e.message;
+    }
+  }
+
+  function dayScheduleLines(day) {
+    return (day && Array.isArray(day.schedule) ? day.schedule : [])
+      .map((s) => `${s.time || ''}：${s.activity || ''}${s.detail ? '（' + s.detail + '）' : ''}`);
+  }
+
+  function showRevisionPreview(result, vals, typing) {
+    const preview = document.createElement('div');
+    preview.className = 'chat-revision-preview';
+    const before = dayScheduleLines(result.beforeDay);
+    const after = dayScheduleLines(result.afterDay);
+    preview.innerHTML = `
+      <b>${uiEnNow() ? 'Revision preview' : '修改预览'} · ${uiEnNow() ? 'Day ' : '第 '}${result.targetDay}${uiEnNow() ? '' : ' 天'}</b>
+      <p>${uiEnNow() ? 'Nothing changes until you click Apply.' : '当前还没有修改原行程，点击“应用修改”后才会同步更新。'}</p>
+      <div class="chat-revision-diff">
+        <div class="chat-revision-side"><strong>${uiEnNow() ? 'Before' : '原安排'}</strong><ul>${before.map((x) => `<li>${app.esc(x)}</li>`).join('')}</ul></div>
+        <div class="chat-revision-side"><strong>${uiEnNow() ? 'After' : '新安排'}</strong><ul>${after.map((x) => `<li>${app.esc(x)}</li>`).join('')}</ul></div>
+      </div>
+      <div class="chat-revision-actions">
+        <button class="btn btn-primary" type="button" data-apply-revision>${uiEnNow() ? 'Apply change' : '应用修改'}</button>
+        <button class="btn btn-ghost" type="button" data-cancel-revision>${uiEnNow() ? 'Cancel' : '取消'}</button>
+      </div>`;
+    typing.insertAdjacentElement('afterend', preview);
+    const chatBody = document.getElementById('chatBody');
+    if (chatBody) chatBody.scrollTop = chatBody.scrollHeight;
+    preview.querySelector('[data-cancel-revision]').addEventListener('click', () => preview.remove());
+    preview.querySelector('[data-apply-revision]').addEventListener('click', () => {
+      const current = currentPlanData();
+      if (current) {
+        planUndoStack.push({ plan: JSON.parse(JSON.stringify(current)), vals: { ...vals } });
+        if (planUndoStack.length > 5) planUndoStack.shift();
+      }
+      const bodyEl = document.getElementById('planBody');
+      renderPlan(bodyEl, result.plan, vals);
+      savePlan(vals, result.plan);
+      preview.remove();
+      const done = addChatMsg('ai', uiEnNow()
+        ? 'The itinerary, left-side schedule, and map have been updated.'
+        : '修改已应用，行程、左侧日程和地图已同步更新。');
+      const actions = document.createElement('div');
+      actions.className = 'chat-message-action';
+      actions.innerHTML = `<button class="btn btn-ghost" type="button">${uiEnNow() ? 'Undo last change' : '撤销上次修改'}</button>`;
+      actions.querySelector('button').addEventListener('click', () => undoLastPlanChange());
+      done.appendChild(actions);
+      document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
+      app.toast(uiEnNow() ? 'Itinerary synced' : '行程、左侧日程和地图已同步');
+    });
+  }
+
+  function undoLastPlanChange() {
+    const last = planUndoStack.pop();
+    if (!last) return;
+    const bodyEl = document.getElementById('planBody');
+    renderPlan(bodyEl, last.plan, last.vals);
+    savePlan(last.vals, last.plan);
+    addChatMsg('ai', uiEnNow() ? 'The previous itinerary has been restored.' : '已恢复上一版行程，日程和地图也已同步。');
+    app.toast(uiEnNow() ? 'Previous itinerary restored' : '已撤销上一次修改');
+  }
+
+  async function sendChat() {
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg || revisionBusy) return;
+    input.value = '';
+    addChatMsg('user', msg);
+    const typing = addChatMsg('ai', uiEnNow() ? 'Working…' : '正在处理…');
+    typing.classList.add('chat-typing');
+    if (isDesktopChat() && chatMode === 'modify') {
+      await sendPlanRevision(msg, typing);
+    } else {
+      await sendExplainChat(msg, typing);
     }
   }
 })();

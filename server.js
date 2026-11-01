@@ -522,6 +522,22 @@ async function handleApi(req, res, pathname) {
     return sendJson(res, 200, { jobId, status: 'running' });
   }
 
+  // POST /api/plan/revise —— AI 行程管家：预览式局部修改
+  if (pathname === '/api/plan/revise' && req.method === 'POST') {
+    if (!allowAi(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
+    let body;
+    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: MSG(reqLang(req)).badJson }); }
+    const message = String(body.message || '').trim();
+    if (!message) return sendJson(res, 400, { error: MSG(body.lang).needQuestion });
+    if (message.length > 600) return sendJson(res, 400, { error: body.lang === 'en' ? 'Revision request is too long.' : '修改要求过长，请精简到 600 字以内。' });
+    if (!body.currentPlan || !Array.isArray(body.currentPlan.days) || !body.currentPlan.days.length) {
+      return sendJson(res, 400, { error: body.lang === 'en' ? 'Generate an itinerary before revising it.' : '请先生成完整行程，再修改其中的安排。' });
+    }
+    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '', lang: body.lang === 'en' ? 'en' : 'zh' };
+    const jobId = runJob(async () => planner.revisePlan(message, body.currentPlan, overrides, body.tripContext || null));
+    return sendJson(res, 200, { jobId, status: 'running' });
+  }
+
   // POST /api/chat —— AI 主理人问答
   if (pathname === '/api/chat' && req.method === 'POST') {
     if (!allowAi(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });

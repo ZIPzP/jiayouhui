@@ -347,6 +347,31 @@ html.elderly .nav-links, html.elderly .quick-planner, html.elderly .packing-layo
 .chat-input-row { display: flex; gap: 10px; padding: 14px 20px; border-top: 1px solid var(--line); background: #fff; border-radius: 0 0 var(--radius) var(--radius); }
 .chat-input-row .input { flex: 1; }
 .chat-typing { color: var(--ink-soft); font-size: .88rem; font-style: italic; }
+.chat-mobile-only { display: none; }
+.chat-head-steward { justify-content: space-between; flex-wrap: wrap; }
+.chat-title-wrap { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.chat-mode-tabs { display: flex; gap: 3px; padding: 3px; border-radius: 10px; background: #f1f5f3; }
+.chat-mode-tabs button { border: 0; border-radius: 7px; padding: 6px 11px; background: transparent; color: var(--ink-soft); font-size: 11px; font-weight: 800; cursor: pointer; }
+.chat-mode-tabs button.active { background: #fff; color: var(--primary-dark); box-shadow: 0 2px 6px rgba(15,23,42,.08); }
+.chat-guide { padding: 9px 20px; background: #f8faf9; border-bottom: 1px solid var(--line); color: var(--ink-soft); font-size: 10px; line-height: 1.55; }
+.chat-revision-preview { align-self: flex-start; width: min(96%, 760px); padding: 14px; border: 1px solid #bae6fd; border-radius: 14px; background: #f8fdff; }
+.chat-revision-preview > b { color: #075985; font-size: 12px; }
+.chat-revision-preview > p { margin: 5px 0 10px; color: var(--ink-soft); font-size: 10px; line-height: 1.55; }
+.chat-revision-diff { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.chat-revision-side { min-width: 0; padding: 9px; border-radius: 9px; background: #fff; border: 1px solid #e2e8f0; }
+.chat-revision-side strong { display: block; margin-bottom: 5px; color: #334155; font-size: 10px; }
+.chat-revision-side ul { margin: 0; padding-left: 16px; color: var(--ink-soft); font-size: 10px; line-height: 1.55; }
+.chat-revision-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.chat-revision-actions .btn { min-height: 30px; padding: 5px 10px; font-size: 10px; }
+.chat-message-action { margin-top: 8px; }
+.chat-message-action .btn { min-height: 28px; padding: 4px 9px; font-size: 10px; }
+@media (max-width: 900px) {
+  .chat-desktop-only { display: none !important; }
+  .chat-mobile-only { display: block; }
+  .chat-head-steward { justify-content: flex-start; }
+  .chat-mode-tabs { display: none; }
+  .chat-revision-diff { grid-template-columns: 1fr; }
+}
 
 /* ---------- 打印：隐藏问答，保留行程 ---------- */
 @media print {
