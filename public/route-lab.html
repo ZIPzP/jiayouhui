@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>家游汇 · 路线实验室</title>
+  <style>
+    :root {
+      --green: #0f766e;
+      --green-soft: #ecfdf5;
+      --orange: #f97316;
+      --ink: #1f2937;
+      --muted: #64748b;
+      --line: #e7e5e4;
+      --bg: #f6f4ef;
+      --card: #fff;
+      --shadow: 0 12px 32px rgba(31, 41, 55, .08);
+      --radius: 20px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(15,118,110,.08), transparent 30%),
+        radial-gradient(circle at 92% 8%, rgba(249,115,22,.08), transparent 26%),
+        var(--bg);
+    }
+    a { color: inherit; text-decoration: none; }
+    .lab-nav {
+      position: sticky; top: 0; z-index: 20;
+      background: rgba(255,255,255,.88); backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(231,229,228,.9);
+    }
+    .lab-nav-inner {
+      max-width: 1320px; margin: 0 auto; padding: 14px 24px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; color: var(--green); font-size: 19px; }
+    .brand-mark { width: 34px; height: 34px; border-radius: 50%; background: var(--green); display: grid; place-items: center; color: #fff; font-size: 17px; }
+    .lab-badge { font-size: 12px; font-weight: 800; color: #9a3412; background: #ffedd5; border: 1px solid #fed7aa; padding: 5px 10px; border-radius: 999px; }
+    .nav-spacer { flex: 1; }
+    .nav-link { font-size: 13px; color: var(--muted); font-weight: 700; padding: 8px 10px; border-radius: 9px; }
+    .nav-link:hover { background: var(--green-soft); color: var(--green); }
+    .lab-wrap { max-width: 1320px; margin: 0 auto; padding: 34px 24px 70px; }
+    .lab-hero { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 22px; }
+    .eyebrow { color: var(--green); font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px; }
+    h1 { margin: 0 0 10px; font-size: clamp(28px, 4vw, 44px); line-height: 1.12; letter-spacing: -.02em; }
+    .hero-sub { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.75; max-width: 720px; }
+    .hero-note {
+      flex: none; max-width: 290px; padding: 13px 15px; border-radius: 14px;
+      background: #fff; border: 1px solid var(--line); color: var(--muted);
+      font-size: 12px; line-height: 1.7; box-shadow: var(--shadow);
+    }
+    .hero-note b { color: var(--green); }
+    .controls {
+      display: flex; align-items: end; gap: 12px; flex-wrap: wrap;
+      background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+      padding: 16px; box-shadow: var(--shadow); margin-bottom: 24px;
+    }
+    .control { display: flex; flex-direction: column; gap: 6px; }
+    .control label { font-size: 11px; font-weight: 800; color: var(--muted); letter-spacing: .04em; }
+    .control select, .control button {
+      height: 42px; border-radius: 11px; border: 1.5px solid var(--line);
+      background: #fff; color: var(--ink); font: inherit; font-size: 13px; font-weight: 700;
+      padding: 0 13px; cursor: pointer;
+    }
+    .control select:focus, .control button:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(15,118,110,.14); }
+    .control button.primary { background: var(--green); border-color: var(--green); color: #fff; }
+    .control button.primary:hover { background: #115e59; }
+    .control button.ghost:hover { background: var(--green-soft); color: var(--green); }
+    .toggle { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 12px; border: 1.5px solid var(--line); border-radius: 11px; font-size: 13px; font-weight: 700; color: var(--muted); background: #fff; cursor: pointer; }
+    .toggle input { accent-color: var(--green); width: 16px; height: 16px; }
+    .controls-spacer { flex: 1; }
+    .lab-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(420px, .95fr); gap: 24px; align-items: start; }
+    .days { display: flex; flex-direction: column; gap: 16px; }
+    .day-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .leftover-card { border-style: dashed; box-shadow: none; }
+    .leftover-card .day-top { border-bottom-style: dashed; }
+    .leftover-card .stop-dot { background: #94a3b8; }
+    .leftover-note { margin: 10px 0 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+    .day-top { padding: 18px 20px 14px; display: flex; justify-content: space-between; gap: 12px; align-items: start; border-bottom: 1px solid var(--line); }
+    .day-kicker { display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--muted); font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+    .day-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--day-color); box-shadow: 0 0 0 4px color-mix(in srgb, var(--day-color) 16%, transparent); }
+    .day-title { margin: 7px 0 0; font-size: 20px; font-weight: 900; letter-spacing: -.01em; }
+    .day-stats { text-align: right; font-size: 12px; color: var(--muted); line-height: 1.7; white-space: nowrap; }
+    .timeline { padding: 16px 20px 20px; }
+    .start-line, .end-line { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: 12px; font-weight: 700; }
+    .start-line { margin-bottom: 11px; }
+    .end-line { margin-top: 11px; }
+    .pin { width: 28px; height: 28px; border-radius: 9px; background: #f1f5f9; display: grid; place-items: center; font-size: 14px; flex: none; }
+    .stop { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; position: relative; }
+    .stop-dot { width: 30px; height: 30px; border-radius: 50%; background: var(--day-color); color: #fff; display: grid; place-items: center; font-size: 12px; font-weight: 900; z-index: 1; }
+    .stop:not(:last-child)::before { content: ""; position: absolute; left: 14.5px; top: 30px; bottom: -2px; width: 1.5px; background: color-mix(in srgb, var(--day-color) 35%, white); }
+    .stop-body { padding-bottom: 11px; min-width: 0; }
+    .stop-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .stop-name { font-size: 15px; font-weight: 900; }
+    .stop-time { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .stop-meta { margin-top: 4px; display: flex; gap: 7px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--muted); }
+    .pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; background: #f8fafc; border: 1px solid var(--line); font-size: 11px; font-weight: 700; }
+    .leg { margin: 0 0 11px 40px; display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; }
+    .leg::before { content: ""; width: 18px; border-top: 1.5px dashed #cbd5e1; }
+    .leg b { color: var(--ink); font-weight: 800; }
+    .map-card { position: sticky; top: 88px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .map-head { padding: 18px 20px 12px; display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+    .map-head h2 { margin: 0; font-size: 18px; font-weight: 900; }
+    .map-head p { margin: 5px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .map-status { font-size: 11px; font-weight: 800; color: var(--green); background: var(--green-soft); border: 1px solid #a7f3d0; border-radius: 999px; padding: 5px 9px; white-space: nowrap; }
+    #map { display: block; width: 100%; height: auto; background: #fbfaf7; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px 14px; padding: 10px 20px 4px; font-size: 11px; color: var(--muted); }
+    .legend-item { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; }
+    .legend-dot { width: 9px; height: 9px; border-radius: 50%; }
+    .metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line); border-top: 1px solid var(--line); margin-top: 12px; }
+    .metric { background: #fff; padding: 13px 16px; }
+    .metric span { display: block; color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 4px; }
+    .metric b { font-size: 18px; letter-spacing: -.02em; }
+    .metric small { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
+    .metric .good { color: var(--green); }
+    .rules { margin-top: 26px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .rule { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px; box-shadow: 0 6px 18px rgba(31,41,55,.05); }
+    .rule b { display: block; font-size: 13px; margin-bottom: 6px; }
+    .rule span { color: var(--muted); font-size: 12px; line-height: 1.65; }
+    .rule .num { width: 24px; height: 24px; border-radius: 8px; background: var(--green-soft); color: var(--green); display: grid; place-items: center; font-size: 12px; font-weight: 900; margin-bottom: 9px; }
+    .lab-foot { margin-top: 26px; color: var(--muted); font-size: 12px; line-height: 1.8; text-align: center; }
+    .lab-foot a { color: var(--green); font-weight: 800; }
+    @media (max-width: 980px) {
+      .lab-grid { grid-template-columns: 1fr; }
+      .map-card { position: static; order: -1; }
+      .lab-hero { align-items: start; flex-direction: column; }
+      .hero-note { max-width: none; }
+      .rules { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .lab-wrap { padding: 22px 14px 50px; }
+      .lab-nav-inner { padding: 12px 14px; }
+      .brand { font-size: 17px; }
+      .lab-badge { display: none; }
+      .controls { padding: 13px; gap: 9px; }
+      .control { flex: 1 1 42%; }
+      .control select, .control button { width: 100%; }
+      .controls-spacer { display: none; }
+      .rules { grid-template-columns: 1fr; }
+      .day-stats { font-size: 11px; }
+      .metrics { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="lab-nav">
+    <div class="lab-nav-inner">
+      <a class="brand" href="/"><span class="brand-mark">🏡</span><span>家游汇</span></a>
+      <span class="lab-badge">路线实验室 · TREK 风格试验</span>
+      <span class="nav-spacer"></span>
+      <a class="nav-link" href="/plan.html">回到行程规划</a>
+    </div>
+  </header>
+
+  <main class="lab-wrap">
+    <section class="lab-hero">
+      <div>
+        <div class="eyebrow">Route Lab · 智能行程排序</div>
+        <h1>把一天的路走顺，<br />而不是把城市横穿三遍。</h1>
+        <p class="hero-sub">按地理位置聚类、最近邻排序、2-opt 微调，再用每日时间预算控制节奏。先看路线是否顺路，再看景点是否精彩。</p>
+      </div>
+      <div class="hero-note"><b>试验说明：</b>这是一个独立测试页，不动正式行程页。灵感来自 TREK 的 auto-sort（最近邻 + 2-opt）和 OpenTripPlanner 的图路由思想。</div>
+    </section>
+
+    <section class="controls">
+      <div class="control"><label for="city">目的地</label><select id="city"><option value="beijing">北京</option><option value="shanghai">上海</option><option value="hangzhou">杭州</option></select></div>
+      <div class="control"><label for="days">天数</label><select id="days"><option value="2">2 天</option><option value="3">3 天</option><option value="4" selected>4 天</option></select></div>
+      <div class="control"><label for="pace">节奏</label><select id="pace"><option value="relaxed">轻松慢游</option><option value="standard" selected>标准</option><option value="packed">紧凑</option></select></div>
+      <label class="toggle"><input id="compare" type="checkbox" checked /> 对比原始顺序</label>
+      <span class="controls-spacer"></span>
+      <div class="control"><button id="shuffle" class="ghost" type="button">打乱原始顺序</button></div>
+      <div class="control"><button id="rerun" class="primary" type="button">重新优化路线</button></div>
+    </section>
+
+    <div class="lab-grid">
+      <section class="days" id="dayList" aria-live="polite"></section>
+      <aside class="map-card">
+        <div class="map-head">
+          <div><h2>路线总览</h2><p id="mapSub">按天着色，虚线为未优化顺序。</p></div>
+          <span class="map-status" id="mapStatus">已按地理位置排序</span>
+        </div>
+        <svg id="map" viewBox="0 0 640 470" role="img" aria-label="行程路线地图"></svg>
+        <div class="legend" id="legend"></div>
+        <div class="metrics" id="metrics"></div>
+      </aside>
+    </div>
+
+    <section class="rules">
+      <div class="rule"><div class="num">1</div><b>地理聚类</b><span>先把相近的景点归到同一天，避免中心城和远郊反复横跳。</span></div>
+      <div class="rule"><div class="num">2</div><b>最近邻排序</b><span>每天从酒店出发，优先去离当前位置最近、且时间放得下的下一站。</span></div>
+      <div class="rule"><div class="num">3</div><b>2-opt 微调</b><span>交换部分顺序，进一步减少折返，酒店作为固定起终点。</span></div>
+      <div class="rule"><div class="num">4</div><b>每日时间预算</b><span>轻松 / 标准 / 紧凑三档控制景点数量和路上时间，带老人孩子也不赶。</span></div>
+    </section>
+
+    <p class="lab-foot">家游汇 · 路线实验室测试页 · 数据为演示用近似坐标，正式版可接入高德 POI 与真实路况。<br /><a href="/plan.html">返回行程规划 →</a></p>
+  </main>
+
+  <script src="/js/route-lab.js" defer></script>
+</body>
+</html>

@@ -567,7 +567,7 @@ async function handleApi(req, res, pathname) {
 
 const gzipCache = new Map(); // 静态文件 gzip 缓存（按 mtime 失效）
 function secHeaders(filePath) {
-  return filePath && /plan\.html$/i.test(filePath) ? Object.assign({}, SEC_HEADERS, { 'Content-Security-Policy': MAP_CSP }) : SEC_HEADERS;
+  return filePath && /(?:plan|plan-map-lab)\.html$/i.test(filePath) ? Object.assign({}, SEC_HEADERS, { 'Content-Security-Policy': MAP_CSP }) : SEC_HEADERS;
 }
 
 function serveStatic(req, res, pathname) {
