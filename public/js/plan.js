@@ -500,7 +500,7 @@
       if (!p) return;
       if (p.result) {
         empty.hidden = true; bodyEl.hidden = false;
-        renderPlan(bodyEl, p.result, p.vals);
+        renderPlan(bodyEl, p.result, p.vals, { restored: true });
         showLangMismatch(p);
         return;
       }
@@ -508,7 +508,7 @@
         empty.hidden = true; bodyEl.hidden = false;
         bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>上次的生成任务还在后台跑，正在恢复…</p>';
         app.pollJob(p.jobId, {
-          onDone: (result) => { renderPlan(bodyEl, result, p.vals); savePlan(p.vals, result); revealPlanResult(); },
+          onDone: (result) => { renderPlan(bodyEl, result, p.vals, { restored: true }); savePlan(p.vals, result); revealPlanResult(); },
           onError: () => { bodyEl.innerHTML = '<p style="padding:40px;text-align:center;color:var(--ink-soft)">上次任务已结束或过期，请重新生成。</p>'; }
         });
       }
@@ -864,7 +864,7 @@
     });
   }
 
-  function renderPlan(el, data, vals) {
+  function renderPlan(el, data, vals, options = {}) {
     data = dedupePlanData(data);
     renderedPlan = { data, vals };
     const dest = app.state.destinations.find((d) => d.id === vals.destinationId) || {};
@@ -925,7 +925,7 @@
         ${rtIn}
         <p class="rt-foot">数据来自 12306 实时官方查询，请以 12306 实际为准</p>
       </div>` : '';
-    if (window.innerWidth > 900) {
+    if (window.innerWidth > 900 && !options.restored) {
       renderDesktopWorkspace(data, vals, { rtHtml, bg, tp, rt });
       return;
     }
