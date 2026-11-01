@@ -512,7 +512,7 @@
       if (!p) return;
       if (p.result) {
         empty.hidden = true; bodyEl.hidden = false;
-        renderPlan(bodyEl, p.result, p.vals, { restored: true });
+        renderPlan(bodyEl, p.result, p.vals);
         showLangMismatch(p);
         return;
       }
@@ -520,7 +520,7 @@
         empty.hidden = true; bodyEl.hidden = false;
         bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>上次的生成任务还在后台跑，正在恢复…</p>';
         app.pollJob(p.jobId, {
-          onDone: (result) => { renderPlan(bodyEl, result, p.vals, { restored: true }); savePlan(p.vals, result); revealPlanResult(); },
+          onDone: (result) => { renderPlan(bodyEl, result, p.vals); savePlan(p.vals, result); revealPlanResult(); },
           onError: () => { bodyEl.innerHTML = '<p style="padding:40px;text-align:center;color:var(--ink-soft)">上次任务已结束或过期，请重新生成。</p>'; }
         });
       }
@@ -532,7 +532,9 @@
     if (!bodyEl || !p || !p.result) return;
     const current = (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh';
     const saved = p.lang || '';
-    const hasChinese = /[\u4e00-\u9fff]/.test(bodyEl.innerText || '');
+    const workspace = document.getElementById('desktopPlanWorkspace');
+    const visibleHost = workspace && !workspace.hidden ? workspace : bodyEl;
+    const hasChinese = /[\u4e00-\u9fff]/.test(visibleHost.innerText || '');
     const mismatch = (saved && saved !== current) || (current === 'en' && hasChinese);
     if (!mismatch) return;
     const notice = document.createElement('div');
@@ -543,7 +545,7 @@
       : '此行程是用英文生成的。 <button type="button" class="btn btn-primary" data-regen-lang style="margin-left:8px">用中文重新生成</button>';
     const btn = notice.querySelector('[data-regen-lang]');
     if (btn) btn.addEventListener('click', () => { notice.remove(); generatePlan(); });
-    bodyEl.prepend(notice);
+    visibleHost.prepend(notice);
   }
   /* 手机上表单很长，生成完成后直接滚到结果，避免用户以为没生成 */
   function revealPlanResult() {
@@ -966,7 +968,7 @@
         ${rtIn}
         <p class="rt-foot">数据来自 12306 实时官方查询，请以 12306 实际为准</p>
       </div>` : '';
-    if (window.innerWidth > 900 && !options.restored) {
+    if (window.innerWidth > 900) {
       renderDesktopWorkspace(data, vals, { rtHtml, bg, tp, rt });
       return;
     }
