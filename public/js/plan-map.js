@@ -75,7 +75,7 @@
         const foodSpecific = !!(mealName && (FOOD_SUFFIX.test(mealName) || /(街|巷|村|镇|广场|楼|店|斋)/.test(mealName)));
         const transportText = /(乘高铁|乘火车|高铁|动车|航班|飞机|机场|车站|南站|东站|西站|北站|乘车|自驾|大巴)/.test(raw);
         const stationMatch = raw.match(/([\u4e00-\u9fa5A-Za-z]{2,12}(?:南站|东站|西站|北站|站|机场))/);
-        const push = (kw, k) => {
+        const push = (kw, k, specific = foodSpecific) => {
           if (!kw) return;
           const key = kw.toLowerCase();
           const typeSeen = globalSeen[k] || (globalSeen[k] = new Set());
@@ -83,10 +83,21 @@
           if (seen.has(k + ':' + key) || dupGlobal || stops.some((item) => item.type === k && (item.keyword.includes(kw) || kw.includes(item.keyword)))) return;
           seen.add(k + ':' + key);
           if (k !== '餐饮') typeSeen.add(key);
-          stops.push({ keyword: kw, name: kw, time: clean(time), type: k, foodSpecific: k === '餐饮' && foodSpecific });
+          stops.push({ keyword: kw, name: kw, time: clean(time), type: k, foodSpecific: k === '餐饮' && specific });
         };
         if (!meal && !enMeal && !foodPlace) {
-          if (/(早餐|午餐|晚餐|用餐|早休息|休息|回酒店|入住|退房)/.test(raw)) return;
+          const restMatch = raw.match(/^(.*?)(?:早餐|午餐|晚餐|用餐|早休息|休息|回酒店|入住|退房)/);
+          if (restMatch) {
+            const place = restMatch[1]
+              .replace(/^(在|于|到|去)/, '')
+              .replace(/[+＋、，,。；;：\/\s]+$/, '')
+              .replace(/(吃|品尝|享用|逛)$/, '')
+              .trim();
+            if (place && !/^(酒店|民宿|客栈|房间|住处|市区|城区|附近|周边)$/.test(place)) {
+              push(keywordFrom(place), '餐饮', true);
+            }
+            return;
+          }
           if (transportText && stationMatch) {
             const station = stationMatch[1].replace(/^(?:乘|坐|从|到|在|前往|抵达|高铁|动车|火车|航班|飞机|去)+/, '').trim();
             push(keywordFrom(station), '交通');
