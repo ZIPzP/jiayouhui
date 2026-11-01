@@ -70,6 +70,11 @@
         const enMeal = !meal && raw.match(/^(breakfast|lunch|dinner|meal)[:\s]\s*(.+)$/i);
         const mealName = meal ? meal[2].trim() : (enMeal ? enMeal[2].trim() : '');
         const kind = (meal || enMeal) ? '餐饮' : (type || '行程');
+        // 交通、住宿、休息行不是游玩地点，直接跳过，避免大量"未定位"
+        if (!meal && !enMeal) {
+          if (/(早餐|午餐|晚餐|用餐|早休息|休息|回酒店|入住|退房)/.test(raw)) return;
+          if (/(乘高铁|乘火车|高铁|动车|航班|飞机|机场|车站|南站|东站|西站|北站|乘车|自驾|大巴)/.test(raw) && !/(景区|公园|博物馆|寺|塔|山|湖|街|古镇|古城)/.test(raw)) return;
+        }
         // 泛化的餐食行不标点；具体菜名/店名保留
         if (mealName && /^(当地|本地|特色|推荐|美食|小吃|家常菜|餐厅|酒店|素食餐厅|清真餐厅|food|local|restaurant|a local|vegetarian restaurant|halal restaurant)/i.test(mealName)) return;
         const keyword = keywordFrom(mealName || raw);
@@ -159,11 +164,22 @@
       localStorage.setItem(POI_CACHE_KEY, JSON.stringify(cache));
     } catch (e) { /* localStorage 不可用时忽略 */ }
   }
+  async function searchPlaceWithFallbacks(AMap, city, keyword) {
+    if (/乘高铁|乘火车|高铁|动车|机场|车站|南站|东站|西站|北站/.test(keyword)) return null;
+    const tries = [keyword];
+    if (keyword.length <= 10) tries.push(keyword + '公园', keyword + '景区', keyword + '风景区');
+    if (/十景$/.test(keyword)) tries.push(keyword.replace(/十景$/, ''));
+    for (const k of tries) {
+      const poi = await searchPlace(AMap, city, k);
+      if (poi) return poi;
+    }
+    return null;
+  }
   function searchPlaceCached(AMap, city, keyword) {
     const cache = readPoiCache();
     const cacheKey = clean(city) + '|' + clean(keyword);
     if (cache[cacheKey]) return Promise.resolve(cache[cacheKey]);
-    return searchPlace(AMap, city, keyword).then((poi) => {
+    return searchPlaceWithFallbacks(AMap, city, keyword).then((poi) => {
       if (poi) { cache[cacheKey] = poi; writePoiCache(cache); }
       return poi;
     });
