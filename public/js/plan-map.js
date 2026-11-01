@@ -8,8 +8,10 @@
   let map = null;
   let infoWindow = null;
   let buildToken = 0;
-  const POI_CACHE_KEY = 'jyh_map_poi_cache_v1';
+  const POI_CACHE_KEY = 'jyh_map_poi_cache_v2';
   const POI_CACHE_MAX = 300;
+  const GENERIC_ONLY = /^(古城|古镇|老街|步行街|美食街|夜市|观景台|湿地|公园|广场|湖|山|夜景|商圈|酒店|民宿|客栈|车站|机场|博物馆|景区|景点|市区|城区|中心|附近|周边|自由|深度|自由活动|休息|抵达|返程|早餐|午餐|晚餐|睡到自然醒|城市慢游|周边漫步)$/;
+  const PLACE_SUFFIX = /(宫|寺|塔|山|湖|江|河|海|岛|湾|滩|园|馆|城|街|巷|镇|村|峡|峰|洞|泉|瀑|陵|庙|桥|遗址|古镇|古城|景区|公园|广场|湿地|博物院|博物馆|美术馆|展览馆|大剧院|步行街|老街)$/;
 
   const t = (zh, en) => ((window.i18n && window.i18n.lang === 'en') ? en : zh);
   const clean = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
@@ -34,16 +36,27 @@
   function keywordFrom(text) {
     let s = clean(text);
     if (!s) return '';
+    s = s.replace(/^第?[一二三四五六七八九十\d]+天[·:：\s]*/, '');
+    s = s.replace(/^Day\s*\d+[·:：\s]*/i, '');
     s = s.replace(/^[（(].*?[）)]\s*/g, '').replace(/^[·•\-–—]\s*/, '');
-    s = s.replace(/^(上午|中午|下午|晚上|推荐|安排|前往|游览|参观|打卡|体验|品尝|享用|乘坐|乘|去|到|逛|漫步|出发去)\s*/, '');
+    // 反复去掉句首的时间/动作词与分隔符，兼容「上午：游览」「午餐后自由活动」等写法
+    s = s.replace(/^(?:(?:上午|中午|下午|晚上|清晨|早上|推荐|安排|前往|游览|参观|打卡|体验|品尝|享用|乘坐|乘|去|到|逛|漫步|出发去|午餐后|早餐后|晚餐后|午饭后|早饭后|晚饭后)[：:\s]*)+/, '');
     s = s.replace(/[·・].*$/, '').trim();
     s = s.replace(/(慢逛|漫步|打卡|游玩|观光|体验|活动|安排|初体验)$/g, '').trim();
-    s = s.split(/[，,。；;:：\/]/)[0].trim();
+    // 「丽江古城石板路」保留古城，去掉尾部描述
+    s = s.replace(/^(.*(?:古城|古镇|老街|街|巷).*?)(石板路)$/, '$1').trim();
+    // 去掉尾部的补充说明，如「故宫博物院（建议提前预约）」
+    s = s.replace(/[（(][^）)]*[）)]\s*$/, '').trim();
+    s = s.split(/[，,。；;:：\/、→]|->/)[0].trim();
     // 从「玉龙雪山乘大索道」「丽江古城石板路」这类描述中取地点主体
-    s = s.replace(/(乘|登|住|感受|观|游|逛|看|品尝|享用|前往|到达|游览|体验|漫步|慢逛|参观|打卡|拍照|高原湖泊|湖泊|古城石板路|石板路|小桥流水|湿地观鸟|骑马划船|特色客栈|特色晚餐).*$/, '').trim();
+    s = s.replace(/(.{1,})(乘|登|住|感受|观|游|逛|看|品尝|享用|前往|到达|游览|体验|漫步|慢逛|参观|打卡|拍照|高原湖泊|湖泊|小桥流水|湿地观鸟|骑马划船|特色客栈|特色晚餐).*$/, '$1').trim();
     if (s.length > 18) s = s.slice(0, 18);
-    if (!s || GENERIC.test(s) || (GENERIC_PREFIX.test(s) && s.length < 20)) return '';
+    if (!s || GENERIC.test(s) || GENERIC_ONLY.test(s) || (GENERIC_PREFIX.test(s) && s.length < 20)) return '';
     return s;
+  }
+  function looksLikePlace(text) {
+    const s = clean(text);
+    return s.length >= 3 && PLACE_SUFFIX.test(s);
   }
   function itineraryDays(data) {
     const out = [];
@@ -58,27 +71,55 @@
         seen.add(key);
         stops.push({ keyword, name: keyword, time: clean(time), type });
       };
-      add(day.title, '', '主题');
       (day.schedule || []).forEach((item) => {
         add(item.activity, item.time, '行程');
       });
+      // 只有当天没有任何具体活动时，才用标题兜底，避免把「山城夜景」这类文案当地点
+      if (!stops.length && looksLikePlace(day.title)) add(day.title, '', '主题');
       if (stops.length) out.push({ day: Number(day.day) || out.length + 1, title: day.title || '', stops: stops.slice(0, 5) });
     });
     return out.slice(0, 14);
   }
 
+  function scorePoi(poi, keyword, city) {
+    const name = clean(poi.name);
+    const typecode = String(poi.typecode || '');
+    const addr = clean([poi.pname, poi.cityname, poi.adname, poi.address].filter(Boolean).join(''));
+    const nameScore = name === keyword ? 60 : name.includes(keyword) ? 40 : keyword.includes(name) ? 20 : 0;
+    // 名称完全对不上的一律不采用，避免「搜故宫却标到长城」
+    if (!nameScore) return -100;
+    let score = nameScore;
+    if (typecode.startsWith('11')) score += 40;       // 风景名胜
+    else if (typecode.startsWith('14')) score += 25;  // 科教文化
+    else if (typecode.startsWith('10')) score -= 35;  // 住宿
+    else if (typecode.startsWith('05')) score -= 25;  // 餐饮
+    else if (typecode.startsWith('06')) score -= 15;  // 购物
+    // 用户找景点时排除同名的酒店/餐饮/商店；用户本身找咖啡/餐厅时不误伤
+    const foodKeyword = /咖啡|茶|餐厅|美食|小吃|火锅|面|饭|烧烤|甜品|早餐|午餐|晚餐/.test(keyword);
+    if (!foodKeyword && /酒店|宾馆|民宿|客栈|公寓|停车场|售票处|超市|便利店|餐厅|饭店|小吃|咖啡|茶楼|茶馆|酒吧|甜品|商场|购物中心|百货|文创店|纪念品|地铁站|公交站|售票/.test(name)) score -= 50;
+    const cityName = clean(city).replace(/[省市]$/, '');
+    if (cityName && addr.includes(cityName)) score += 15;
+    return score;
+  }
+
   function searchPlace(AMap, city, keyword) {
     return new Promise((resolve) => {
       AMap.plugin(['AMap.PlaceSearch'], () => {
-        const search = new AMap.PlaceSearch({ city: city || '全国', citylimit: !!city, pageSize: 1, pageIndex: 1, extensions: 'base' });
+        const search = new AMap.PlaceSearch({ city: city || '全国', citylimit: !!city, pageSize: 10, pageIndex: 1, extensions: 'base' });
         search.search(keyword, (state, result) => {
           if (state !== 'complete') return resolve(null);
-          const poi = result && result.poiList && result.poiList.pois && result.poiList.pois[0];
+          const pois = (result && result.poiList && result.poiList.pois) || [];
+          if (!pois.length) return resolve(null);
+          const best = pois
+            .map((poi) => ({ poi, score: scorePoi(poi, keyword, city) }))
+            .sort((a, b) => b.score - a.score)[0];
+          if (!best || best.score < 20) return resolve(null);
+          const poi = best.poi;
           const location = poi && poi.location;
           const lng = Number(location && (location.lng != null ? location.lng : location.getLng && location.getLng()));
           const lat = Number(location && (location.lat != null ? location.lat : location.getLat && location.getLat()));
           if (!poi || !Number.isFinite(lng) || !Number.isFinite(lat)) return resolve(null);
-          resolve({ name: poi.name || keyword, address: poi.address || poi.district || '', lng, lat });
+          resolve({ name: poi.name || keyword, address: poi.address || poi.district || '', lng, lat, typecode: poi.typecode || '' });
         });
       });
     });
@@ -217,18 +258,28 @@
         return;
       }
       status(t('正在搜索地点坐标…', 'Looking up place coordinates…'));
-      const located = await mapLimit(items, 2, async (item) => ({ ...item, poi: await searchPlaceCached(AMap, city, item.keyword) }));
+      const searchKeyword = (item) => {
+        if (!(window.i18n && window.i18n.lang === 'en' && window.i18n.toZh)) return item.keyword;
+        const zh = String(window.i18n.toZh(item.keyword) || '').split('·')[0].trim();
+        return zh || item.keyword;
+      };
+      const located = await mapLimit(items, 2, async (item) => ({ ...item, poi: await searchPlaceCached(AMap, city, searchKeyword(item)) }));
       if (token !== buildToken) return;
       const valid = located.filter((item) => item.poi);
-      const center = dest && Number.isFinite(Number(dest.lon)) ? [Number(dest.lon), Number(dest.lat)] : [116.397, 39.908];
-      map = new AMap.Map(canvas, { zoom: 11, center, viewMode: '2D', resizeEnable: true });
+      const center = dest && Number.isFinite(Number(dest.lon)) && Number.isFinite(Number(dest.lat))
+        ? [Number(dest.lon), Number(dest.lat)]
+        : (valid[0] && valid[0].poi ? [valid[0].poi.lng, valid[0].poi.lat] : [116.397, 39.908]);
+      map = new AMap.Map(canvas, { zoom: 11, center, viewMode: '2D', resizeEnable: true, lang: (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh_cn' });
       infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -28) });
       const markerItems = [];
       const markerObjects = [];
       const groupsByDay = new Map();
       valid.forEach((item, index) => {
         const position = [item.poi.lng, item.poi.lat];
-        const popup = '<b>' + escapeHtml(item.poi.name) + '</b><br>' + escapeHtml(item.time || '') + (item.poi.address ? '<br>' + escapeHtml(item.poi.address) : '');
+        const enNow = !!(window.i18n && window.i18n.lang === 'en');
+        const popupName = enNow ? (item.keyword || item.poi.name) : item.poi.name;
+        const popupAddress = enNow ? '' : (item.poi.address || '');
+        const popup = '<b>' + escapeHtml(popupName) + '</b><br>' + escapeHtml(item.time || '') + (popupAddress ? '<br>' + escapeHtml(popupAddress) : '');
         const marker = new AMap.Marker({ position, title: item.poi.name, label: { content: 'D' + item.day + ' · ' + (window.i18n && window.i18n.lang === 'en' ? (TYPE_EN[item.type] || item.type || '') : (item.type || '')), direction: 'top' } });
         marker.on('click', () => { infoWindow.setContent(popup); infoWindow.open(map, position); });
         map.add(marker);
@@ -238,7 +289,7 @@
         const group = groupsByDay.get(item.day);
         group.path.push(position);
         group.markers.push(marker);
-        group.items.push({ ...item, index, name: item.poi.name });
+        group.items.push({ ...item, index, name: (window.i18n && window.i18n.lang === 'en') ? (item.keyword || item.poi.name) : item.poi.name });
       });
       const groups = [...groupsByDay.values()];
       const routeTasks = [];

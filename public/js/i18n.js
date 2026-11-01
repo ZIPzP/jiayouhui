@@ -84,8 +84,8 @@
  "已退出长辈模式": "Senior Mode off",
  "当前浏览器不支持语音朗读": "This browser does not support voice reading",
  "✅ 图片已保存": "✅ Image saved",
- "当前浏览器暂不支持截图，请用「打印 / 存为 PDF」": "Screenshots aren’t supported in this browser — use Print / Save as PDF",
- "保存图片失败，请用「打印 / 存为 PDF」": "Couldn’t save the image — use Print / Save as PDF",
+ "当前浏览器暂不支持截图，请用「打印 / 存为 PDF」": "Screenshots aren't supported in this browser — use Print / Save as PDF",
+ "保存图片失败，请用「打印 / 存为 PDF」": "Couldn't save the image — use Print / Save as PDF",
  "✅ 已导出 1 张拼图（三列并排，放大后左右滑动看）": "✅ Exported as one image (3 columns side by side — zoom in and swipe)",
  "导出失败，请用「打印 / 存为 PDF」": "Export failed — use Print / Save as PDF",
  "✅ Word 已导出，可用 Word / WPS 打开": "✅ Word file exported — open it in Word or WPS",
@@ -96,7 +96,7 @@
  "三亚": "Sanya",
  "成都": "Chengdu",
  "桂林": "Guilin",
- "西安": "Xi’an",
+ "西安": "Xi'an",
  "张家界": "Zhangjiajie",
  "青岛": "Qingdao",
  "丽江": "Lijiang",
@@ -178,7 +178,7 @@
  "螺蛳粉故乡+柳江山水，好吃又好玩": "Home of luosifen with Liujiang river scenery",
  "保存最完整的明清古城，穿越回晋商时代": "The best-preserved Ming-Qing walled city — back to the age of Shanxi merchants",
  "南浔古镇与安吉竹海，江南的小众清静": "Nanxun old town and Anji bamboo forest — quiet corners of Jiangnan",
- "乐山大佛与峨眉金顶，佛国山水": "The Leshan Giant Buddha and Mount Emei’s golden summit",
+ "乐山大佛与峨眉金顶，佛国山水": "The Leshan Giant Buddha and Mount Emei's golden summit",
  "福建土楼与东山岛，客家文化与海岛风情": "Fujian tulou and Dongshan Island — Hakka culture and island life",
  "银滩+涠洲岛，人少景美的平价海滨": "Silver Beach and Weizhou Island — quiet, affordable coast",
  "文艺海滨与鼓浪屿，都市里的慢生活": "Artsy seaside and Gulangyu — slow living in the city",
@@ -197,7 +197,7 @@
  "冲浪小镇，日月湾的青春海风": "A surf town — young sea breeze at Riyue Bay",
  "山海关与北戴河，长城入海处": "Shanhaiguan and Beidaihe — where the Great Wall meets the sea",
  "烟花三月下扬州，早茶与园林": "Sailing to Yangzhou in March — morning tea and classical gardens",
- "乌篷船与水乡，鲁迅笔下的故乡": "Wupeng boats and waterways — Lu Xun’s hometown",
+ "乌篷船与水乡，鲁迅笔下的故乡": "Wupeng boats and waterways — Lu Xun's hometown",
  "沱江边的边城，吊脚楼与苗寨": "A riverside border town of stilt houses and Miao villages",
  "心中的日月，雪山草甸与藏地秘境": "The sun and moon in your heart — snow peaks and Tibetan meadows",
  "翠海叠瀑彩林雪峰，带爸妈孩子走进童话世界": "Turquoise lakes, waterfalls, autumn forests and snow peaks — a fairytale for all ages",
@@ -232,7 +232,7 @@
  "手机预览": "Mobile preview",
  "长辈模式已开启": "Senior Mode is on",
  "抽取热门家庭目的地": "Draw a popular family destination",
- "不知道去哪玩？点一下，让缘分帮你决定下一站全家之旅": "Can’t decide where to go? Tap and let fate pick your family’s next trip",
+ "不知道去哪玩？点一下，让缘分帮你决定下一站全家之旅": "Can't decide where to go? Tap and let fate pick your family's next trip",
  "🎲 开始抽取": "🎲 Start drawing",
  "🕘 最近抽到": "🕘 Recently drawn",
  "🎲 再抽一次": "🎲 Draw again",
@@ -245,12 +245,12 @@
  "👴 老年人模式": "👴 Senior Mode",
  "一键切换大字体、高对比、大按钮，并支持语音朗读，让长辈看得清、听得懂。": "One tap for larger text, higher contrast, bigger buttons and voice reading — easy for older travellers to see and hear.",
  "🔒 隐私安全": "🔒 Privacy and security",
- "API Key 可内置到服务器本地配置（不入 git），支持服务端 AI 邀请码解锁，公网部署时保护你的配额。": "API keys can live in the server’s local config (never committed to git), with an optional server-AI invite code to protect your quota on public deployments.",
+ "API Key 可内置到服务器本地配置（不入 git），支持服务端 AI 邀请码解锁，公网部署时保护你的配额。": "API keys can live in the server's local config (never committed to git), with an optional server-AI invite code to protect your quota on public deployments.",
  "免责声明": "Disclaimer",
  "本项目仅供学习、研究与技术交流，严禁用于任何商业用途。": "This project is for learning, research and technical exchange only. Commercial use is strictly prohibited.",
  "本项目不存储、不篡改、不传播任何 12306 官方数据，仅作为官方公开接口的智能聚合与转发。": "This project does not store, alter or redistribute any official 12306 data; it only aggregates and forwards publicly available official endpoints.",
  "使用本项目造成的任何后果（包括但不限于账号封禁、数据异常、法律风险等）均由使用者本人承担，项目作者不承担任何责任。": "Any consequences of using this project (including but not limited to account bans, data anomalies or legal risks) are borne solely by the user; the author accepts no responsibility.",
- "请遵守中国法律法规及 12306 官方相关规定，合理合规使用。": "Please comply with Chinese laws and 12306’s official rules, and use this project responsibly.",
+ "请遵守中国法律法规及 12306 官方相关规定，合理合规使用。": "Please comply with Chinese laws and 12306's official rules, and use this project responsibly.",
  "AI 主理人 · 行程规划": "AI Planner · Trip Planner",
  "输入城市名会自动提示补全；出发城市和目的地必填。AI 自动生成含价格估算、交通安排、忌食提醒的逐日详细行程；页面下方还能直接向 AI 主理人提问": "Type a city name for suggestions; departure city and destination are required. AI generates a detailed day-by-day itinerary with cost estimates, transport and dietary notes — and you can chat with the AI planner below.",
  "出发城市": "Departure city",
@@ -332,7 +332,7 @@
  "古城老街": "Old towns",
  "清空": "Clear",
  "📋 演示模式：未配置 AI Key，将使用内置规划引擎（点右上角 ⚙️ AI 设置 接入 DeepSeek）": "📋 Demo mode: no AI key yet — using the built-in planning engine",
- "你好呀，我是「家游汇」的 AI 主理人 🏡 可以问我任何家庭旅行问题，比如「带老人孩子去西安怎么安排 5 天？」": "Hi! I’m the Family Trip Hub AI planner 🏡 Ask me anything about family travel — e.g. “How should we plan 5 days in Xi’an with elderly parents and kids?”",
+ "你好呀，我是「家游汇」的 AI 主理人 🏡 可以问我任何家庭旅行问题，比如「带老人孩子去西安怎么安排 5 天？」": "Hi! I'm the Family Trip Hub AI planner 🏡 Ask me anything about family travel — e.g. \"How should we plan 5 days in Xi'an with elderly parents and kids?\"",
  "口令错误，请重试": "Wrong passcode, please try again",
  "📋 内置规划引擎": "📋 Built-in planner",
  "📋 内置规则引擎": "📋 Built-in rules engine",
@@ -434,7 +434,7 @@
  "🔊 朗读介绍": "🔊 Read the introduction",
  "AI 主理人正在后台生成行程…": "The AI planner is building your itinerary in the background…",
  "你可以放心切到别的页面/标签页，回来会自动恢复显示结果": "Feel free to switch pages or tabs — the result will be restored when you return.",
- "（当前为演示模式，未配置 AI Key）我是「家游汇」AI 主理人 🐱 配置 DeepSeek API Key 后，我可以帮你规划详细行程、推荐餐厅、估算费用、安排交通。你也可以直接使用页面上方的「行程规划」按钮式表单生成完整方案。": "(Demo mode — no AI key configured.) I’m the Family Trip Hub AI planner 🐱 Add a DeepSeek API key and I can plan detailed itineraries, recommend restaurants, estimate costs and arrange transport. You can also use the Trip Planner form above to generate a full plan.",
+ "（当前为演示模式，未配置 AI Key）我是「家游汇」AI 主理人 🐱 配置 DeepSeek API Key 后，我可以帮你规划详细行程、推荐餐厅、估算费用、安排交通。你也可以直接使用页面上方的「行程规划」按钮式表单生成完整方案。": "(Demo mode — no AI key configured.) I'm the Family Trip Hub AI planner 🐱 Add a DeepSeek API key and I can plan detailed itineraries, recommend restaurants, estimate costs and arrange transport. You can also use the Trip Planner form above to generate a full plan.",
  "生成失败：": "Generation failed: ",
  "✨ 必去亮点": "✨ Must-see highlights",
  "点击恢复此前的填写": "Click to restore these settings",
@@ -497,6 +497,17 @@
  "中期": "Medium trip",
  "长期": "Long trip"
 };
+  // 英文 -> 中文反查（地图搜索需要中文 POI 名，界面仍显示英文）
+  const EN2ZH = {};
+  const normApostrophe = (s) => String(s || '').replace(/[’‘]/g, "'");
+  function rebuildReverse() {
+    Object.keys(DICT).forEach((zh) => {
+      const en = DICT[zh];
+      if (en && typeof en === 'string' && !EN2ZH[normApostrophe(en)]) EN2ZH[normApostrophe(en)] = zh;
+    });
+  }
+  rebuildReverse();
+
   // 上下文词典：同一个中文在不同位置用不同英文（如表单里的「目的地」用单数）
   const CTX = { 'form-label': { '目的地': 'Destination' } };
   const ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
@@ -675,7 +686,7 @@
         if (!j || !j.map) return;
         let added = 0;
         Object.keys(j.map).forEach((k) => { if (!Object.prototype.hasOwnProperty.call(DICT, k)) { DICT[k] = j.map[k]; added++; } });
-        if (added) { walk(document.body); applyTitle(); }
+        if (added) { rebuildReverse(); walk(document.body); applyTitle(); }
       }).catch(() => {});
     }
     if ('MutationObserver' in window) {
@@ -702,7 +713,9 @@
     setLang,
     apply: () => walk(document.body),
     /** JS 里需要中文->英文时用它：t('首页') */
-    t: (s) => (lang === 'en' && hit(s)) || s
+    t: (s) => (lang === 'en' && hit(s)) || s,
+    /** 英文->中文反查：地图搜索用中文 POI，界面仍显示英文 */
+    toZh: (s) => EN2ZH[normApostrophe(String(s).trim())] || String(s)
   };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);

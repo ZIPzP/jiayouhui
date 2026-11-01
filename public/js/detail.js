@@ -152,7 +152,10 @@
     if (!box || !lb.urls.length) return;
     lb.index = (i + lb.urls.length) % lb.urls.length;
     const img = document.getElementById('lightboxImg');
-    if (img) img.src = lb.urls[lb.index];
+    if (img) {
+      img.src = lb.urls[lb.index];
+      img.alt = lb.titles[lb.index] || '';
+    }
     const cap = document.getElementById('lightboxCaption');
     if (cap) cap.textContent = lb.titles[lb.index] || '';
     box.hidden = false;

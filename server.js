@@ -289,7 +289,7 @@ async function handleApi(req, res, pathname) {
     return sendJson(res, 401, { error: MSG(reqLang(req)).passcodeWrong });
   }
 
-  // POST /api/ai/invite —— 邀请码解锁服务端 AI（换短时效令牌；服务端 Key 永不下发）
+  // POST /api/ai/invite —— 邀请码解锁服务端 AI（换长期设备令牌；服务端 Key 永不下发）
   if (pathname === '/api/ai/invite' && req.method === 'POST') {
     if (!allowAi(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
     let body;

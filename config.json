@@ -5,6 +5,8 @@
                "baseUrl":  "https://api.deepseek.com/v1",
                "model":  "deepseek-chat",
                "inviteCode":  "",
+               "tokenTtlDays":  365,
+               "tokenVersion":  1,
                "temperature":  0.7,
                "allowPrivateBaseUrl":  false
            },

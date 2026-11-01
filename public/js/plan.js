@@ -5,6 +5,7 @@
   window.pageInit = async function () {
     bindEvents();
     restoreDraft();
+    initDateFields();
     renderHistory();
     bindHistory();
     restorePlan();
@@ -39,6 +40,35 @@
     const hit = app.state.destinations.find((d) => app.normCity(d.name) === destName);
     if (hit) return Object.assign({}, base, { destinationId: hit.id });
     return Object.assign({}, base, { destinationId: 'custom', customDest: { name: cityHit ? cityHit.name : destRaw, note: document.getElementById('pl-notes').value.trim() } });
+  }
+
+  // 原生 date 输入框的占位文案跟随浏览器语言，英文站点仍可能显示「年/月/日」。
+  // 保留原生日期选择器，用透明输入 + 自定义显示层统一成 YYYY-MM-DD / 年/月/日。
+  function initDateFields() {
+    ['pl-start', 'pl-end'].forEach((id) => {
+      const input = document.getElementById(id);
+      if (!input || input.dataset.dateReady === '1') return;
+      input.dataset.dateReady = '1';
+      const field = input.closest('.date-field');
+      const display = field && field.querySelector('.date-display');
+      if (!field || !display) return;
+      const en = !!(window.i18n && window.i18n.lang === 'en');
+      display.placeholder = en ? 'YYYY-MM-DD' : '年/月/日';
+      const sync = () => {
+        const english = !!(window.i18n && window.i18n.lang === 'en');
+        display.value = input.value
+          ? (english ? input.value : input.value.replace(/^(\d{4})-(\d{2})-(\d{2})$/, '$1年$2月$3日'))
+          : '';
+      };
+      input.addEventListener('input', sync);
+      input.addEventListener('change', sync);
+      input.addEventListener('click', () => {
+        if (typeof input.showPicker === 'function') {
+          try { input.showPicker(); } catch (e) { /* 已打开或浏览器限制时忽略 */ }
+        }
+      });
+      sync();
+    });
   }
 
   function bindEvents() {
@@ -267,7 +297,7 @@
     return a || b;
   }
   function savePlan(vals, result) {
-    saveLast({ vals, result });
+    saveLast({ vals, result, lang: (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh' });
   }
   /* ---------- 增量修改：检测用户改了哪里 ---------- */
   const CHANGE_LABELS = {
@@ -363,9 +393,9 @@
       const enNow = uiEnNow();
       const patch = dec ? { enabled: dec.enabled, changes: dec.changes.map((x) => Object.assign({}, x, { label: (CHANGE_LABELS[x.field] || {})[enNow ? 'en' : 'zh'] || x.field })), previous: dec.enabled ? { vals: dec.prevVals, result: dec.prevResult } : null } : null;
       const st = await app.api('/api/plan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(app.aiPayload(Object.assign({}, vals, { patch }))) });
-      saveLast({ jobId: st.jobId, vals, result: null });
+      saveLast({ jobId: st.jobId, vals, result: null, lang: (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh' });
       app.pollJob(st.jobId, {
-        onDone: (result) => { renderPlan(bodyEl, result, vals); savePlan(vals, result); },
+        onDone: (result) => { renderPlan(bodyEl, result, vals); savePlan(vals, result); revealPlanResult(); },
         onError: (msg) => { bodyEl.innerHTML = `<div class="ai-feedback">${uiEn ? '🐱 AI planner: ' : '🐱 AI 主理人：'}${app.esc(msg)}</div>`; }
       });
     } catch (e) {
@@ -384,17 +414,43 @@
       if (p.result) {
         empty.hidden = true; bodyEl.hidden = false;
         renderPlan(bodyEl, p.result, p.vals);
+        showLangMismatch(p);
         return;
       }
       if (p.jobId) {
         empty.hidden = true; bodyEl.hidden = false;
         bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>上次的生成任务还在后台跑，正在恢复…</p>';
         app.pollJob(p.jobId, {
-          onDone: (result) => { renderPlan(bodyEl, result, p.vals); savePlan(p.vals, result); },
+          onDone: (result) => { renderPlan(bodyEl, result, p.vals); savePlan(p.vals, result); revealPlanResult(); },
           onError: () => { bodyEl.innerHTML = '<p style="padding:40px;text-align:center;color:var(--ink-soft)">上次任务已结束或过期，请重新生成。</p>'; }
         });
       }
     } catch (e) { /* 忽略 */ }
+  }
+  /* 旧行程是在另一种语言下生成的：提示用户，并允许一键用当前语言重生成 */
+  function showLangMismatch(p) {
+    const bodyEl = document.getElementById('planBody');
+    if (!bodyEl || !p || !p.result) return;
+    const current = (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh';
+    const saved = p.lang || '';
+    const hasChinese = /[\u4e00-\u9fff]/.test(bodyEl.innerText || '');
+    const mismatch = (saved && saved !== current) || (current === 'en' && hasChinese);
+    if (!mismatch) return;
+    const notice = document.createElement('div');
+    notice.className = 'ai-feedback';
+    notice.style.marginBottom = '12px';
+    notice.innerHTML = current === 'en'
+      ? 'This itinerary was generated in Chinese. <button type="button" class="btn btn-primary" data-regen-lang style="margin-left:8px">Regenerate in English</button>'
+      : '此行程是用英文生成的。 <button type="button" class="btn btn-primary" data-regen-lang style="margin-left:8px">用中文重新生成</button>';
+    const btn = notice.querySelector('[data-regen-lang]');
+    if (btn) btn.addEventListener('click', () => { notice.remove(); generatePlan(); });
+    bodyEl.prepend(notice);
+  }
+  /* 手机上表单很长，生成完成后直接滚到结果，避免用户以为没生成 */
+  function revealPlanResult() {
+    if (window.innerWidth > 900) return;
+    const el = document.getElementById('planResult');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
   /* 问答上下文：把上方表单的行程信息 + 最近生成的方案一起送给 AI */
   function buildTripContext() {

@@ -2,6 +2,8 @@
   "ai": {
     "apiKey": "sk-你的DeepSeekKey",
     "inviteCode": "你的服务端AI邀请码",
+    "tokenTtlDays": 365,
+    "tokenVersion": 1,
     "allowPrivateBaseUrl": false
   },
   "map": {

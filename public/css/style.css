@@ -129,6 +129,12 @@ code { background: #f1f5f9; padding: 2px 6px; border-radius: 6px; font-size: .9e
 }
 .input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(15,118,110,.15); }
 .input.num { width: 68px; text-align: center; }
+.date-field { position: relative; }
+.date-field .date-native { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; border: 0; padding: 0; }
+.date-field .date-display { position: relative; z-index: 1; pointer-events: none; }
+.date-field .date-display::placeholder { color: var(--ink-soft); opacity: 1; }
+.date-field:focus-within .date-display { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(15,118,110,.15); }
+.date-field .date-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; z-index: 1; font-size: .95rem; opacity: .75; }
 .num-group { display: flex; gap: 8px; }
 .num-group span { display: flex; align-items: center; gap: 6px; font-size: 1.05rem; }
 .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -306,9 +312,9 @@ html.elderly .nav-links, html.elderly .quick-planner, html.elderly .packing-layo
 .day-num { background: var(--primary); color: #fff; font-weight: 800; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: .95rem; }
 .day-title { font-weight: 800; font-size: 1.05rem; color: var(--primary-dark); }
 .day-date { font-size: .8rem; color: var(--ink-soft); }
-.schedule-item { display: grid; grid-template-columns: 64px 1fr; gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--line); }
+.schedule-item { display: grid; grid-template-columns: minmax(4.2em, max-content) 1fr; gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--line); }
 .schedule-item:last-child { border-bottom: none; }
-.schedule-time { font-weight: 800; color: var(--accent); font-size: .9rem; }
+.schedule-time { font-weight: 800; color: var(--accent); font-size: .9rem; white-space: nowrap; }
 .schedule-activity { font-weight: 700; }
 .schedule-detail { font-size: .86rem; color: var(--ink-soft); }
 .meals-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
@@ -400,7 +406,7 @@ html.elderly .auth-card { padding: 40px 32px; }
   .hot-rank { width: 36px; font-size: 1.2rem; }
   .hot-heat { width: 100%; order: 5; }
   .hot-trend { font-size: .85rem; }
-  .schedule-item { grid-template-columns: 52px 1fr; }
+  .schedule-item { grid-template-columns: minmax(4.2em, max-content) 1fr; }
   .chat-msg { max-width: 92%; font-size: .9rem; }
   .chat-body { max-height: 340px; padding: 12px; }
   .chat-input-row { padding: 10px 12px; }
@@ -621,13 +627,19 @@ html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; 
   .brand { font-size: 22px; gap: 10px; }
   .brand-svg { display: block; flex: none; }
   .brand-emoji { display: none; }
-  .nav-links-inline { display: flex; align-items: center; gap: 4px; margin-left: 26px; }
-  .nav-links-inline a { padding: 8px 14px; border-radius: 10px; color: #64748B; font-weight: 600; font-size: 14px; text-decoration: none; }
+  .nav-links-inline { display: flex; align-items: center; gap: 2px; margin-left: 14px; flex: none; }
+  .nav-links-inline a { padding: 8px 9px; border-radius: 10px; color: #64748B; font-weight: 600; font-size: 14px; text-decoration: none; white-space: nowrap; }
   .nav-links-inline a:hover { background: rgba(13,148,136,.08); color: #0D9488; }
   .nav-links-inline a.active { color: #0D9488; background: rgba(13,148,136,.1); font-weight: 700; }
   .nav-toggle { display: none !important; }
-  .btn-start-desktop { display: inline-flex; border-radius: 8px; box-shadow: 0 6px 18px rgba(13,148,136,.35); }
-  #settingsBtn { font-size: 14px; padding: 8px 14px; }
+  .nav-actions { gap: 8px; flex: none; }
+  .btn-start-desktop { display: inline-flex; border-radius: 8px; box-shadow: 0 6px 18px rgba(13,148,136,.35); white-space: nowrap; }
+  #settingsBtn { font-size: 14px; padding: 8px 12px; white-space: nowrap; }
+}
+/* 窄桌面改用抽屉导航，避免英文导航项被挤成两行 */
+@media (min-width: 901px) and (max-width: 1199px) {
+  .nav-links-inline, .btn-start-desktop { display: none; }
+  .nav-toggle { display: inline-flex !important; }
 }
 /* 桌面 Hero 响应式：窗口较窄时自动缩小，避免左列被大图挤压错位 */
 @media (min-width: 901px) and (max-width: 1200px) {
@@ -645,11 +657,10 @@ html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; 
   .hd-carousel { width: 400px; height: 340px; }
   .hd-title { font-size: 34px; }
 }
-/* 行程规划·电脑端：左右两栏各自独立滚动，互不影响（手机端不变） */
+/* 行程规划·电脑端：整页自然滚动，左侧表单吸顶，避免表单底部被卡片内滚动截断 */
 @media (min-width: 901px) {
-  .plan-layout { height: calc(100vh - var(--nav-h) - 48px); overflow: hidden; align-items: stretch; }
-  .plan-layout > .card { overflow-y: auto; min-height: 0; }
-  .plan-layout .form-card { position: static; }
+  .plan-layout { align-items: start; }
+  .plan-layout > .card { min-height: 0; }
 }
 
 /* ================= 抽取热门家庭目的地（仅电脑端） ================= */

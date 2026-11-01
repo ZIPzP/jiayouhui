@@ -106,6 +106,9 @@
     const imgs = [document.getElementById('heroSlide'), document.getElementById('heroSlide2')];
     if (!imgs[0] || !imgs[1]) return;
     if (window.innerWidth <= 900) return;
+    const heroAlt = (window.i18n && window.i18n.lang === 'en') ? 'Family travel scenery' : '家庭旅行风景';
+    imgs[0].alt = heroAlt;
+    imgs[1].alt = heroAlt;
     const seen = new Set();
     // 内置兜底风景图（保证首图确定存在、立即可用）
     const fallback = ['/images/beihai/cover.jpg', '/images/shanghai/cover.jpg', '/images/sanya/cover.jpg', '/images/hangzhou/cover.jpg', '/images/guilin/cover.jpg', '/images/lijiang/cover.jpg'];

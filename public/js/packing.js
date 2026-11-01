@@ -164,7 +164,7 @@
   }
 
   function savePack(vals, result) {
-    localStorage.setItem('jyh_last_pack', JSON.stringify({ vals, result, ts: Date.now() }));
+    localStorage.setItem('jyh_last_pack', JSON.stringify({ vals, result, lang: (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh', ts: Date.now() }));
   }
   async function generatePacking(vals) {
     const empty = document.getElementById('resultEmpty');
@@ -178,7 +178,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(app.aiPayload(vals))
       });
-      localStorage.setItem('jyh_last_pack', JSON.stringify({ jobId: st.jobId, vals, result: null, ts: Date.now() }));
+      localStorage.setItem('jyh_last_pack', JSON.stringify({ jobId: st.jobId, vals, result: null, lang: (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh', ts: Date.now() }));
       app.pollJob(st.jobId, {
         onDone: (result) => { renderResult(bodyEl, result, vals); savePack(vals, result); },
         onError: (msg) => { bodyEl.innerHTML = `<p style="padding:40px;text-align:center;color:var(--danger)">${(window.i18n && window.i18n.lang === 'en') ? 'Generation failed: ' : '生成失败：'}${app.esc(msg)}</p>`; }
@@ -197,6 +197,7 @@
       if (p.result) {
         empty.hidden = true; bodyEl.hidden = false;
         renderResult(bodyEl, p.result, p.vals);
+        showPackLangMismatch(p);
         return;
       }
       if (p.jobId) {
@@ -208,6 +209,25 @@
         });
       }
     } catch (e) { /* 忽略 */ }
+  }
+  /* 旧清单是在另一种语言下生成的：提示用户，并允许一键用当前语言重生成 */
+  function showPackLangMismatch(p) {
+    const bodyEl = document.getElementById('resultBody');
+    if (!bodyEl || !p || !p.result) return;
+    const current = (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh';
+    const saved = p.lang || '';
+    const hasChinese = /[\u4e00-\u9fff]/.test(bodyEl.innerText || '');
+    const mismatch = (saved && saved !== current) || (current === 'en' && hasChinese);
+    if (!mismatch) return;
+    const notice = document.createElement('div');
+    notice.className = 'ai-feedback';
+    notice.style.marginBottom = '12px';
+    notice.innerHTML = current === 'en'
+      ? 'This packing list was generated in Chinese. <button type="button" class="btn btn-primary" data-regen-pack style="margin-left:8px">Regenerate in English</button>'
+      : '此清单是用英文生成的。 <button type="button" class="btn btn-primary" data-regen-pack style="margin-left:8px">用中文重新生成</button>';
+    const btn = notice.querySelector('[data-regen-pack]');
+    if (btn) btn.addEventListener('click', () => { notice.remove(); generatePacking(p.vals || formValues()); });
+    bodyEl.prepend(notice);
   }
   function checkedKey(vals) { return `jyh_ck_${vals.destinationId}_${vals.month}`; }
   function isChecked(vals, name) {
@@ -232,10 +252,10 @@
     const tips = (data.tips || []).map((t) => `<li>${app.esc(t)}</li>`).join('');
     el.innerHTML = `
       <div class="result-head">
-    <h3>\u{1F392} ${app.esc(uiEn ? (window.i18n ? window.i18n.t(destName) : destName) : destName)} · ${app.esc(data.monthLabel || '')}${uiEn ? 'packing list' : '出行清单'}${vals.mode === '超详细' ? (uiEn ? ' · \u{1F9F3}Detailed' : ' · \u{1F9F3}超详细') : ''}</h3>
-        <span class="provider-tag">${data.provider === 'ai' ? '🐱 AI 生成 · ' + app.esc(data.model || '') : '📋 内置规则引擎'}</span>
+    <h3>\u{1F392} ${app.esc(uiEn ? (window.i18n ? window.i18n.t(destName) : destName) : destName)} · ${app.esc(data.monthLabel || '')}${uiEn ? ' packing list' : '出行清单'}${vals.mode === '超详细' ? (uiEn ? ' · \u{1F9F3}Detailed' : ' · \u{1F9F3}超详细') : ''}</h3>
+        <span class="provider-tag">${data.provider === 'ai' ? (uiEn ? '🐱 AI generated · ' : '🐱 AI 生成 · ') + app.esc(data.model || '') : (uiEn ? '📋 Built-in rules engine' : '📋 内置规则引擎')}</span>
       </div>
-      ${data.aiError ? `<p class="form-hint" style="color:var(--danger)">AI 调用失败，已自动使用内置清单：${app.esc(data.aiError)}</p>` : ''}
+      ${data.aiError ? `<p class="form-hint" style="color:var(--danger)">${uiEn ? 'AI failed — using the built-in packing list: ' : 'AI 调用失败，已自动使用内置清单：'}${app.esc(data.aiError)}</p>` : ''}
       ${vals.tripContext ? `<p class="form-hint">📋 ${uiEn ? 'Based on your itinerary plan' : '本清单已结合行程规划生成'}</p>` : ''}
       <div class="weather-box">🌤️ ${app.esc(data.weatherAdvice || '')}</div>
       ${groupHtml}

@@ -186,6 +186,13 @@
       state.serverKey = !!h.hasServerKey;
       const st = await api('/api/auth/status');
       state.accessEnabled = !!st.enabled;
+      if (h.hasServerKey) {
+        // 页面刷新后自动校验已保存的长期令牌，有效则直接显示已解锁，不用再输邀请码
+        const r = await api('/api/ai/status', { headers: { 'x-ai-token': state.ai.aiToken || '' } });
+        state.aiUnlocked = !!r.unlocked;
+      } else {
+        state.aiUnlocked = false;
+      }
     } catch (e) { /* 忽略 */ }
     updateAiHints();
     updateAiModal();
@@ -195,6 +202,12 @@
     $('#ai-key').value = '';
     $('#ai-base').value = state.ai.baseUrl || '';
     $('#ai-model').value = state.ai.model || '';
+    // 让服务商预设显示真实保存值，避免「实际是阿里云、界面却高亮 DeepSeek」
+    const savedBase = (state.ai.baseUrl || '').replace(/\/+$/, '');
+    const savedModel = state.ai.model || '';
+    const matched = Object.keys(PROVIDERS).find((key) => PROVIDERS[key].baseUrl.replace(/\/+$/, '') === savedBase && PROVIDERS[key].model === savedModel);
+    const activeKey = matched || (!savedBase && !savedModel ? 'deepseek' : '');
+    $$('#providerPresets .chip[data-provider]').forEach((chip) => chip.classList.toggle('active', chip.dataset.provider === activeKey));
     const kh = $('#aiKeyHint');
     if (kh) kh.textContent = state.ai.apiKey ? '✅ 已保存 Key（留空保持现有，填写新 Key 可更换）' : '';
     const iv = $('#ai-invite'); if (iv) iv.value = '';
@@ -214,8 +227,10 @@
     document.body.style.overflow = '';
   }
   function saveAi() {
+    const enteredKey = $('#ai-key').value.trim();
     state.ai = {
-      apiKey: $('#ai-key').value.trim(),
+      // 输入框留空表示沿用已保存的 Key，而不是把它清空
+      apiKey: enteredKey || state.ai.apiKey || '',
       baseUrl: $('#ai-base').value.trim(),
       model: $('#ai-model').value.trim(),
       aiToken: state.ai.aiToken || ''
@@ -226,7 +241,7 @@
     if (kh2) kh2.textContent = state.ai.apiKey ? '✅ 已保存 Key（留空保持现有，填写新 Key 可更换）' : '';
     $('#ai-key').value = '';
     closeAiModal();
-    toast(state.ai.apiKey ? '✅ AI 设置已保存，开始使用大模型' : '已切换为演示模式（内置规则引擎）');
+    toast(enteredKey ? '✅ AI 设置已保存，开始使用大模型' : (state.ai.apiKey ? '✅ AI 设置已保存' : '已切换为演示模式（内置规则引擎）'));
   }
 
   function openMobilePreview() {
