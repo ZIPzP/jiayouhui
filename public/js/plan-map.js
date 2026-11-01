@@ -60,27 +60,43 @@
   }
   function itineraryDays(data) {
     const out = [];
-    const globalSeen = new Set();
+    const globalSeen = {};
     (data && data.days || []).forEach((day) => {
       const stops = [];
       const seen = new Set();
       const add = (text, time, type) => {
         const raw = clean(text);
-        // 餐食行不是景点：跳过「晚餐：北京烤鸭」「Lunch: ...」这类内容，避免把餐厅标到地图上
-        if (/^(早餐|午餐|晚餐|用餐)[：:]/.test(raw)) return;
-        if (/^(breakfast|lunch|dinner|meal)[:\s]/i.test(raw)) return;
-        const keyword = keywordFrom(raw);
+        const meal = raw.match(/^(早餐|午餐|晚餐|用餐)[：:]\s*(.+)$/);
+        const enMeal = !meal && raw.match(/^(breakfast|lunch|dinner|meal)[:\s]\s*(.+)$/i);
+        const mealName = meal ? meal[2].trim() : (enMeal ? enMeal[2].trim() : '');
+        const kind = (meal || enMeal) ? '餐饮' : (type || '行程');
+        // 泛化的餐食行不标点；具体菜名/店名保留
+        if (mealName && /^(当地|本地|特色|推荐|美食|小吃|家常菜|餐厅|酒店|素食餐厅|清真餐厅|food|local|restaurant|a local|vegetarian restaurant|halal restaurant)/i.test(mealName)) return;
+        const keyword = keywordFrom(mealName || raw);
         if (!keyword) return;
         const key = keyword.toLowerCase();
-        const dupGlobal = [...globalSeen].some((k) => k === key || (k.length >= 2 && key.length >= 2 && (k.includes(key) || key.includes(k))));
-        if (seen.has(key) || dupGlobal || stops.some((item) => item.keyword.includes(keyword) || keyword.includes(item.keyword))) return;
-        seen.add(key);
-        globalSeen.add(key);
-        stops.push({ keyword, name: keyword, time: clean(time), type });
+        const typeSeen = globalSeen[kind] || (globalSeen[kind] = new Set());
+        // 景点跨天去重；餐饮按天保留（同一天内仍去重）
+        const dupGlobal = kind === '餐饮' ? false : [...typeSeen].some((k) => k === key || (k.length >= 2 && key.length >= 2 && (k.includes(key) || key.includes(k))));
+        if (seen.has(kind + ':' + key) || dupGlobal || stops.some((item) => item.type === kind && (item.keyword.includes(keyword) || keyword.includes(item.keyword)))) return;
+        seen.add(kind + ':' + key);
+        if (kind !== '餐饮') typeSeen.add(key);
+        stops.push({ keyword, name: keyword, time: clean(time), type: kind });
       };
       (day.schedule || []).forEach((item) => {
         add(item.activity, item.time, '行程');
       });
+      const scheduleHasDinner = (day.schedule || []).some((item) => /晚餐|dinner/i.test(item.activity || ''));
+      const isReturnDay = (day.schedule || []).some((item) => /返程|返家|travel home|heading home/i.test(item.activity || ''));
+      if (!isReturnDay) {
+        (day.meals || []).forEach((meal) => {
+          if (!meal || !meal.recommend) return;
+          const mealType = meal.type || '用餐';
+          if (/早餐|breakfast/i.test(mealType)) return;
+          if (/晚餐|dinner/i.test(mealType) && scheduleHasDinner) return;
+          add(mealType + '：' + meal.recommend, mealType, '餐饮');
+        });
+      }
       // 只有当天没有任何具体活动时，才用标题兜底，避免把「山城夜景」这类文案当地点
       if (!stops.length && looksLikePlace(day.title)) add(day.title, '', '主题');
       if (stops.length) out.push({ day: Number(day.day) || out.length + 1, title: day.title || '', stops: stops.slice(0, 5) });
@@ -217,7 +233,8 @@
   }
 
   function renderStopList(container, groups, markers) {
-    const legend = `<div class="plan-map-legend">${groups.map((group) => `<span><i style="background:${group.color}"></i>${t('第 ' + group.day + ' 天', 'Day ' + group.day)}</span>`).join('')}</div>`;
+    const foodLegend = groups.some((group) => group.items.some((item) => item.type === '餐饮')) ? `<span>🍜 ${t('餐饮', 'Food')}</span>` : '';
+    const legend = `<div class="plan-map-legend">${groups.map((group) => `<span><i style="background:${group.color}"></i>${t('第 ' + group.day + ' 天', 'Day ' + group.day)}</span>`).join('')}${foodLegend}</div>`;
     container.innerHTML = legend + groups.map((group) => {
       const summary = group.summary && group.summary.routed ? ' · ' + fmtDistance(group.summary.distance) + ' · ' + fmtDuration(group.summary.time) : '';
       return `<div class="plan-map-day">
@@ -289,10 +306,11 @@
         const popupAddress = enNow ? '' : (item.poi.address || '');
         const popup = '<b>' + escapeHtml(popupName) + '</b><br>' + escapeHtml(item.time || '') + (popupAddress ? '<br>' + escapeHtml(popupAddress) : '');
         const typeLabel = enNow ? (TYPE_EN[item.type] || item.type || '') : (item.type || '');
+        const isFood = item.type === '餐饮';
         const marker = new AMap.Marker({
           position,
           title: item.poi.name,
-          content: `<div class="plan-map-pin" style="--c:${item.color}">${item.day}</div>`,
+          content: `<div class="plan-map-pin${isFood ? ' food' : ''}" style="--c:${item.color}">${isFood ? '🍜' : item.day}</div>`,
           offset: new AMap.Pixel(-13, -13),
           label: { content: `<span class="plan-map-label">D${item.day} · ${typeLabel}</span>`, direction: 'top' }
         });
