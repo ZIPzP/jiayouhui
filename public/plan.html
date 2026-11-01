@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>家游汇 · 家庭旅游推荐与攻略</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>" />
-  <link rel="stylesheet" href="/css/style.css?v=20261101audit" />
+  <link rel="stylesheet" href="/css/style.css?v=20261101audit2" />
 </head>
 <body class="plan-page">    <header class="nav" id="topnav">
     <div class="nav-inner">
@@ -46,8 +46,18 @@
       <h2><span class="tt-emoji">🐱</span> <span class="tt-grad">AI 主理人 · 行程规划</span></h2>
       <p>输入城市名会自动提示补全；出发城市和目的地必填。AI 自动生成含价格估算、交通安排、忌食提醒的逐日详细行程；页面下方还能直接向 AI 主理人提问</p>
     </div>
+    <div class="plan-flow-guide plan-desktop-guide" data-reveal>
+      <div class="plan-flow-step"><span>01</span><b>描述家庭需求</b><small>目的地、日期、同行人和偏好</small></div>
+      <div class="plan-flow-step"><span>02</span><b>AI 生成可执行行程</b><small>每日安排、交通、天气和费用</small></div>
+      <div class="plan-flow-step"><span>03</span><b>进入地图工作台</b><small>左侧日程、中间地图、右侧信息</small></div>
+    </div>
     <div class="plan-layout">
       <div class="card form-card" id="planForm" data-reveal>
+        <div class="plan-form-intro">
+          <b>先告诉我们，这次全家想怎么玩</b>
+          <span>带 <em>*</em> 的项目必填；其余选项会影响 AI 的节奏、预算和路线安排。</span>
+        </div>
+        <div class="plan-form-section-label"><span>01</span> 基础行程</div>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label" for="pl-dest">目的地 <em class="req">*</em></label>
@@ -104,6 +114,7 @@
           </div>
           <div class="wf-body" id="planWeatherBody"></div>
         </div>
+        <div class="plan-form-section-label"><span>02</span> 交通、同行人与饮食</div>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">交通方式</label>
@@ -144,6 +155,7 @@
             <button class="chip active" data-value="无特别忌口" type="button">✅ 无特别忌口</button>
           </div>
         </div>
+        <div class="plan-form-section-label"><span>03</span> 预算与游玩偏好</div>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">预算档位</label>
@@ -184,6 +196,7 @@
             <button class="chip" data-value="亲子乐园" type="button">🎡 亲子乐园</button>
           </div>
         </div>
+        <div class="plan-form-section-label"><span>04</span> 补充要求</div>
         <div class="form-group">
           <label class="form-label" for="pl-notes">其他需求（自由填写，可选）</label>
           <textarea id="pl-notes" class="input" rows="3" placeholder="如：想坐竹筏看日出、老人腿脚不便需要少走路、预算不含购物……"></textarea>
@@ -205,7 +218,13 @@
       <div class="card result-card" id="planResult">
         <div class="result-empty" id="planEmpty">
           <div class="result-empty-icon">🗺️</div>
-          <p>点击「生成完整行程规划」<br />AI 主理人会为你安排逐日行程、交通、餐厅与费用估算</p>
+          <h3>生成后进入三栏地图工作台</h3>
+          <p class="plan-mobile-note">点击「生成完整行程规划」<br />AI 主理人会为你安排逐日行程、交通、餐厅与费用估算</p>
+          <div class="plan-empty-steps plan-desktop-guide">
+            <div><span>1</span><b>左侧：每日日程</b><small>拖动排序、删除或加入当前城市精选景点</small></div>
+            <div><span>2</span><b>中间：地图路线</b><small>按天查看标记、路线、距离和地点详情</small></div>
+            <div><span>3</span><b>右侧：实用信息</b><small>切换交通、酒店、预算、天气和出行建议</small></div>
+          </div>
         </div>
         <div id="planBody" hidden></div>
       </div>

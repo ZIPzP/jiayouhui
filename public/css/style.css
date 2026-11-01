@@ -1638,3 +1638,177 @@ body.plan-workspace-mode .plan-layout { display: none !important; }
   .desktop-plan-workspace { display: none !important; }
   body.plan-workspace-mode .plan-layout { display: grid !important; }
 }
+
+/* 电脑端行程规划：生成前引导 */
+.plan-flow-guide {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 1200px;
+  margin: 0 auto 18px;
+}
+
+.plan-flow-step {
+  position: relative;
+  min-width: 0;
+  padding: 14px 16px 14px 54px;
+  border: 1px solid rgba(255, 255, 255, .76);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .60);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .04);
+  backdrop-filter: blur(12px);
+}
+
+.plan-flow-step > span {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.plan-flow-step b,
+.plan-flow-step small {
+  display: block;
+}
+
+.plan-flow-step b {
+  color: #29423c;
+  font-size: 12px;
+}
+
+.plan-flow-step small {
+  margin-top: 4px;
+  color: var(--ink-soft);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.plan-form-intro {
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  border: 1px solid #d7eee8;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(236,253,245,.92), rgba(255,251,235,.78));
+}
+
+.plan-form-intro b,
+.plan-form-intro span {
+  display: block;
+}
+
+.plan-form-intro b {
+  color: #21564c;
+  font-size: 12px;
+}
+
+.plan-form-intro span {
+  margin-top: 5px;
+  color: var(--ink-soft);
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.plan-form-intro em {
+  color: var(--danger);
+  font-style: normal;
+}
+
+.plan-form-section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0 10px;
+  color: #36534c;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.plan-form-section-label > span {
+  display: inline-grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  border-radius: 7px;
+  background: #ecfdf5;
+  color: #0f766e;
+  font-size: 9px;
+}
+
+.plan-form-section-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(13,148,136,.20), transparent);
+}
+
+.result-empty h3 {
+  margin: 0 0 8px;
+  color: #29423c;
+  font-size: 1.15rem;
+}
+
+.plan-mobile-note { display: none; }
+
+.plan-empty-steps {
+  display: grid;
+  gap: 9px;
+  width: min(100%, 470px);
+  margin: 22px auto 0;
+  text-align: left;
+}
+
+.plan-empty-steps > div {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 11px 13px;
+  border: 1px solid rgba(219, 234, 229, .9);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .72);
+}
+
+.plan-empty-steps > div > span {
+  grid-row: 1 / span 2;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.plan-empty-steps b {
+  color: #33443f;
+  font-size: 11px;
+}
+
+.plan-empty-steps small {
+  color: var(--ink-soft);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .plan-desktop-guide,
+  .plan-form-intro,
+  .plan-form-section-label,
+  .result-empty h3 {
+    display: none !important;
+  }
+
+  .plan-mobile-note {
+    display: block;
+  }
+}
