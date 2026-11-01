@@ -123,6 +123,7 @@
   let weatherRenderToken = 0;
   let selectedSpotId = null;
   let pendingJumpId = null;
+  let sortables = [];
 
   function cloneInitial() {
     return {
@@ -174,6 +175,7 @@
           <span class="stop-index" style="--c:${color}">${si + 1}</span>
           <div class="stop-main"><b>${s.name}</b><small>${s.zone} · 建议 ${s.duration} 分钟</small></div>
           <div class="stop-actions">
+            <span class="drag-handle" title="拖动排序" aria-hidden="true">⠿</span>
             <button type="button" data-act="up" data-day="${di}" data-i="${si}" title="上移">↑</button>
             <button type="button" data-act="down" data-day="${di}" data-i="${si}" title="下移">↓</button>
             <select data-act="move" data-day="${di}" data-i="${si}" aria-label="移到哪一天">${state.days.map((_, j) => `<option value="${j}" ${j === di ? 'selected' : ''}>D${j + 1}</option>`).join('')}</select>
@@ -183,7 +185,7 @@
       }).join('');
       return `<section class="day-card" style="--c:${color}">
         <div class="day-head"><span class="day-dot"></span><span class="day-title">Day ${di + 1}</span><span class="day-zone">${dayZone(day)} · ${day.spots.length} 站</span></div>
-        <div class="day-body">${stops || '<p class="pool-empty">暂无安排，从下方备选景点添加</p>'}</div>
+        <div class="day-body" data-day-index="${di}">${stops || '<p class="pool-empty">暂无安排，从下方备选景点添加</p>'}</div>
       </section>`;
     }).join('');
     const addDay = $('addDay');
@@ -198,6 +200,42 @@
       ? pool.map((s) => `<div class="pool-row"><input type="checkbox" data-hot-select="${s.id}" aria-label="选择${s.name}" /><span>${s.name}${s.heat >= 90 ? ' <em class="hot-badge">🔥 热门</em>' : ''}<small>${s.zone} · ${s.tag} · 热度 ${s.heat || '—'}</small></span><button type="button" data-act="add" data-id="${s.id}">加入</button></div>`).join('')
       : '<p class="pool-empty">暂无备选景点。可能都已经加入行程，点右上角「重置示例」恢复。</p>';
     updatePoolSelection();
+    initSortables();
+  }
+
+  function initSortables() {
+    sortables.forEach((s) => { try { s.destroy(); } catch (e) { /* ignore */ } });
+    sortables = [];
+    if (!window.Sortable) return;
+    document.querySelectorAll('#dayList .day-body').forEach((el) => {
+      sortables.push(new Sortable(el, {
+        group: 'plan-stops',
+        handle: '.drag-handle',
+        draggable: '.stop-row',
+        animation: 150,
+        ghostClass: 'drag-ghost',
+        chosenClass: 'drag-chosen',
+        onEnd: (evt) => moveSpotByDrag(evt)
+      }));
+    });
+  }
+
+  function moveSpotByDrag(evt) {
+    const id = evt.item && evt.item.dataset.spotId;
+    const from = Number(evt.from && evt.from.dataset.dayIndex);
+    const to = Number(evt.to && evt.to.dataset.dayIndex);
+    if (!id || !Number.isInteger(from) || !Number.isInteger(to)) return;
+    const fromSpots = state.days[from].spots;
+    const oldIndex = fromSpots.indexOf(id);
+    if (oldIndex < 0) return;
+    fromSpots.splice(oldIndex, 1);
+    const target = state.days[to].spots;
+    const insertAt = Math.max(0, Math.min(Number(evt.newIndex), target.length));
+    target.splice(insertAt, 0, id);
+    selectedSpotId = id;
+    saveState();
+    renderEditor();
+    renderMap(false);
   }
 
   function updatePoolSelection() {
