@@ -367,7 +367,7 @@
   }
 
 
-  const LAST_KEY = 'jyh_last_plan';
+  const LAST_KEY = 'jyh_last_plan_v2';
   /* 保存「上次生成」：localStorage 持久（关掉浏览器也还在）+ sessionStorage 兼容旧数据 */
   function saveLast(data) {
     const payload = JSON.stringify(Object.assign({ ts: Date.now() }, data));
@@ -409,7 +409,7 @@
   const uiEnNow = () => !!(window.i18n && window.i18n.lang === 'en');
   const fmtVal = (v) => (Array.isArray(v) ? (v.length ? v.join('、') : '—') : (v === '' || v == null ? '—' : String(v)));
   function lastPlanRecord() {
-    try { return JSON.parse(sessionStorage.getItem('jyh_last_plan') || localStorage.getItem('jyh_last_plan') || 'null'); } catch (e) { return null; }
+    try { return JSON.parse(sessionStorage.getItem(LAST_KEY) || localStorage.getItem(LAST_KEY) || 'null'); } catch (e) { return null; }
   }
   function diffVals(prev, next) {
     if (!prev || !next) return [];
@@ -544,7 +544,7 @@
     try {
       const v = planFormValues();
       let last = null;
-      try { last = JSON.parse(sessionStorage.getItem('jyh_last_plan') || localStorage.getItem('jyh_last_plan') || 'null'); } catch (e) { /* 忽略 */ }
+    try { last = JSON.parse(sessionStorage.getItem(LAST_KEY) || localStorage.getItem(LAST_KEY) || 'null'); } catch (e) { /* 忽略 */ }
       return {
         destinationId: v.destinationId,
         destinationName: document.getElementById('pl-dest').value.trim(),
@@ -636,7 +636,7 @@
     loadDesktopHighlights(vals.destinationId, token);
     setTimeout(() => {
       if (window.planMap && desktopData) {
-        Promise.resolve(window.planMap.build(desktopData, desktopVals)).then(() => loadDesktopHotspots(vals, token));
+        Promise.resolve(window.planMap.build(desktopData, desktopVals));
       }
     }, 80);
   }
@@ -646,41 +646,9 @@
     app.api('/api/destinations/' + encodeURIComponent(destinationId)).then((data) => {
       if (token !== desktopHighlightsToken || !desktopData) return;
       const base = (data.destination && data.destination.highlights) || [];
-      const seen = new Set(base.map((item) => String(item.title || '')));
-      desktopHighlights = base.concat(desktopHighlights.filter((item) => !seen.has(String(item.title || '')))).slice(0, 10);
+      desktopHighlights = base.slice(0, 10);
       renderDesktopItinerary();
     }).catch(() => { renderDesktopItinerary(); });
-  }
-
-  function loadDesktopHotspots(vals, token) {
-    if (!window.AMap || !desktopData) return;
-    const city = vals.destinationName || ((app.state.destinations.find((d) => d.id === vals.destinationId) || {}).name || '');
-    if (!city) return;
-    const used = (desktopData.days || []).flatMap((day) => (day.schedule || []).map((item) => String(item.activity || '').trim())).filter(Boolean);
-    AMap.plugin(['AMap.PlaceSearch'], () => {
-      try {
-        const search = new AMap.PlaceSearch({ city, citylimit: true, type: '110000', pageSize: 20, extensions: 'all' });
-        search.search('景点', (status, result) => {
-          if (token !== desktopHighlightsToken || !desktopData || status !== 'complete') return;
-          const seen = new Set(desktopHighlights.map((item) => String(item.title || '').replace(/\s+/g, '')));
-          const extra = ((result.poiList && result.poiList.pois) || [])
-            .filter((poi) => poi && poi.name && !/酒店|宾馆|停车场|游客中心|售票处|地铁站|公交站/.test(poi.name))
-            .filter((poi) => !used.some((name) => name.includes(poi.name) || poi.name.includes(name)))
-            .sort((a, b) => (Number(b.biz_ext && b.biz_ext.rating) || 0) - (Number(a.biz_ext && a.biz_ext.rating) || 0))
-            .filter((poi) => {
-              const key = String(poi.name).replace(/\s+/g, '');
-              if (seen.has(key)) return false;
-              seen.add(key);
-              return true;
-            })
-            .slice(0, 8)
-            .map((poi) => ({ title: poi.name, text: poi.address || '地图热门景点' }));
-          if (!extra.length) return;
-          desktopHighlights = desktopHighlights.concat(extra).slice(0, 10);
-          renderDesktopItinerary();
-        });
-      } catch (e) { /* 高德搜索不可用时保留目的地精选 */ }
-    });
   }
 
   function renderDesktopItinerary() {
@@ -692,7 +660,7 @@
       const stops = (d.schedule || []).map((s, si) => `
         <div class="dpw-stop" data-dpw-stop data-day-index="${di}" data-schedule-index="${si}" data-activity="${app.esc(s.activity)}">
           <span class="dpw-drag" title="拖动排序">⠿</span>
-          <div><b>${app.esc(s.activity)}</b><small>${app.esc(s.time || '')}${s.detail ? ' · ' + app.esc(s.detail) : ''}</small></div>
+          <div><b>${app.esc(s.activity)}</b><small>${app.esc(s.time || '')}${s.detail ? ' · ' + app.esc(s.detail) : ''}${s.source === 'manual' ? ' · 手动加入' : ''}</small></div>
           <button class="dpw-stop-del" type="button" data-dpw-del data-day-index="${di}" data-schedule-index="${si}" title="移除">×</button>
         </div>`).join('');
       return `<div class="dpw-day" style="--c:${color}">
@@ -702,26 +670,12 @@
     }).join('');
     const dayOptions = (desktopData.days || []).map((_, i) => `<option value="${i}">Day ${i + 1}</option>`).join('');
     const pool = `<div class="dpw-pool">
-      <div class="dpw-pool-head"><h4>✨ 热门景点备选</h4><select id="dpwAddDay">${dayOptions}</select></div>
-      ${desktopHighlights.length ? desktopHighlights.map((h, i) => `<label class="dpw-pool-row"><input type="checkbox" data-dpw-hl="${i}" /><span>${app.esc(h.title || '')}</span><button type="button" data-dpw-add data-hl-index="${i}">加入</button></label>`).join('') : '<p class="dpw-empty">正在读取当前城市备选景点…</p>'}
-      ${desktopHighlights.length ? '<button class="dpw-add-selected" type="button" data-dpw-add-selected disabled>加入所选</button>' : ''}
+      <div class="dpw-pool-head"><h4>✨ 当前城市精选</h4><select id="dpwAddDay">${dayOptions}</select></div>
+      <p class="dpw-pool-note">这里只是备选，不会自动加入行程；选择 Day 后点击“加入行程”才会写入。</p>
+      ${desktopHighlights.length ? desktopHighlights.map((h, i) => `<div class="dpw-pool-row"><span>${app.esc(h.title || '')}</span><button type="button" data-dpw-add data-hl-index="${i}">加入行程</button></div>`).join('') : '<p class="dpw-empty">当前城市暂无内置精选景点，可继续查看上方 AI 行程。</p>'}
     </div>`;
     box.innerHTML = dayHtml + pool;
-    box.querySelectorAll('[data-dpw-hl]').forEach((input) => {
-      input.addEventListener('change', updateDesktopPoolSelection);
-    });
     initDesktopSortables();
-  }
-
-  function updateDesktopPoolSelection() {
-    const box = document.getElementById('dpwItinerary');
-    if (!box) return;
-    const checked = box.querySelectorAll('[data-dpw-hl]:checked').length;
-    const btn = box.querySelector('[data-dpw-add-selected]');
-    if (btn) {
-      btn.disabled = checked === 0;
-      btn.textContent = checked ? `加入所选（${checked}）` : '加入所选';
-    }
   }
 
   function initDesktopSortables() {
@@ -889,32 +843,13 @@
       }
       const add = e.target.closest('[data-dpw-add]');
       if (add) {
-        const dest = app.state.destinations.find((d) => d.id === desktopVals.destinationId) || {};
-        const h = (dest.highlights || [])[Number(add.dataset.hlIndex)];
+        const h = desktopHighlights[Number(add.dataset.hlIndex)];
         const to = Number(document.getElementById('dpwAddDay').value) || 0;
         if (!h || !h.title || (desktopData.days[to].schedule || []).some((s) => String(s.activity || '').trim() === h.title)) return;
-        desktopData.days[to].schedule.push({ time: '上午', activity: h.title, detail: h.text || '' });
+        desktopData.days[to].schedule.push({ time: '上午', activity: h.title, detail: h.text || '', source: 'manual' });
         savePlan(desktopVals, desktopData);
         renderDesktopItinerary();
         if (window.planMap) window.planMap.build(desktopData, desktopVals);
-        return;
-      }
-      if (e.target.closest('[data-dpw-add-selected]')) {
-        const dest = app.state.destinations.find((d) => d.id === desktopVals.destinationId) || {};
-        const to = Number(document.getElementById('dpwAddDay').value) || 0;
-        const indexes = [...document.querySelectorAll('[data-dpw-hl]:checked')].map((el) => Number(el.dataset.dpwHl));
-        const seen = new Set((desktopData.days[to].schedule || []).map((s) => String(s.activity || '').trim()));
-        indexes.forEach((index) => {
-          const h = desktopHighlights[index];
-          if (!h || !h.title || seen.has(h.title)) return;
-          desktopData.days[to].schedule.push({ time: '上午', activity: h.title, detail: h.text || '' });
-          seen.add(h.title);
-        });
-        if (indexes.length) {
-          savePlan(desktopVals, desktopData);
-          renderDesktopItinerary();
-          if (window.planMap) window.planMap.build(desktopData, desktopVals);
-        }
         return;
       }
       const tab = e.target.closest('[data-dpw-tab]');
