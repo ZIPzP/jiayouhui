@@ -332,8 +332,9 @@
 .disc-screen {
   position: relative;
   width: min(280px, 100%);
-  min-height: 158px;
-  padding: 18px;
+  height: 170px;
+  min-height: 170px;
+  padding: 16px;
   border-radius: 20px;
   border: 1px dashed #0d9488;
   background:
@@ -373,16 +374,25 @@
 .disc-screen strong {
   position: relative;
   z-index: 1;
+  max-width: 100%;
+  overflow: hidden;
   color: #115e59;
   font-size: 1.45rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .disc-screen small {
   position: relative;
   z-index: 1;
+  display: -webkit-box;
+  max-width: 100%;
+  overflow: hidden;
   color: var(--ink-soft);
   text-align: center;
   line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .disc-draw-btn {
