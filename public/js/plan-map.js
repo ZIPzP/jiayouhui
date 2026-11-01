@@ -111,37 +111,48 @@
     return out.slice(0, 14);
   }
 
-  function scorePoi(poi, keyword, city) {
+  function scorePoi(poi, keyword, city, kind) {
     const name = clean(poi.name);
     const typecode = String(poi.typecode || '');
     const addr = clean([poi.pname, poi.cityname, poi.adname, poi.address].filter(Boolean).join(''));
+    const foodKeyword = kind === '餐饮' || /咖啡|茶|餐厅|美食|小吃|火锅|面|饭|烧烤|甜品|早餐|午餐|晚餐|菜馆|农家菜|茶楼|菜/.test(keyword);
+    const area = keyword.replace(/(农家菜馆|农家菜|餐厅|饭店|餐馆|酒楼|菜馆|小吃店|茶馆|咖啡馆|火锅店|竹筏|漂流|游船|索道|缆车|表演|演出|温泉|乐园)$/,'').trim();
+    const areaHit = area && area !== keyword && (name.includes(area) || addr.includes(area));
     const nameScore = name === keyword ? 60 : name.includes(keyword) ? 40 : keyword.includes(name) ? 20 : 0;
-    // 名称完全对不上的一律不采用，避免「搜故宫却标到长城」
-    if (!nameScore) return -100;
-    let score = nameScore;
+    // 名称对不上但地址属于关键词所在片区（如梅家坞农家菜馆 → 梅家坞某餐馆）也接受
+    if (!nameScore && !areaHit) return -100;
+    let score = nameScore || 20;
+    if (areaHit) score += 30;
     if (typecode.startsWith('11')) score += 40;       // 风景名胜
     else if (typecode.startsWith('14')) score += 25;  // 科教文化
     else if (typecode.startsWith('10')) score -= 35;  // 住宿
     else if (typecode.startsWith('05')) score -= 25;  // 餐饮
     else if (typecode.startsWith('06')) score -= 15;  // 购物
     // 用户找景点时排除同名的酒店/餐饮/商店；用户本身找咖啡/餐厅时不误伤
-    const foodKeyword = /咖啡|茶|餐厅|美食|小吃|火锅|面|饭|烧烤|甜品|早餐|午餐|晚餐/.test(keyword);
     if (!foodKeyword && /酒店|宾馆|民宿|客栈|公寓|停车场|售票处|超市|便利店|餐厅|饭店|小吃|咖啡|茶楼|茶馆|酒吧|甜品|商场|购物中心|百货|文创店|纪念品|地铁站|公交站|售票/.test(name)) score -= 50;
+    // 主景点优先于北站、游客中心、售票处等子 POI
+    if (!foodKeyword && /(北站|南站|东站|西站|游客中心|售票处|停车场|码头|入口|出口|服务中心|导览中心|北门|南门|东门|西门)$/.test(name)) score -= 25;
+    // 门牌号地址不要抢过片区/景点本体
+    if (/\d+号$/.test(name)) score -= 15;
     const cityName = clean(city).replace(/[省市]$/, '');
     if (cityName && addr.includes(cityName)) score += 15;
     return score;
   }
 
-  function searchPlace(AMap, city, keyword) {
+  function searchPlace(AMap, city, keyword, kind, retried = false) {
     return new Promise((resolve) => {
       AMap.plugin(['AMap.PlaceSearch'], () => {
         const search = new AMap.PlaceSearch({ city: city || '全国', citylimit: !!city, pageSize: 10, pageIndex: 1, extensions: 'base' });
-        search.search(keyword, (state, result) => {
+        const handle = (state, result, isRetry) => {
+          if (state === 'error' && !isRetry) {
+            setTimeout(() => search.search(keyword, (s, r) => handle(s, r, true)), 250);
+            return;
+          }
           if (state !== 'complete') return resolve(null);
           const pois = (result && result.poiList && result.poiList.pois) || [];
           if (!pois.length) return resolve(null);
           const best = pois
-            .map((poi) => ({ poi, score: scorePoi(poi, keyword, city) }))
+            .map((poi) => ({ poi, score: scorePoi(poi, keyword, city, kind) }))
             .sort((a, b) => b.score - a.score)[0];
           if (!best || best.score < 20) return resolve(null);
           const poi = best.poi;
@@ -150,13 +161,14 @@
           const lat = Number(location && (location.lat != null ? location.lat : location.getLat && location.getLat()));
           if (!poi || !Number.isFinite(lng) || !Number.isFinite(lat)) return resolve(null);
           resolve({ name: poi.name || keyword, address: poi.address || poi.district || '', lng, lat, typecode: poi.typecode || '' });
-        });
+        };
+        search.search(keyword, (state, result) => handle(state, result, retried));
       });
     });
   }
 
   // 宽松搜索：不限城市，但只接受地址属于当前城市的 POI，主要用于村/片区/餐馆名
-  function searchPlaceLoose(AMap, city, keyword) {
+  function searchPlaceLoose(AMap, city, keyword, kind) {
     return new Promise((resolve) => {
       AMap.plugin(['AMap.PlaceSearch'], () => {
         const search = new AMap.PlaceSearch({ city: '', citylimit: false, pageSize: 10, pageIndex: 1, extensions: 'base' });
@@ -170,7 +182,7 @@
               const addr = clean([poi.pname, poi.cityname, poi.adname, poi.address].filter(Boolean).join(''));
               return !cityName || addr.includes(cityName);
             })
-            .map((poi) => ({ poi, score: scorePoi(poi, keyword, city) }))
+            .map((poi) => ({ poi, score: scorePoi(poi, keyword, city, kind) }))
             .sort((a, b) => b.score - a.score)[0];
           if (!best || best.score < 20) return resolve(null);
           const poi = best.poi;
@@ -196,29 +208,23 @@
   }
   async function searchPlaceWithFallbacks(AMap, city, keyword, kind) {
     if (/乘高铁|乘火车|高铁|动车|机场|车站|南站|东站|西站|北站/.test(keyword)) return null;
-    const tries = [keyword];
+    let poi = await searchPlace(AMap, city, keyword, kind);
+    if (poi) return poi;
+    let fallback = keyword;
     if (kind === '餐饮') {
-      // 梅家坞农家菜馆 → 梅家坞，找不到餐馆时退回搜片区
       const area = keyword.replace(/(农家菜馆|农家菜|餐厅|饭店|餐馆|酒楼|菜馆|小吃店|茶馆|咖啡馆|火锅店)$/,'').trim();
-      if (area && area !== keyword) tries.push(area);
+      if (area && area !== keyword) fallback = area;
     } else if (kind !== '自由活动') {
-      // 只有景点才尝试公园/景区别名
-      if (keyword.length <= 10) tries.push(keyword + '公园', keyword + '景区', keyword + '风景区');
-      if (/十景$/.test(keyword)) tries.push(keyword.replace(/十景$/, ''));
-      // 活动型名称回退到基础地名：漓江竹筏 → 漓江，长江索道 → 长江
       const base = keyword.replace(/(竹筏|漂流|游船|索道|缆车|表演|演出|温泉|乐园)$/,'').trim();
-      if (base && base !== keyword) tries.push(base);
-      if (keyword.includes('秦淮河')) tries.push('夫子庙', '秦淮河');
+      if (base && base !== keyword) fallback = base;
+      else if (/十景$/.test(keyword)) fallback = keyword.replace(/十景$/, '');
+      else fallback = keyword + '景区';
     }
-    for (const k of tries) {
-      const poi = await searchPlace(AMap, city, k);
+    if (fallback && fallback !== keyword) {
+      poi = await searchPlace(AMap, city, fallback, kind);
       if (poi) return poi;
     }
-    for (const k of tries) {
-      const poi = await searchPlaceLoose(AMap, city, k);
-      if (poi) return poi;
-    }
-    return null;
+    return searchPlaceLoose(AMap, city, fallback || keyword, kind);
   }
   function searchPlaceCached(AMap, city, keyword, kind) {
     const cache = readPoiCache();
