@@ -244,19 +244,6 @@
     toast(enteredKey ? '✅ AI 设置已保存，开始使用大模型' : (state.ai.apiKey ? '✅ AI 设置已保存' : '已切换为演示模式（内置规则引擎）'));
   }
 
-  function openMobilePreview() {
-    const pv = $('#mobilePreview');
-    if (!pv) return;
-    const frame = $('#previewIframe');
-    if (frame) frame.src = location.pathname === '/' ? '/' : location.pathname;
-    pv.hidden = false;
-    document.body.style.overflow = 'hidden';
-  }
-  function closeMobilePreview() {
-    const pv = $('#mobilePreview');
-    if (pv) pv.hidden = true;
-    document.body.style.overflow = '';
-  }
   function bindSettings() {
     const et = $('#elderlyToggle');
     if (et) et.addEventListener('click', toggleElderly);
@@ -304,14 +291,7 @@
     if (me) me.addEventListener('click', toggleElderly);
     const ma = $('#menuAi');
     if (ma) ma.addEventListener('click', () => { closeMenu(); openAiModal(); });
-    const mm = $('#menuMobile');
-    if (mm) mm.addEventListener('click', () => { closeMenu(); openMobilePreview(); });
     document.addEventListener('click', (e) => { if (!e.target.closest('.settings-wrap')) closeMenu(); });
-    // 手机预览
-    const pc = $('#previewClose');
-    if (pc) pc.addEventListener('click', closeMobilePreview);
-    const pv = $('#mobilePreview');
-    if (pv) pv.addEventListener('click', (e) => { if (e.target === pv) closeMobilePreview(); });
     const presets = $('#providerPresets');
     if (presets) presets.addEventListener('click', (e) => {
       const btn = e.target.closest('.chip[data-provider]');
@@ -381,16 +361,8 @@
     if (!document.getElementById('toast')) {
       html += '<div id="toast" class="toast" hidden></div>';
     }
-    if (!document.getElementById('mobilePreview')) {
-      html += `<div class="preview-backdrop" id="mobilePreview" hidden>
-        <div class="preview-frame">
-          <div class="preview-bar"><span>📱 手机预览 · 390px</span><button id="previewClose" type="button" class="btn btn-ghost" style="padding:6px 12px">✕ 关闭</button></div>
-          <iframe id="previewIframe" src="/" title="手机预览"></iframe>
-        </div>
-      </div>`;
-    }
     if (html) document.body.insertAdjacentHTML('beforeend', html);
-    // 导航栏：把长辈模式 / AI设置 / 手机预览 / 关于 收进「⚙️ 设置」菜单
+    // 导航栏：把长辈模式 / AI 设置 / 关于收进「⚙️ 设置」菜单
     const actions = document.querySelector('.nav-actions');
     if (actions && !document.getElementById('settingsBtn')) {
       const et = document.getElementById('elderlyToggle');
@@ -405,7 +377,6 @@
         <div class="settings-menu" id="settingsMenu" hidden>
           <button id="menuElderly" type="button">👴 <span>长辈模式</span></button>
           <button id="menuAi" type="button">🐱 AI 设置</button>
-          <button id="menuMobile" type="button">📱 手机预览</button>
           <a href="/about.html">📖 关于</a>
         </div>
       </div>

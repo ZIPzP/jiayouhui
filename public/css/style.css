@@ -478,12 +478,6 @@ a.dest-card { display: block; text-decoration: none; color: inherit; }
 /* 内容底部留白 */
 .footer { margin-top: 0; }
 
-/* ---------- 手机预览框 ---------- */
-.preview-backdrop { position: fixed; inset: 0; z-index: 400; background: rgba(15,23,42,.72); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 16px; }
-.preview-frame { background: #fff; border-radius: 18px; box-shadow: var(--shadow-lg); width: 420px; max-width: 96vw; display: flex; flex-direction: column; overflow: hidden; }
-.preview-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line); font-weight: 700; color: var(--primary-dark); background: #fff; }
-.preview-frame iframe { width: 100%; height: min(78vh, 760px); border: 0; background: #fff; }
-
 /* ---------- 设置菜单 ---------- */
 .settings-wrap { position: relative; display: flex; align-items: center; gap: 8px; }
 .settings-menu { position: absolute; top: calc(100% + 10px); right: 0; background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow-lg); padding: 8px; min-width: 190px; z-index: 80; display: flex; flex-direction: column; gap: 4px; }
@@ -1086,12 +1080,6 @@ html.js [data-reveal].in { opacity: 1; transform: none; filter: none; }
 /* 10. 页脚波浪分隔 */
 .footer-wave { display: block; width: 100%; height: 44px; margin-bottom: -1px; }
 .footer-wave + .footer { border-top: none; }
-
-
-/* 手机端隐藏"手机预览"（该功能是桌面端预览手机布局用的） */
-@media (max-width: 900px) {
-  #menuMobile { display: none; }
-}
 
 
 /* 极光：移入 bg-fx（overflow:hidden 裁剪，不再撑出底部空白） */
