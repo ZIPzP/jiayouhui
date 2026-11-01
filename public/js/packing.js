@@ -150,7 +150,11 @@
   function bindEvents() {
     // 城市自动补全（支持中文名与拼音/英文）
     if (app.cityAutocomplete) app.cityAutocomplete('pf-dest', 'pfDestSug', 'pfDestErr', '目的地');
-    document.getElementById('pf-dest').addEventListener('input', renderPlanContext);
+    document.getElementById('pf-dest').addEventListener('input', () => {
+      const err = document.getElementById('pfDestErr');
+      if (err) err.hidden = true;
+      renderPlanContext();
+    });
     document.getElementById('pf-submit').addEventListener('click', () => generatePacking(formValues()));
     const body = document.getElementById('resultBody');
     body.addEventListener('click', (e) => {
@@ -169,6 +173,17 @@
   async function generatePacking(vals) {
     const empty = document.getElementById('resultEmpty');
     const bodyEl = document.getElementById('resultBody');
+    const rawDest = (document.getElementById('pf-dest').value || '').trim();
+    if (!rawDest) {
+      const err = document.getElementById('pfDestErr');
+      if (err) {
+        err.textContent = (window.i18n && window.i18n.lang === 'en') ? 'Please enter a destination first.' : '请先填写目的地。';
+        err.hidden = false;
+      }
+      const input = document.getElementById('pf-dest');
+      if (input) input.focus();
+      return;
+    }
     empty.hidden = true;
     bodyEl.hidden = false;
     bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>正在后台生成打包清单…<br/>你可以放心切到别的页面，回来会自动恢复</p>';
