@@ -78,12 +78,16 @@
     state.hot.forEach((item) => {
       if (state.destinations.some((d) => d.name === item.name) && !names.includes(item.name)) names.push(item.name);
     });
-    if (!names.length) {
-      state.destinations.slice(0, 8).forEach((d) => {
-        if (d.name && !names.includes(d.name)) names.push(d.name);
-      });
+    state.destinations.forEach((d) => {
+      if (d.name && !names.includes(d.name)) names.push(d.name);
+    });
+    state.featured = names;
+    const count = document.getElementById('discFeaturedCount');
+    if (count) {
+      count.textContent = uiEn()
+        ? `All ${names.length} featured cities participate`
+        : `全部 ${names.length} 个精选城市均参与抽取`;
     }
-    state.featured = names.slice(0, 8);
     box.innerHTML = state.featured.map((name) => {
       const d = state.destinations.find((x) => x.name === name) || {};
       return `<span class="disc-featured-chip">${app.esc(d.emoji || '📍')} ${app.esc(tr(name))}</span>`;
@@ -257,7 +261,9 @@
     const body = document.getElementById('discResultBody');
     const en = uiEn();
     const tags = (d.tags || []).slice(0, 5).map((tag) => `<span class="disc-result-tag">${app.esc(tr(tag))}</span>`).join('');
-    const suggestedDays = String(d.suggestDays || '').replace(/(\d+)\s*-\s*(\d+)\s*天/, '$1–$2 days').replace(/(\d+)\s*天/, '$1 days');
+    const suggestedDays = en
+      ? String(d.suggestDays || '').replace(/(\d+)\s*-\s*(\d+)\s*天/, '$1–$2 days').replace(/(\d+)\s*天/, '$1 days')
+      : String(d.suggestDays || '');
     const meta = [tr(d.province), d.suggestDays ? (en ? 'Suggested ' : '建议 ') + suggestedDays : '', (d.bestSeasons || []).length ? (en ? 'Best ' : '最佳 ') + d.bestSeasons.map((x) => tr(x)).join('/') : '']
       .filter(Boolean).join(' · ');
     body.innerHTML = `
