@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const DAY_COLORS = ['#0d9488', '#f97316', '#2563eb', '#9333ea', '#dc2626', '#0891b2', '#65a30d', '#c2410c', '#7c3aed', '#db2777'];
-  const TYPE_EN = { '主题': 'Theme', '行程': 'Itinerary', '餐饮': 'Food' };
+  const TYPE_EN = { '主题': 'Theme', '行程': 'Itinerary', '餐饮': 'Food', '自由活动': 'Free time' };
   const GENERIC = /^(抵达|返回|返程|入住|退房|早餐|午餐|晚餐|自由活动|休息|出发|前往|市区|酒店|民宿|客栈|附近|当地|美食|城市漫步|市区漫步|夜景|行程结束|收拾行李|办理入住|回酒店|逛市区)$/;
   const GENERIC_PREFIX = /^(抵达|返回|返程|入住|退房|出发|前往|自由活动|休息|收拾行李|办理入住|回酒店|逛市区|市区|夜景|附近|当地|美食|特色晚餐|享用早餐|就近午餐|整理行李)/;
   let amapPromise = null;
@@ -99,7 +99,8 @@
       }
       // 只有当天没有任何具体活动时，才用标题兜底，避免把「山城夜景」这类文案当地点
       if (!stops.length && looksLikePlace(day.title)) add(day.title, '', '主题');
-      if (stops.length) out.push({ day: Number(day.day) || out.length + 1, title: day.title || '', stops: stops.slice(0, 5) });
+      // 每天都保留，哪怕当天只有自由活动，避免 5–6 天行程地图只显示 2–3 天
+      out.push({ day: Number(day.day) || out.length + 1, title: day.title || '', stops: stops.slice(0, 5) });
     });
     return out.slice(0, 14);
   }
@@ -237,9 +238,14 @@
     const legend = `<div class="plan-map-legend">${groups.map((group) => `<span><i style="background:${group.color}"></i>${t('第 ' + group.day + ' 天', 'Day ' + group.day)}</span>`).join('')}${foodLegend}</div>`;
     container.innerHTML = legend + groups.map((group) => {
       const summary = group.summary && group.summary.routed ? ' · ' + fmtDistance(group.summary.distance) + ' · ' + fmtDuration(group.summary.time) : '';
+      const emptyText = /返程|返家|travel home|heading home/i.test(group.title || '')
+        ? t('返程日 · 无固定景点', 'Return day · no fixed stop')
+        : t('自由活动 · 无可定位景点', 'Free time · no fixed stop');
       return `<div class="plan-map-day">
         <div class="plan-map-day-title" data-map-day="${group.day}"><i style="background:${group.color}"></i><span>${t('第 ' + group.day + ' 天', 'Day ' + group.day)}</span><em>${summary}</em></div>
-        ${group.items.map((item) => `<button class="plan-map-stop" type="button" data-map-index="${item.index}"><b>${item.index + 1}</b><span>${escapeHtml(item.name)}</span></button>`).join('')}
+        ${group.items.map((item) => item.unlocated
+          ? `<span class="plan-map-stop unlocated"><b>?</b><span>${escapeHtml(item.name)} · ${t('未定位', 'not located')}</span></span>`
+          : `<button class="plan-map-stop" type="button" data-map-index="${item.index}"><b>${item.index + 1}</b><span>${escapeHtml(item.name)}</span></button>`).join('') || `<p class="plan-map-foot">${emptyText}</p>`}
       </div>`;
     }).join('');
     container.querySelectorAll('[data-map-day]').forEach((title) => {
@@ -276,6 +282,13 @@
       const dest = destinationFor(vals, data);
       const city = dest ? dest.name : '';
       const days = itineraryDays(data);
+      // 没有具体景点的天，在城市中心给一个「自由活动」点，保证 5–6 天都出现在地图上
+      days.forEach((day) => {
+        const isReturn = /返程|返家|travel home|heading home/i.test(day.title || '');
+        if (!day.stops.length && dest && !isReturn) {
+          day.stops.push({ keyword: dest.name, name: dest.name, time: '', type: '自由活动', free: true });
+        }
+      });
       const items = [];
       days.forEach((day, dayIndex) => day.stops.forEach((stop) => items.push({ ...stop, day: day.day, dayIndex, color: DAY_COLORS[dayIndex % DAY_COLORS.length] })));
       if (!items.length) {
@@ -288,9 +301,15 @@
         const zh = String(window.i18n.toZh(item.keyword) || '').split('·')[0].trim();
         return zh || item.keyword;
       };
-      const located = await mapLimit(items, 2, async (item) => ({ ...item, poi: await searchPlaceCached(AMap, city, searchKeyword(item)) }));
+      const located = await mapLimit(items, 2, async (item) => {
+        if (item.free && dest && Number.isFinite(Number(dest.lon)) && Number.isFinite(Number(dest.lat))) {
+          return { ...item, poi: { name: dest.name, address: '', lng: Number(dest.lon), lat: Number(dest.lat) } };
+        }
+        return { ...item, poi: await searchPlaceCached(AMap, city, searchKeyword(item)) };
+      });
       if (token !== buildToken) return;
       const valid = located.filter((item) => item.poi);
+      const unlocated = located.filter((item) => !item.poi);
       const center = dest && Number.isFinite(Number(dest.lon)) && Number.isFinite(Number(dest.lat))
         ? [Number(dest.lon), Number(dest.lat)]
         : (valid[0] && valid[0].poi ? [valid[0].poi.lng, valid[0].poi.lat] : [116.397, 39.908]);
@@ -299,6 +318,9 @@
       const markerItems = [];
       const markerObjects = [];
       const groupsByDay = new Map();
+      days.forEach((day, dayIndex) => {
+        groupsByDay.set(day.day, { day: day.day, title: day.title || '', color: DAY_COLORS[dayIndex % DAY_COLORS.length], path: [], markers: [], items: [] });
+      });
       valid.forEach((item, index) => {
         const position = [item.poi.lng, item.poi.lat];
         const enNow = !!(window.i18n && window.i18n.lang === 'en');
@@ -307,10 +329,11 @@
         const popup = '<b>' + escapeHtml(popupName) + '</b><br>' + escapeHtml(item.time || '') + (popupAddress ? '<br>' + escapeHtml(popupAddress) : '');
         const typeLabel = enNow ? (TYPE_EN[item.type] || item.type || '') : (item.type || '');
         const isFood = item.type === '餐饮';
+        const isFree = item.type === '自由活动';
         const marker = new AMap.Marker({
           position,
           title: item.poi.name,
-          content: `<div class="plan-map-pin${isFood ? ' food' : ''}" style="--c:${item.color}">${isFood ? '🍜' : item.day}</div>`,
+          content: `<div class="plan-map-pin${isFood ? ' food' : ''}${isFree ? ' free' : ''}" style="--c:${item.color}">${isFree ? '☕' : (isFood ? '🍜' : item.day)}</div>`,
           offset: new AMap.Pixel(-13, -13),
           label: { content: `<span class="plan-map-label">D${item.day} · ${typeLabel}</span>`, direction: 'top' }
         });
@@ -318,11 +341,14 @@
         map.add(marker);
         markerObjects.push(marker);
         markerItems[index] = { ...item, ...item.poi, lng: item.poi.lng, lat: item.poi.lat, position };
-        if (!groupsByDay.has(item.day)) groupsByDay.set(item.day, { day: item.day, color: item.color, path: [], markers: [], items: [] });
         const group = groupsByDay.get(item.day);
         group.path.push(position);
         group.markers.push(marker);
         group.items.push({ ...item, index, name: (window.i18n && window.i18n.lang === 'en') ? (item.keyword || item.poi.name) : item.poi.name });
+      });
+      unlocated.forEach((item) => {
+        const group = groupsByDay.get(item.day);
+        if (group) group.items.push({ ...item, index: -1, name: item.keyword, unlocated: true });
       });
       const groups = [...groupsByDay.values()];
       const routeTasks = [];
@@ -349,7 +375,8 @@
       renderStopList(stopList, groups, markerItems);
       if (markerObjects.length) map.setFitView(markerObjects, false, [40, 40, 40, 40], 15);
       const routedDays = groups.filter((group) => group.summary.routed).length;
-      status(t('已定位 ' + valid.length + '/' + items.length + ' 个地点，已完成 ' + routedDays + '/' + groups.length + ' 天路线计算。', 'Located ' + valid.length + '/' + items.length + ' places; routed ' + routedDays + '/' + groups.length + ' days.'));
+      const unlocatedText = unlocated.length ? (t(' · ' + unlocated.length + ' 个未定位', ' · ' + unlocated.length + ' not located')) : '';
+      status(t('已定位 ' + valid.length + '/' + items.length + ' 个地点' + unlocatedText + '，已完成 ' + routedDays + '/' + groups.length + ' 天路线计算。', 'Located ' + valid.length + '/' + items.length + ' places' + unlocatedText + '; routed ' + routedDays + '/' + groups.length + ' days.'));
     } catch (error) {
       if (error && error.message === 'NO_KEY') {
         status(t('未配置高德地图 Key，暂时无法生成地图。请在 config.local.json 的 map 段填写 Web端 JS API Key 和安全密钥。', 'AMap key is not configured. Add a Web JS API key and security code to the map section of config.local.json.'));
