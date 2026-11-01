@@ -164,22 +164,25 @@
       localStorage.setItem(POI_CACHE_KEY, JSON.stringify(cache));
     } catch (e) { /* localStorage 不可用时忽略 */ }
   }
-  async function searchPlaceWithFallbacks(AMap, city, keyword) {
+  async function searchPlaceWithFallbacks(AMap, city, keyword, kind) {
     if (/乘高铁|乘火车|高铁|动车|机场|车站|南站|东站|西站|北站/.test(keyword)) return null;
     const tries = [keyword];
-    if (keyword.length <= 10) tries.push(keyword + '公园', keyword + '景区', keyword + '风景区');
-    if (/十景$/.test(keyword)) tries.push(keyword.replace(/十景$/, ''));
+    // 只有景点才尝试公园/景区别名；餐饮和自由活动只用原名，避免无意义请求
+    if (kind !== '餐饮' && kind !== '自由活动') {
+      if (keyword.length <= 10) tries.push(keyword + '公园', keyword + '景区', keyword + '风景区');
+      if (/十景$/.test(keyword)) tries.push(keyword.replace(/十景$/, ''));
+    }
     for (const k of tries) {
       const poi = await searchPlace(AMap, city, k);
       if (poi) return poi;
     }
     return null;
   }
-  function searchPlaceCached(AMap, city, keyword) {
+  function searchPlaceCached(AMap, city, keyword, kind) {
     const cache = readPoiCache();
-    const cacheKey = clean(city) + '|' + clean(keyword);
+    const cacheKey = clean(city) + '|' + clean(keyword) + '|' + clean(kind);
     if (cache[cacheKey]) return Promise.resolve(cache[cacheKey]);
-    return searchPlaceWithFallbacks(AMap, city, keyword).then((poi) => {
+    return searchPlaceWithFallbacks(AMap, city, keyword, kind).then((poi) => {
       if (poi) { cache[cacheKey] = poi; writePoiCache(cache); }
       return poi;
     });
@@ -324,7 +327,7 @@
         if (item.free && dest && Number.isFinite(Number(dest.lon)) && Number.isFinite(Number(dest.lat))) {
           return { ...item, poi: { name: dest.name, address: '', lng: Number(dest.lon), lat: Number(dest.lat) } };
         }
-        return { ...item, poi: await searchPlaceCached(AMap, city, searchKeyword(item)) };
+        return { ...item, poi: await searchPlaceCached(AMap, city, searchKeyword(item), item.type) };
       });
       if (token !== buildToken) return;
       const valid = located.filter((item) => item.poi);
