@@ -755,6 +755,20 @@ html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; 
 @media (min-width: 1200px) {
   .nav-profile-link { display: inline-flex !important; }
 }
+@media (min-width: 1400px) {
+  html.lang-en .nav-inner { max-width: 1380px; }
+}
+@media (min-width: 1200px) and (max-width: 1399px) {
+  html.lang-en .nav-inner { gap: 12px; }
+  html.lang-en .brand { font-size: 18px; gap: 8px; }
+  html.lang-en .nav-links-inline { gap: 14px; margin-left: 20px; }
+  html.lang-en .nav-links-inline a { padding: 8px; font-size: 12px; }
+  html.lang-en .nav-actions { gap: 6px; }
+  html.lang-en .btn-lang,
+  html.lang-en #settingsBtn,
+  html.lang-en .nav-profile-link,
+  html.lang-en .btn-start-desktop { padding-inline: 9px; font-size: 12px; }
+}
 /* 窄桌面改用抽屉导航，避免英文导航项被挤成两行 */
 @media (min-width: 901px) and (max-width: 1199px) {
   .nav-links-inline, .btn-start-desktop { display: none; }
