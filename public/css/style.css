@@ -1752,6 +1752,10 @@ body.plan-page #plan .plan-hero-head {
     linear-gradient(135deg, rgba(255,255,255,.92), rgba(240,253,250,.72));
 }
 
+body.plan-page #plan .plan-hero-head::after {
+  display: none;
+}
+
 .plan-hero-main {
   display: flex;
   align-items: flex-start;
