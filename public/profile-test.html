@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>家游汇 · 个人旅行档案测试页</title>
+  <link rel="icon" href="/images/beian-icon.png" />
+  <link rel="stylesheet" href="/css/style.css?v=20261103navprofile2" />
+  <link rel="stylesheet" href="/css/profile-test.css?v=20261103navprofile" />
+</head>
+<body class="profile-test-page">
+  <header class="nav" id="topnav">
+    <div class="nav-inner">
+      <a class="brand" href="/">
+        <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
+          <circle cx="16" cy="16" r="16" fill="#0D9488" />
+          <path d="M6 22 L13 12 L17 18 L21 13 L27 22 Z" fill="#fff" />
+        </svg>
+        <span class="brand-emoji">🏡</span>
+        <span>家游汇</span>
+      </a>
+      <nav class="nav-links-inline" aria-label="主要导航">
+        <a href="/" data-nav="home">首页</a>
+        <a href="/destinations.html" data-nav="destinations">目的地</a>
+        <a href="/plan.html" data-nav="plan">行程规划</a>
+        <a href="/packing.html" data-nav="packing">出行清单</a>
+        <a href="/draw.html" data-nav="discovery">发现</a>
+      </nav>
+      <div class="nav-actions">
+        <div class="settings-wrap">
+          <button class="nav-toggle" id="navToggle" type="button" aria-label="打开菜单" aria-expanded="false" title="菜单">☰</button>
+          <button id="settingsBtn" class="btn btn-ghost" type="button">⚙️ 设置</button>
+          <div class="settings-menu" id="settingsMenu" hidden>
+            <button id="menuElderly" type="button">👴 <span>长辈模式</span></button>
+            <button id="menuAi" type="button">🐱 AI 设置</button>
+            <a href="/about.html">📖 关于</a>
+          </div>
+        </div>
+        <a class="btn btn-primary btn-start-desktop" href="/plan.html">开始规划</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="nav-drawer" id="navDrawer" aria-hidden="true">
+    <div class="nav-drawer-head">🏡 家游汇</div>
+    <nav class="nav-links" id="navLinks" aria-label="移动端导航">
+      <a href="/">🏠 首页</a>
+      <a href="/destinations.html">🗺️ 目的地</a>
+      <a href="/plan.html">🐱 行程规划</a>
+      <a href="/packing.html">🎒 出行清单</a>
+      <a href="/draw.html">发现</a>
+    </nav>
+  </div>
+  <div class="nav-backdrop" id="navBackdrop"></div>
+
+  <main class="profile-shell">
+    <header class="profile-heading">
+      <div>
+        <h1>我们家的旅行档案</h1>
+        <p>把去过的路、花过的预算和 AI 改过的方案，整理成下一次更轻松的决定。</p>
+      </div>
+      <div class="profile-heading-actions">
+        <a class="profile-btn profile-btn-primary" href="/plan.html">开启新行程</a>
+        <button class="profile-btn profile-btn-secondary" type="button" data-open-billing>查看会员方案</button>
+      </div>
+    </header>
+
+    <p class="demo-note">
+      <strong>测试档案</strong>
+      <span>当前为演示数据，仅用于验证个人数据、商业价值和充值交互；不会上传、扣款或生成真实订单。</span>
+    </p>
+
+    <section class="metric-strip" aria-labelledby="tripSummaryTitle">
+      <h2 class="sr-only" id="tripSummaryTitle">旅行数据摘要</h2>
+      <div class="metric">
+        <span class="metric-label">已完成</span>
+        <div class="metric-value"><strong id="completedTrips">4</strong><span>趟</span></div>
+      </div>
+      <div class="metric">
+        <span class="metric-label">累计规划</span>
+        <div class="metric-value"><strong id="plannedDays">17</strong><span>天</span></div>
+      </div>
+      <div class="metric">
+        <span class="metric-label">AI 局部修改</span>
+        <div class="metric-value"><strong id="aiRevisions">12</strong><span>次</span></div>
+      </div>
+      <div class="metric">
+        <span class="metric-label">计划预算余量</span>
+        <div class="metric-value"><strong id="budgetRemaining">5,100</strong><span>元</span></div>
+      </div>
+    </section>
+
+    <div class="profile-grid profile-grid-primary">
+      <section class="profile-panel value-panel" aria-labelledby="savingTitle">
+        <div class="panel-heading">
+          <div>
+            <h2 id="savingTitle">过去一年，AI 帮家里省下 43 小时</h2>
+            <p>按每次查攻略、比路线和重排日程的估算耗时计算，演示口径可在偏好中调整。</p>
+          </div>
+          <span class="panel-meta">近 12 个月</span>
+        </div>
+        <div class="value-hero">
+          <strong id="savedHours">43</strong>
+          <span>小时重新留给家人</span>
+        </div>
+        <ol class="saving-bars" id="savingBars" aria-label="每次行程节省的规划时间"></ol>
+        <div class="insight-callout">
+          <div>
+            <strong>本页发现</strong>
+            <p>杭州行日均步行约 8.2 公里，超过家庭设置的 5 公里上限。下一次建议把下午景点换成茶馆休息或酒店午休。</p>
+          </div>
+          <a href="/plan.html">去调整</a>
+        </div>
+      </section>
+
+      <aside class="profile-panel preference-panel" aria-labelledby="preferenceTitle">
+        <div class="panel-heading">
+          <div>
+            <h2 id="preferenceTitle">家庭偏好</h2>
+            <p>来自最近 5 次规划，下一次会自动沿用。</p>
+          </div>
+          <span class="member-count">5 位成员</span>
+        </div>
+        <dl class="preference-list">
+          <div><dt>旅行节奏</dt><dd>舒缓，午后留白</dd></div>
+          <div><dt>每日步行</dt><dd>不超过 5 公里</dd></div>
+          <div><dt>家庭饮食</dt><dd>少辣、少油</dd></div>
+          <div><dt>住宿偏好</dt><dd>电梯房，近地铁</dd></div>
+          <div><dt>单次预算</dt><dd>3,000–6,000 元</dd></div>
+        </dl>
+        <div class="preference-action">
+          <div>
+            <strong>把这套偏好带进下一次规划</strong>
+            <span>老人、儿童和饮食要求会一起进入 AI 上下文。</span>
+          </div>
+          <a href="/plan.html">开始规划</a>
+        </div>
+      </aside>
+    </div>
+
+    <div class="profile-grid profile-grid-secondary">
+      <section class="profile-panel trips-panel" aria-labelledby="tripsTitle">
+        <div class="panel-heading trips-heading">
+          <div>
+            <h2 id="tripsTitle">旅行记录</h2>
+            <p id="tripCountText">共 5 次计划，其中 1 次待出发。</p>
+          </div>
+          <div class="trip-filters" role="group" aria-label="筛选旅行记录">
+            <button type="button" class="trip-filter" data-filter="all" aria-pressed="true">全部 5</button>
+            <button type="button" class="trip-filter" data-filter="upcoming" aria-pressed="false">待出发 1</button>
+            <button type="button" class="trip-filter" data-filter="completed" aria-pressed="false">已完成 4</button>
+          </div>
+        </div>
+        <div class="trip-list" id="tripList"></div>
+        <noscript><p class="trip-empty">启用 JavaScript 后可查看并筛选旅行记录。</p></noscript>
+      </section>
+
+      <aside class="profile-panel member-panel" aria-labelledby="memberTitle">
+        <div class="member-topline">
+          <h2 id="memberTitle">家庭会员</h2>
+          <span>商业价值预览</span>
+        </div>
+        <p class="member-lead">把一次性的行程生成，变成会积累、可复用、能分享的家庭旅行资产。</p>
+        <div class="member-price"><strong>68</strong><span>元 / 年</span></div>
+        <ul class="member-benefits">
+          <li>家庭档案与跨设备同步</li>
+          <li>不限历史行程，导出年度旅行报告</li>
+          <li>每月 30 次 AI 局部修改</li>
+          <li>多家庭方案对比与预算复盘</li>
+        </ul>
+        <button class="profile-btn profile-btn-primary member-cta" type="button" data-open-billing>查看会员与 AI 充值</button>
+        <button class="text-action" type="button" data-open-billing data-open-tab="credits">只想购买 AI 次数</button>
+        <p class="member-footnote">测试界面只记录选择意向，不发起支付。</p>
+      </aside>
+    </div>
+
+    <section class="privacy-panel" id="privacy" aria-labelledby="privacyTitle">
+      <div>
+        <h2 id="privacyTitle">数据边界</h2>
+        <p>个人旅行档案应默认保存在当前设备。跨设备同步、家庭共享和年度报告只有在用户主动开通并授权后才能启用，同时提供导出和删除入口。</p>
+      </div>
+      <a href="/about.html">查看项目说明</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>家游汇 · 个人旅行档案测试页</p>
+    <p class="icp">
+      <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">
+        <img class="beian-icon" src="/images/beian-icon.png" alt="备案图标" />赣ICP备2026019601号-1
+      </a>
+    </p>
+  </footer>
+
+  <dialog class="billing-dialog" id="billingDialog" aria-labelledby="billingTitle">
+    <div class="billing-head">
+      <div>
+        <h2 id="billingTitle">会员与 AI 次数</h2>
+        <p>选择适合家庭的方案。当前为界面原型，不会跳转支付。</p>
+      </div>
+      <button class="dialog-close" id="billingClose" type="button" aria-label="关闭">关闭</button>
+    </div>
+    <div class="billing-tabs" role="tablist" aria-label="购买类型">
+      <button type="button" role="tab" aria-selected="true" data-billing-tab="membership">家庭会员</button>
+      <button type="button" role="tab" aria-selected="false" data-billing-tab="credits">AI 次数包</button>
+    </div>
+
+    <div class="billing-panel" id="membershipPanel" role="tabpanel">
+      <label class="plan-option">
+        <input type="radio" name="billingPlan" value="家庭年卡 ¥68/年" data-plan-meta="推荐 · 平均每天不到 0.19 元" checked />
+        <span class="plan-copy">
+          <strong>家庭年卡</strong>
+          <small>全年使用，包含 30 次 AI 修改/月</small>
+        </span>
+        <span class="plan-price"><strong>68</strong>元 / 年</span>
+      </label>
+      <label class="plan-option">
+        <input type="radio" name="billingPlan" value="家庭月卡 ¥6.9/月" data-plan-meta="体验一个月" />
+        <span class="plan-copy">
+          <strong>家庭月卡</strong>
+          <small>适合短期出行，包含 10 次 AI 修改</small>
+        </span>
+        <span class="plan-price"><strong>6.9</strong>元 / 月</span>
+      </label>
+      <div class="billing-proof">
+        <strong>会员价值来自复用，不来自限制</strong>
+        <p>免费用户仍可完成基础规划；付费部分面向长期保存、家庭协作、更多修改和年度复盘。</p>
+      </div>
+    </div>
+
+    <div class="billing-panel" id="creditsPanel" role="tabpanel" hidden>
+      <label class="plan-option">
+        <input type="radio" name="billingPlan" value="AI 次数包 10 次 ¥9.9" data-plan-meta="适合一次短途旅行" checked />
+        <span class="plan-copy">
+          <strong>10 次 AI 修改</strong>
+          <small>约可支持一次 2–3 天家庭行程</small>
+        </span>
+        <span class="plan-price"><strong>9.9</strong>元</span>
+      </label>
+      <label class="plan-option">
+        <input type="radio" name="billingPlan" value="AI 次数包 30 次 ¥24.9" data-plan-meta="适合两到三次出行" />
+        <span class="plan-copy">
+          <strong>30 次 AI 修改</strong>
+          <small>适合反复调整路线、餐饮和同行人安排</small>
+        </span>
+        <span class="plan-price"><strong>24.9</strong>元</span>
+      </label>
+      <label class="plan-option">
+        <input type="radio" name="billingPlan" value="AI 次数包 80 次 ¥49.9" data-plan-meta="适合全年使用" />
+        <span class="plan-copy">
+          <strong>80 次 AI 修改</strong>
+          <small>适合多个家庭或频繁出行场景</small>
+        </span>
+        <span class="plan-price"><strong>49.9</strong>元</span>
+      </label>
+      <div class="billing-proof">
+        <strong>次数只用于 AI 修改</strong>
+        <p>基础行程、天气、地图和清单仍可独立使用；调用失败或规则降级不扣次数。</p>
+      </div>
+    </div>
+
+    <div class="billing-foot">
+      <p id="billingNotice">尚未记录选择。</p>
+      <button class="profile-btn profile-btn-primary" id="billingConfirm" type="button">记录这个选择</button>
+    </div>
+  </dialog>
+
+  <div class="profile-toast" id="profileToast" role="status" aria-live="polite" hidden></div>
+  <script src="/js/i18n.js?v=20261101enfull2"></script>
+  <script src="/js/common.js?v=20261103navprofile2"></script>
+  <script src="/js/profile-test.js?v=20261103"></script>
+</body>
+</html>

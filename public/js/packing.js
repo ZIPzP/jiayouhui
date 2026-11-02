@@ -7,6 +7,7 @@
   window.pageInit = async function () {
     fillMonths();
     bindEvents();
+    bindPackingImagePreview();
     linkedPlan = previewMode ? demoPlan() : loadLinkedPlan();
     if (linkedPlan) applyPlanDefaults(linkedPlan);
     renderPlanContext();
@@ -168,6 +169,47 @@
     pace.textContent = planVals.pace ? tr(planVals.pace) : '—';
     transport.textContent = planVals.transport ? tr(planVals.transport) : '—';
     rail.hidden = false;
+  }
+
+  function bindPackingImagePreview() {
+    const cover = document.getElementById('packingTripCover');
+    const lightbox = document.getElementById('packingImageLightbox');
+    const preview = document.getElementById('packingImagePreview');
+    const caption = document.getElementById('packingImageCaption');
+    const close = document.getElementById('packingImageClose');
+    const image = document.getElementById('packingTripImage');
+    const title = document.getElementById('packingTripTitle');
+    const dates = document.getElementById('packingTripDates');
+    if (!cover || !lightbox || !preview || !caption || !close || !image || !title || !dates) return;
+
+    let lastFocus = null;
+    function closePreview() {
+      lightbox.hidden = true;
+      lightbox.classList.add('closing');
+      document.body.style.overflow = '';
+      preview.removeAttribute('src');
+      if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+    }
+    function openPreview() {
+      if (!image.src || !image.complete || !image.naturalWidth) return;
+      lastFocus = document.activeElement;
+      preview.src = image.currentSrc || image.src;
+      preview.alt = image.alt || title.textContent || '旅行图片';
+      caption.textContent = [title.textContent, dates.textContent].filter(Boolean).join(' · ');
+      lightbox.classList.remove('closing');
+      lightbox.hidden = false;
+      document.body.style.overflow = 'hidden';
+      close.focus();
+    }
+
+    cover.addEventListener('click', openPreview);
+    close.addEventListener('click', closePreview);
+    lightbox.addEventListener('click', (event) => {
+      if (event.target === lightbox) closePreview();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !lightbox.hidden) closePreview();
+    });
   }
   function destinationNameFromVals(vals) {
     const hit = app.state.destinations.find((d) => d.id === vals.destinationId);

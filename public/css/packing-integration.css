@@ -187,11 +187,17 @@ body.packing-linked-plan .packing-trip-rail {
 .packing-trip-cover {
   position: relative;
   display: block;
+  width: 100%;
   aspect-ratio: 16 / 9;
   overflow: hidden;
+  padding: 0;
+  border: 0;
   border-radius: 14px;
   background: var(--pack-accent-soft);
   color: #fff;
+  cursor: zoom-in;
+  font: inherit;
+  text-align: left;
   text-decoration: none;
 }
 
@@ -199,6 +205,16 @@ body.packing-linked-plan .packing-trip-rail {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform .25s ease;
+}
+
+.packing-trip-cover:hover img {
+  transform: scale(1.03);
+}
+
+.packing-trip-cover:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
 }
 
 .packing-trip-copy {
@@ -818,4 +834,8 @@ html.elderly body.packing-page {
     animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
   }
+}
+
+.packing-image-lightbox .lightbox-close {
+  cursor: pointer;
 }

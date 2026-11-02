@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>家游汇 · 家庭旅游推荐与攻略</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>" />
-  <link rel="stylesheet" href="/css/style.css?v=20261103icons2" />
-  <link rel="stylesheet" href="/css/packing-integration.css?v=20261102final3" />
+  <link rel="stylesheet" href="/css/style.css?v=20261103navprofile2" />
+  <link rel="stylesheet" href="/css/packing-integration.css?v=20261103image2" />
 </head>
 <body class="packing-page">    <header class="nav" id="topnav">
     <div class="nav-inner">
@@ -46,13 +46,13 @@
     <div class="packing-shell">
       <div class="packing-rail-wrap">
         <aside class="packing-trip-rail" id="packingTripRail" hidden>
-        <a class="packing-trip-cover" id="packingTripCover" href="/destinations.html">
+        <button class="packing-trip-cover" id="packingTripCover" type="button" aria-label="查看本次行程图片" aria-haspopup="dialog">
           <img id="packingTripImage" alt="" />
           <span class="packing-trip-copy">
             <strong id="packingTripTitle"></strong>
             <small id="packingTripDates"></small>
           </span>
-        </a>
+        </button>
         <nav class="packing-rail-nav" aria-label="本次出行导航">
           <a class="active" href="/packing.html" aria-current="page">
             <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M4.2 4h9.6M4.2 9h9.6M4.2 14h6"></path><path d="m1.8 4 .7.7 1.3-1.4M1.8 9l.7.7 1.3-1.4"></path></svg>
@@ -157,10 +157,15 @@
     </div>
   </section>
   <svg class="footer-wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0,28 C240,52 480,8 720,24 C960,40 1200,52 1440,28 L1440,60 L0,60 Z" fill="#1E293B"/></svg>
+  <div class="lightbox packing-image-lightbox" id="packingImageLightbox" role="dialog" aria-modal="true" aria-label="旅行图片预览" hidden>
+    <button class="lightbox-close" id="packingImageClose" type="button" aria-label="关闭图片预览">✕</button>
+    <img id="packingImagePreview" alt="" />
+    <div class="lightbox-caption" id="packingImageCaption"></div>
+  </div>
   <footer class="footer"><p class="footer-slogan">🏡 家游汇 · 让每一次家庭旅行都充满美好回忆</p><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习研究与技术交流，严禁商业用途；请遵守中国法律法规及 12306 官方相关规定，合理合规使用</p><p class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener"><img class="beian-icon" src="/images/beian-icon.png" alt="备案图标" />赣ICP备2026019601号-1</a></p></footer>  <script src="/js/i18n.js?v=20261102final2"></script>
-  <script src="/js/common.js?v=20261103icons4"></script>
+  <script src="/js/common.js?v=20261103navprofile2"></script>
   <script src="/js/html2canvas.min.js?v=20261101r"></script>
-  <script src="/js/packing.js?v=20261102final4"></script>
+  <script src="/js/packing.js?v=20261103image2"></script>
 </body>
 </html>
 

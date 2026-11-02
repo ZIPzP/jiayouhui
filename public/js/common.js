@@ -562,6 +562,28 @@
     }
   }
 
+  /* ---------------- 个人旅行档案入口 ---------------- */
+  function ensureProfileEntry() {
+    const actions = document.querySelector('.nav-actions');
+    if (actions && !document.querySelector('.nav-profile-link')) {
+      const link = document.createElement('a');
+      link.className = 'btn btn-ghost nav-profile-link';
+      link.href = '/profile-test.html';
+      link.dataset.nav = 'profile';
+      link.textContent = '旅行档案';
+      const start = actions.querySelector('.btn-start-desktop');
+      actions.insertBefore(link, start || null);
+    }
+    const links = document.getElementById('navLinks');
+    if (links && !links.querySelector('[data-nav="profile"]')) {
+      const link = document.createElement('a');
+      link.href = '/profile-test.html';
+      link.dataset.nav = 'profile';
+      link.textContent = '旅行档案';
+      links.appendChild(link);
+    }
+  }
+
   /* ---------------- 导航高亮 ---------------- */
   function bindNav() {
     const toggle = document.getElementById('navToggle');
@@ -578,9 +600,9 @@
   }
   function navActive() {
     const p = location.pathname.split('/').pop() || 'index.html';
-    const map = { 'index.html': 'home', 'destinations.html': 'destinations', 'plan.html': 'plan', 'packing.html': 'packing', 'hot.html': 'hot', 'draw.html': 'discovery', 'draw-mobile.html': 'draw', 'about.html': 'about' };
+    const map = { 'index.html': 'home', 'destinations.html': 'destinations', 'plan.html': 'plan', 'packing.html': 'packing', 'hot.html': 'hot', 'draw.html': 'discovery', 'draw-mobile.html': 'draw', 'about.html': 'about', 'profile-test.html': 'profile' };
     const key = map[p] || 'home';
-    $$('#navLinks a, .nav-links-inline a').forEach((a) => a.classList.toggle('active', a.dataset.nav === key));
+    $$('#navLinks a, .nav-links-inline a, .nav-profile-link').forEach((a) => a.classList.toggle('active', a.dataset.nav === key));
   }
 
   function adaptLegacyMobileNav() {
@@ -787,6 +809,7 @@
     // 关闭浏览器自动滚动恢复（返回键关闭弹窗时不跳回顶部）
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     ensureShell();
+    ensureProfileEntry();
     applyElderly();
     adaptLegacyMobileNav();
     injectIconSprite();
