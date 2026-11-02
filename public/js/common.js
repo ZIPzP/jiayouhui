@@ -7,6 +7,169 @@
   const $ = (sel, el = document) => el.querySelector(sel);
   const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
 
+  const ICON_DEFS = {
+    home: '<path d="m3 11 9-7 9 7v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1v-9Z"/>',
+    map: '<path d="m9 18-6 3V6l6-3 6 3 6-3v15l-6 3-6-3Z"/><path d="M9 3v15M15 6v15"/>',
+    sparkles: '<path d="m12 3 1.2 4.2L17 9l-3.8 1.8L12 15l-1.2-4.2L7 9l3.8-1.8L12 3Z"/><path d="m5 16 .8 2.2L8 19l-2.2.8L5 22l-.8-2.2L2 19l2.2-.8L5 16Z"/><path d="M19 14v6M16 17h6"/>',
+    backpack: '<path d="M6 9a6 6 0 0 1 12 0v11H6V9Z"/><path d="M9 9V7a3 3 0 0 1 6 0v2M9 13h6M10 20v-4h4v4"/>',
+    route: '<circle cx="5" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><path d="M7 6h4a3 3 0 0 1 3 3v6a3 3 0 0 0 3 3"/>',
+    compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/>',
+    flame: '<path d="M12 22c4 0 7-3 7-7 0-3-2-6-4-8 0 3-2 4-3 5 0-3-2-6-4-8 0 4-3 7-3 11 0 4 3 7 7 7Z"/>',
+    settings: '<path d="M4 7h7M15 7h5M4 17h5M13 17h7"/><circle cx="13" cy="7" r="2"/><circle cx="11" cy="17" r="2"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    users: '<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M16 5a3 3 0 0 1 0 6M17 14a5 5 0 0 1 4 5"/>',
+    book: '<path d="M3 5.5A3.5 3.5 0 0 1 6.5 2H11v17H6.5A3.5 3.5 0 0 0 3 22V5.5ZM21 5.5A3.5 3.5 0 0 0 17.5 2H13v17h4.5A3.5 3.5 0 0 1 21 22V5.5Z"/>',
+    warning: '<path d="M12 3 2.8 20h18.4L12 3Z"/><path d="M12 9v5M12 17.5v.1"/>',
+    plane: '<path d="M22 2 9.5 14.5M22 2l-7 20-5.5-7.5L2 9l20-7Z"/>',
+    train: '<rect x="5" y="3" width="14" height="15" rx="3"/><path d="M8 7h8M8 12h.1M16 12h.1M8 18l-2 3M16 18l2 3M7 21h10"/>',
+    car: '<path d="m5 11 2-5h10l2 5M3 14a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4H3v-4Z"/><circle cx="7" cy="17" r="1.5"/><circle cx="17" cy="17" r="1.5"/>',
+    bus: '<rect x="4" y="3" width="16" height="15" rx="3"/><path d="M7 7h10M7 12h.1M17 12h.1M7 18l-2 3M17 18l2 3M6 21h12"/>',
+    help: '<circle cx="12" cy="12" r="9"/><path d="M9.6 9a2.5 2.5 0 1 1 4.2 1.8c-1.1.8-1.8 1.2-1.8 2.7M12 17.5v.1"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    leaf: '<path d="M20 4C9 4 4 9 4 16c0 2 1 4 1 4 4-8 8-9 14-10-4 3-7 6-9 10"/>',
+    landmark: '<path d="m3 9 9-5 9 5M5 10h14M6 10v8M10 10v8M14 10v8M18 10v8M3 21h18"/>',
+    check: '<path d="m5 12 4 4L19 6"/>',
+    wallet: '<rect x="3" y="6" width="18" height="14" rx="3"/><path d="M3 9h18M16 14h2"/>',
+    card: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/>',
+    gem: '<path d="m7 3-4 6 9 12 9-12-4-6H7Z"/><path d="M3 9h18M9 3l3 6 3-6M8 9l4 12 4-12"/>',
+    bed: '<path d="M3 20V8M21 20v-6a3 3 0 0 0-3-3H9v5M3 14h18M6 11H3v3h3v-3Z"/>',
+    mountain: '<path d="m3 20 7-12 4 7 2-3 5 8H3Z"/><path d="m8 11 2 3 2-3"/>',
+    food: '<path d="M6 3v8M9 3v8M6 7h3M7.5 11v10M16 3c-2 2-2 6 0 8v10M16 3c3 2 3 6 0 8"/>',
+    waves: '<path d="M2 8c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2M2 13c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2M2 18c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/>',
+    moon: '<path d="M20 15.5A9 9 0 0 1 8.5 4 9 9 0 1 0 20 15.5Z"/>',
+    ticket: '<path d="M3 9a3 3 0 0 0 0 6v4h18v-4a3 3 0 0 0 0-6V5H3v4Z"/><path d="M9 5v14"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    calendar: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18M8 14h2M14 14h2M8 17h2M14 17h2"/>',
+    cloudSun: '<path d="M8 9a4 4 0 0 1 7.5-2M5 5V3M5 15H3M10 3h-.1M3 10h-.1M7 7 5.5 5.5M13 5l1.5-1.5"/><path d="M7 19h9a4 4 0 0 0 .7-7.9A5 5 0 0 0 7 13a3 3 0 0 0 0 6Z"/>',
+    wrench: '<path d="M14.5 6.5a4.5 4.5 0 0 0-6 5.8L3 17.8 6.2 21l5.5-5.5a4.5 4.5 0 0 0 5.8-6L14 13l-3-3 3.5-3.5Z"/>',
+    message: '<path d="M21 12a8 8 0 0 1-8 8H5l-3 2 1.2-4.2A8 8 0 1 1 21 12Z"/>',
+    image: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="9" r="2"/><path d="m3 17 5-5 4 4 2-2 7 7"/>',
+    lock: '<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/>',
+    pin: '<path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',
+    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+    unlock: '<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 7.5-2M12 14v3"/>',
+    package: '<path d="m12 3 9 5v8l-9 5-9-5V8l9-5Z"/><path d="m3 8 9 5 9-5M12 13v8M7.5 5.5l9 5"/>',
+    dice: '<rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1" fill="currentColor" stroke="none"/><circle cx="9" cy="15" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="15" r="1" fill="currentColor" stroke="none"/>',
+    menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+    close: '<path d="m6 6 12 12M18 6 6 18"/>',
+    'arrow-left': '<path d="m15 18-6-6 6-6"/>',
+    'arrow-right': '<path d="m9 18 6-6-6-6"/>',
+    'arrow-up': '<path d="m6 15 6-6 6 6"/>',
+    buildings: '<path d="M4 21V7l6-4v18M10 21V9l10-3v15M2 21h20M7 8v.1M7 12v.1M7 16v.1M14 10v.1M14 14v.1M14 18v.1"/>',
+    rocket: '<path d="M14 4c3-2 6-2 6-2s0 3-2 6l-6 6-4-4 6-6ZM8 14l-3 1-2 4 4-2 1-3ZM4 16l4 4M14 10l2 2"/>'
+  };
+
+  const EMOJI_ICONS = {
+    '🏠':'home','🏡':'home','🗺️':'map','🗺':'map','🧭':'compass','🏞️':'mountain','🏞':'mountain',
+    '🐱':'sparkles','🎒':'backpack','🧳':'backpack','📦':'package','🔥':'flame','🎲':'dice',
+    '📖':'book','⚠️':'warning','⚠':'warning','👴':'user','🧑':'user','🧒':'user','👨‍👩‍👧':'users',
+    '⚙️':'settings','⚙':'settings','☰':'menu','✕':'close','‹':'arrow-left','›':'arrow-right','↑':'arrow-up',
+    '📅':'calendar','🌤️':'cloudSun','🌤':'cloudSun','✈️':'plane','✈':'plane','🚄':'train','🚗':'car','🚌':'bus',
+    '❓':'help','🤷':'help','🌅':'sun','☀️':'sun','☀':'sun','🌇':'sun','🌶️':'warning','🌶':'warning',
+    '🦐':'warning','🥜':'warning','🥛':'warning','🥬':'leaf','🕌':'landmark','🏯':'landmark','🏛️':'landmark',
+    '🏛':'landmark','✅':'check','💰':'wallet','💳':'card','💎':'gem','🏨':'bed','🏰':'bed','🍜':'food',
+    '🌊':'waves','🏘️':'buildings','🏘':'buildings','🌃':'moon','🎡':'ticket','🕘':'clock','📍':'pin',
+    '🔒':'lock','🔓':'unlock','🌏':'globe','🖼️':'image','🖼':'image','🛠️':'wrench','🛠':'wrench','💬':'message','🚀':'rocket'
+  };
+
+  const ICON_SELECTOR = [
+    '.btn','.chip','.tt-emoji','.ft-icon','.entry-icon','.result-empty-icon','.disc-hero-mark',
+    '.settings-menu button','.settings-menu a','#navLinks a','.about-card h3','.quick-title',
+    '.date-icon','#planDateWeatherTitle','.chat-desktop-only','.chat-mobile-only','.num-group span',
+    '.nav-toggle','.modal-close','.lightbox-close','.lightbox-nav','.to-top','#langSwitch'
+  ].join(',');
+  const EMOJI_KEYS = Object.keys(EMOJI_ICONS).sort((a, b) => b.length - a.length);
+
+  function injectIconSprite() {
+    if (document.getElementById('ui-icon-sprite')) return;
+    const sprite = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    sprite.id = 'ui-icon-sprite';
+    sprite.setAttribute('aria-hidden', 'true');
+    sprite.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+    sprite.innerHTML = Object.entries(ICON_DEFS).map(([name, path]) =>
+      `<symbol id="ui-icon-${name}" viewBox="0 0 24 24">${path}</symbol>`
+    ).join('');
+    document.body.prepend(sprite);
+  }
+
+  function makeUiIcon(name) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'ui-icon');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    use.setAttribute('href', '#ui-icon-' + name);
+    svg.appendChild(use);
+    return svg;
+  }
+
+  function upgradeEmojiIcons(root) {
+    const scope = root && root.nodeType === 1 ? root : document;
+    const targets = [];
+    if (scope.matches && scope.matches(ICON_SELECTOR)) targets.push(scope);
+    if (scope.querySelectorAll) targets.push(...scope.querySelectorAll(ICON_SELECTOR));
+    targets.forEach((el) => {
+      const hasIcon = !!el.querySelector('.ui-icon');
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      let node;
+      while ((node = walker.nextNode())) {
+        const text = node.nodeValue || '';
+        const leading = text.match(/^\s*/)[0];
+        const trimmed = text.slice(leading.length);
+        const emoji = EMOJI_KEYS.find((key) => trimmed.startsWith(key));
+        if (!emoji) continue;
+        const icon = makeUiIcon(EMOJI_ICONS[emoji]);
+        node.nodeValue = trimmed.slice(emoji.length).replace(/^\s+/, '');
+        if (!hasIcon) node.parentNode.insertBefore(icon, node);
+        el.classList.add('has-ui-icon');
+        break;
+      }
+    });
+  }
+
+  function observeEmojiIcons() {
+    if (!('MutationObserver' in window)) return;
+    let pending = false;
+    let roots = [];
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (node && node.nodeType === 1) roots.push(node);
+        }
+        if (mutation.type === 'characterData' && mutation.target.parentElement) {
+          roots.push(mutation.target.parentElement);
+        }
+      }
+      if (pending || !roots.length) return;
+      pending = true;
+      requestAnimationFrame(() => {
+        pending = false;
+        const batch = roots;
+        roots = [];
+        batch.forEach((node) => upgradeEmojiIcons(node));
+      });
+    });
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+
+  function bindButtonMotion() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      const control = event.target.closest('.btn, .chip');
+      if (!control || control.disabled || control.getAttribute('aria-disabled') === 'true') return;
+      const rect = control.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height) * 1.2;
+      const ripple = document.createElement('span');
+      ripple.className = 'ui-ripple';
+      ripple.style.width = ripple.style.height = size + 'px';
+      ripple.style.left = (event.clientX - rect.left - size / 2) + 'px';
+      ripple.style.top = (event.clientY - rect.top - size / 2) + 'px';
+      control.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 560);
+    }, { passive: true });
+  }
+
   const state = {
     destinations: [],
     elderly: localStorage.getItem('jyh_elderly') === '1',
@@ -623,6 +786,10 @@
     ensureShell();
     applyElderly();
     adaptLegacyMobileNav();
+    injectIconSprite();
+    upgradeEmojiIcons();
+    observeEmojiIcons();
+    bindButtonMotion();
     navActive();
     bindNav();
     bindNavScroll();
