@@ -168,13 +168,13 @@ body.packing-linked-plan .result-card {
 
 body.packing-linked-plan .packing-trip-rail {
   display: flex;
-  position: fixed;
-  top: 84px;
-  left: max(24px, calc((100vw - 1360px) / 2));
+  position: sticky;
+  top: calc(var(--nav-h) + 16px);
+  left: auto;
   align-self: start;
   flex-direction: column;
   gap: 16px;
-  width: 240px;
+  width: 100%;
   height: calc(100vh - 220px);
   min-height: 0;
   overflow-y: auto;
@@ -700,7 +700,6 @@ html.elderly body.packing-page {
   }
 
   body.packing-linked-plan .packing-trip-rail {
-    left: 24px;
     width: 220px;
   }
 
