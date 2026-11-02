@@ -633,9 +633,19 @@ function serveStatic(req, res, pathname) {
     }
     const ext = path.extname(filePath).toLowerCase();
     const mime = MIME[ext] || 'application/octet-stream';
-    const cacheCtrl = ext === '.html' ? 'no-cache'
+    const cacheCtrl = ext === '.html' ? 'public, max-age=30, stale-while-revalidate=120'
       : (ext === '.js' || ext === '.css' || ext === '.json' || ext === '.svg') ? 'public, max-age=31536000, immutable'
       : 'public, max-age=604800';
+    const etag = `W/"${st.size.toString(16)}-${Math.floor(st.mtimeMs).toString(16)}"`;
+    const lastModified = st.mtime.toUTCString();
+    const inm = String(req.headers['if-none-match'] || '').split(',').map((x) => x.trim());
+    const ims = Date.parse(String(req.headers['if-modified-since'] || ''));
+    const notModified = inm.includes(etag) || (Number.isFinite(ims) && Math.floor(st.mtimeMs / 1000) <= Math.floor(ims / 1000));
+    const commonHeaders = { 'Cache-Control': cacheCtrl, 'ETag': etag, 'Last-Modified': lastModified, 'Vary': 'Accept-Encoding' };
+    if (notModified) {
+      res.writeHead(304, Object.assign(commonHeaders, secHeaders(filePath)));
+      return res.end();
+    }
     const accept = (req.headers['accept-encoding'] || '');
     const compressible = ['.html', '.css', '.js', '.json', '.svg', '.txt'].includes(ext);
     if (compressible && /gzip/i.test(accept)) {
@@ -644,10 +654,10 @@ function serveStatic(req, res, pathname) {
         gz = { mtime: st.mtimeMs, data: zlib.gzipSync(fs.readFileSync(filePath)) };
         gzipCache.set(filePath, gz);
       }
-      res.writeHead(200, Object.assign({ 'Content-Type': mime, 'Cache-Control': cacheCtrl, 'Content-Encoding': 'gzip', 'Vary': 'Accept-Encoding' }, secHeaders(filePath)));
+      res.writeHead(200, Object.assign({ 'Content-Type': mime, 'Content-Encoding': 'gzip' }, commonHeaders, secHeaders(filePath)));
       return res.end(gz.data);
     }
-    res.writeHead(200, Object.assign({ 'Content-Type': mime, 'Cache-Control': cacheCtrl }, secHeaders(filePath)));
+    res.writeHead(200, Object.assign({ 'Content-Type': mime }, commonHeaders, secHeaders(filePath)));
     fs.createReadStream(filePath).pipe(res);
   });
 }

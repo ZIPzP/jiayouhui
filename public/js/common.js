@@ -448,6 +448,32 @@
     update(); // 初始状态（锚点直达/页面中部刷新时立即正确）
   }
 
+  function bindNavPrefetch() {
+    const connection = navigator.connection || {};
+    if (connection.saveData || /^(slow-2g|2g)$/.test(connection.effectiveType || '')) return;
+    const links = [...document.querySelectorAll('.nav-links-inline a[href], #navDrawer a[href]')]
+      .filter((a) => a.origin === location.origin && a.pathname !== location.pathname);
+    const seen = new Set();
+    const prefetch = (href) => {
+      if (!href || seen.has(href)) return;
+      seen.add(href);
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.as = 'document';
+      link.href = href;
+      document.head.appendChild(link);
+    };
+    links.forEach((a) => {
+      ['pointerenter', 'focus', 'touchstart'].forEach((type) => {
+        a.addEventListener(type, () => prefetch(a.href), { once: true, passive: true });
+      });
+    });
+    const idle = window.requestIdleCallback
+      ? (cb) => requestIdleCallback(cb, { timeout: 1200 })
+      : (cb) => setTimeout(cb, 900);
+    idle(() => links.forEach((a) => prefetch(a.href)));
+  }
+
   /* ---------------- 启动 ---------------- */
   async function startPage() {
     refreshAiStatus();
@@ -600,6 +626,7 @@
     navActive();
     bindNav();
     bindNavScroll();
+    bindNavPrefetch();
     bindSettings();
     bindAuth();
     try {

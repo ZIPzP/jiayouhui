@@ -149,6 +149,28 @@ code { background: #f1f5f9; padding: 2px 6px; border-radius: 6px; font-size: .9e
 /* ---------- 打包布局 ---------- */
 .packing-layout { display: grid; grid-template-columns: 420px 1fr; gap: 24px; align-items: start; }
 .form-card { padding: 24px; position: sticky; top: calc(var(--nav-h) + 16px); }
+@media (min-width: 901px) {
+body.packing-page #packing { padding-bottom: 0; }
+.packing-page .packing-layout > .form-card {
+  position: sticky;
+  top: calc(var(--nav-h) + 16px);
+  max-height: none;
+}
+.packing-page .packing-layout > .result-card {
+  position: sticky;
+  top: calc(var(--nav-h) + 16px);
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.packing-page .packing-layout > .result-card::-webkit-scrollbar { width: 6px; }
+.packing-page .packing-layout > .result-card::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(15, 118, 110, .28);
+}
+.packing-page .packing-layout > .result-card::-webkit-scrollbar-track { background: transparent; }
+}
 .plan-context { margin: 0 0 16px; padding: 10px 12px; border: 1px solid #99f6e4; background: var(--primary-light); color: var(--primary-dark); border-radius: 10px; font-size: .84rem; line-height: 1.5; }
 .plan-context p { margin: 0; }
 .result-card { padding: 28px; min-height: 420px; }
@@ -734,7 +756,7 @@ html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; 
 }
 
 /* ① Hero 入场：JS 挂 .anim 触发，backwards 让延迟期保持初始态，播完由 JS 摘除 */
-html.js .anim { animation: jyh-rise .45s cubic-bezier(.22, .61, .36, 1) backwards; }
+html.js .anim { animation: jyh-rise .34s cubic-bezier(.22, .61, .36, 1) backwards; }
 html.js .anim[data-delay="1"] { animation-delay: .08s; }
 html.js .anim[data-delay="2"] { animation-delay: .16s; }
 html.js .anim[data-delay="3"] { animation-delay: .24s; }
@@ -742,7 +764,7 @@ html.js .anim[data-delay="4"] { animation-delay: .32s; }
 
 /* ② 滚动入场：JS 挂 .reveal → 进入视口挂 .reveal-in → 播完摘除，恢复 hover 常态 */
 html.js .reveal { opacity: 0; }
-html.js .reveal.reveal-in { animation: jyh-rise .5s cubic-bezier(.22, .61, .36, 1) both; }
+html.js .reveal.reveal-in { animation: jyh-rise .36s cubic-bezier(.22, .61, .36, 1) both; }
 
 /* ③ 导航两态：顶部轻盈 → 滚动后毛玻璃加深 + 阴影。
       border 用透明占位不删除，避免状态切换时高度跳动；不过渡 backdrop-filter，省 paint */
@@ -802,7 +824,7 @@ html.js .reveal.reveal-in { animation: jyh-rise .5s cubic-bezier(.22, .61, .36, 
 }
 /* ================= 🎨 动态高级感 · 动效层（不改变功能） ================= */
 /* 页面入场：整页淡入上浮（仅 JS 可用时） */
-html.js body { animation: pageIn .5s ease both; }
+html.js body { animation: pageIn .16s ease-out both; }
 @keyframes pageIn { from { opacity: 0; } to { opacity: 1; } }
 
 /* 流动渐变背景（柔和青绿→暖白，贴合家庭旅行主题） */
@@ -842,6 +864,8 @@ body.packing-page #packing {
     radial-gradient(ellipse at 94% 18%, rgba(249, 115, 22, .12), transparent 24rem),
     linear-gradient(180deg, rgba(251, 250, 246, .44), rgba(242, 239, 231, .76) 48%, rgba(242, 249, 247, .62));
 }
+
+body.packing-page #packing { overflow: clip; }
 
 body.plan-page #plan::before,
 body.packing-page #packing::before {
@@ -953,7 +977,7 @@ body.packing-page .result-card {
 }
 
 /* 滚动入场：元素进入视口淡入上浮 */
-html.js [data-reveal] { opacity: 0; transform: translateY(20px); transition: opacity .65s ease, transform .65s cubic-bezier(.22, .61, .36, 1); }
+html.js [data-reveal] { opacity: 0; transform: translateY(10px); transition: opacity .32s ease, transform .32s cubic-bezier(.22, .61, .36, 1); }
 html.js [data-reveal].in { opacity: 1; transform: none; }
 
 /* 首页 Hero 山形/波浪剪影（缓慢漂移，点缀主题） */
@@ -986,7 +1010,7 @@ html.js [data-reveal].in { opacity: 1; transform: none; }
 
 /* 级联入场：目的地/入口/榜单/关于/特色条 */
 .dest-grid > .dest-card, .entry-grid > .entry-card, .about-grid > .card, #hotList > .hot-item, .ft-item, .draw-card {
-  animation: cardIn .55s ease backwards;
+  animation: cardIn .36s ease backwards;
 }
 
 .dest-grid > .dest-card:nth-child(1) { animation-delay: 0.00s; }
@@ -1034,10 +1058,10 @@ html.js [data-reveal].in { opacity: 1; transform: none; }
 
 /* 页面切换过渡（Chrome 等现代浏览器渐进增强） */
 @view-transition { navigation: auto; }
-::view-transition-old(root) { animation: vtOut .16s ease both; }
-::view-transition-new(root) { animation: vtIn .32s ease both; }
-@keyframes vtOut { to { opacity: 0; transform: translateY(8px); } }
-@keyframes vtIn { from { opacity: 0; transform: translateY(12px); } }
+::view-transition-old(root) { animation: vtOut .12s ease both; }
+::view-transition-new(root) { animation: vtIn .2s ease both; }
+@keyframes vtOut { to { opacity: 0; transform: translateY(4px); } }
+@keyframes vtIn { from { opacity: 0; transform: translateY(6px); } }
 
 /* 尊重系统"减少动态"：关闭所有动画 */
 @media (prefers-reduced-motion: reduce) {
@@ -1090,11 +1114,11 @@ html.js .ch { display: inline-block; opacity: 0; transform: translateY(16px) rot
 
 /* 滚动入场更高级：加上轻微模糊 + 弹性曲线 */
 html.js [data-reveal] {
-  opacity: 0; transform: translateY(26px);
-  filter: blur(4px);
-  transition: opacity .7s ease, transform .7s cubic-bezier(.22,.61,.36,1), filter .7s ease;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .32s ease, transform .32s cubic-bezier(.22,.61,.36,1);
 }
-html.js [data-reveal].in { opacity: 1; transform: none; filter: none; }
+html.js [data-reveal].in { opacity: 1; transform: none; }
 
 /* 减少动态时，渐变文字恢复纯色可读 */
 @media (prefers-reduced-motion: reduce) {

@@ -14,6 +14,7 @@
       document.body.classList.add('packing-linked-plan');
       renderPackingTrip();
     }
+    schedulePackingStickyBounds();
     // 从首页快捷规划跳转过来时，自动带入选择并生成
     const quick = sessionStorage.getItem('jyh_quick');
     if (quick) {
@@ -229,6 +230,11 @@
       renderPlanContext();
     });
     document.getElementById('pf-submit').addEventListener('click', () => generatePacking(formValues()));
+    window.addEventListener('resize', schedulePackingStickyBounds);
+    const form = document.querySelector('.packing-layout > .form-card');
+    if (form && 'ResizeObserver' in window) {
+      new ResizeObserver(schedulePackingStickyBounds).observe(form);
+    }
     const body = document.getElementById('resultBody');
     body.addEventListener('click', (e) => {
       if (e.target.closest('[data-print]')) { window.print(); return; }
@@ -242,6 +248,29 @@
 
   function savePack(vals, result) {
     localStorage.setItem(packStorageKey, JSON.stringify({ vals, result, lang: (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh', ts: Date.now() }));
+  }
+  let packingStickyFrame = 0;
+  function schedulePackingStickyBounds() {
+    if (packingStickyFrame) return;
+    packingStickyFrame = requestAnimationFrame(() => {
+      packingStickyFrame = 0;
+      syncPackingStickyBounds();
+    });
+  }
+  function syncPackingStickyBounds() {
+    const form = document.querySelector('.packing-layout > .form-card');
+    const result = document.querySelector('.packing-layout > .result-card');
+    if (!form || !result) return;
+    if (window.matchMedia('(max-width: 900px)').matches) {
+      form.style.maxHeight = '';
+      result.style.height = '';
+      result.style.maxHeight = '';
+      return;
+    }
+    form.style.maxHeight = '';
+    const height = Math.ceil(form.getBoundingClientRect().height) + 'px';
+    result.style.height = height;
+    result.style.maxHeight = height;
   }
   async function generatePacking(vals) {
     const empty = document.getElementById('resultEmpty');
@@ -526,5 +555,6 @@
       const action = button.querySelector('.packing-priority-action');
       if (action) action.textContent = checked ? (uiEn ? 'Packed' : '已收好') : (uiEn ? 'Pack' : '收好');
     });
+    schedulePackingStickyBounds();
   }
 })();
