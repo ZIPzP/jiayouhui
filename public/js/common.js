@@ -32,6 +32,8 @@
     wallet: '<rect x="3" y="6" width="18" height="14" rx="3"/><path d="M3 9h18M16 14h2"/>',
     card: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/>',
     gem: '<path d="m7 3-4 6 9 12 9-12-4-6H7Z"/><path d="M3 9h18M9 3l3 6 3-6M8 9l4 12 4-12"/>',
+    star: '<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9L12 3Z"/>',
+    'star-filled': '<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9L12 3Z" fill="currentColor"/>',
     bed: '<path d="M3 20V8M21 20v-6a3 3 0 0 0-3-3H9v5M3 14h18M6 11H3v3h3v-3Z"/>',
     mountain: '<path d="m3 20 7-12 4 7 2-3 5 8H3Z"/><path d="m8 11 2 3 2-3"/>',
     food: '<path d="M6 3v8M9 3v8M6 7h3M7.5 11v10M16 3c-2 2-2 6 0 8v10M16 3c3 2 3 6 0 8"/>',
@@ -69,7 +71,8 @@
     '🦐':'warning','🥜':'warning','🥛':'warning','🥬':'leaf','🕌':'landmark','🏯':'landmark','🏛️':'landmark',
     '🏛':'landmark','✅':'check','💰':'wallet','💳':'card','💎':'gem','🏨':'bed','🏰':'bed','🍜':'food',
     '🌊':'waves','🏘️':'buildings','🏘':'buildings','🌃':'moon','🎡':'ticket','🕘':'clock','📍':'pin',
-    '🔒':'lock','🔓':'unlock','🌏':'globe','🖼️':'image','🖼':'image','🛠️':'wrench','🛠':'wrench','💬':'message','🚀':'rocket'
+    '🔒':'lock','🔓':'unlock','🌏':'globe','🖼️':'image','🖼':'image','🛠️':'wrench','🛠':'wrench','💬':'message','🚀':'rocket',
+    '✨':'sparkles','☆':'star','★':'star-filled'
   };
 
   const ICON_SELECTOR = [
