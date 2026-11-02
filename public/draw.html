@@ -6,7 +6,7 @@
   <title>家游汇 · 发现下一站</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>" />
   <link rel="stylesheet" href="/css/style.css?v=20261101navspace2" />
-  <link rel="stylesheet" href="/css/discovery.css?v=20261101enfull6" />
+  <link rel="stylesheet" href="/css/discovery.css?v=20261102search1" />
 </head>
 <body class="discovery-lab-page">
   <header class="nav" id="topnav">
@@ -120,66 +120,41 @@
       </aside>
     </div>
 
-    <section class="card disc-feedback-card">
-      <div class="disc-feedback-head">
+    <section class="card disc-search-card" aria-labelledby="discKnowledgeTitle">
+      <div class="disc-search-head">
         <div>
-          <span class="disc-eyebrow">03 · FEEDBACK</span>
-          <h2>旅行热点反馈</h2>
-          <p>告诉其他家庭：你想去哪、去过哪里，或者哪里不值得去。</p>
+          <span class="disc-eyebrow">03 · DISCOVER</span>
+          <h2 id="discKnowledgeTitle">搜索文旅热点</h2>
+          <p>按城市、主题或媒体搜索已收录的公开旅游资讯，找到后可直接跳转原文。</p>
         </div>
-        <span class="disc-local-note">体验版 · 反馈保存在本设备</span>
+        <span class="disc-knowledge-source">来源已标注</span>
       </div>
 
-      <div class="disc-feedback-layout">
-        <form class="disc-feedback-form" id="discFeedbackForm">
-          <div class="disc-form-row">
-            <label>
-              <span>目的地</span>
-              <input class="input" id="discFbDestination" maxlength="20" required placeholder="例如 杭州" />
-            </label>
-            <label>
-              <span>昵称（可选）</span>
-              <input class="input" id="discFbNickname" maxlength="16" placeholder="匿名旅人" />
-            </label>
-          </div>
-          <div class="disc-form-row">
-            <label>
-              <span>反馈类型</span>
-              <select class="input" id="discFbType">
-                <option value="想去">我想去</option>
-                <option value="去过推荐">去过了，推荐</option>
-                <option value="不推荐">去过，但不推荐</option>
-              </select>
-            </label>
-            <label>
-              <span>推荐指数</span>
-              <select class="input" id="discFbRating">
-                <option value="5">★★★★★ 5 分</option>
-                <option value="4">★★★★☆ 4 分</option>
-                <option value="3">★★★☆☆ 3 分</option>
-                <option value="2">★★☆☆☆ 2 分</option>
-                <option value="1">★☆☆☆☆ 1 分</option>
-              </select>
-            </label>
-          </div>
-          <label>
-            <span>留言</span>
-            <textarea class="input" id="discFbText" rows="4" maxlength="200" required placeholder="分享交通、老人孩子体验、避坑建议…"></textarea>
-          </label>
-          <button class="btn btn-primary" type="submit">发布旅行反馈</button>
-        </form>
-
-        <div class="disc-feedback-board">
-          <div class="disc-feedback-board-head">
-            <b>最新旅行反馈</b>
-            <span id="discFbCount">0 条</span>
-          </div>
-          <div id="discFeedbackList"></div>
+      <form class="disc-search-form" id="discKnowledgeSearchForm" role="search">
+        <label class="disc-search-label" for="discKnowledgeSearch">搜索目的地、主题或媒体</label>
+        <div class="disc-search-controls">
+          <input class="input" id="discKnowledgeSearch" type="search" autocomplete="off" placeholder="例如：北京 / 夜游 / Lonely Planet" />
+          <button class="btn btn-primary" type="submit">搜索</button>
+          <button class="btn btn-ghost" id="discKnowledgeReset" type="button">清除</button>
         </div>
+        <div class="disc-search-tags" aria-label="热门搜索">
+          <span>热门搜索</span>
+          <button type="button" data-search-tag="北京">北京</button>
+          <button type="button" data-search-tag="上海">上海</button>
+          <button type="button" data-search-tag="夜游">夜游</button>
+          <button type="button" data-search-tag="酒店">酒店</button>
+          <button type="button" data-search-tag="乡村">乡村</button>
+        </div>
+        <p class="disc-search-status" id="discKnowledgeStatus" aria-live="polite">正在读取文旅热点…</p>
+      </form>
+
+      <div class="disc-knowledge-grid" id="discKnowledgeList" aria-live="polite">
+        <p class="disc-knowledge-empty">正在读取文旅资讯…</p>
       </div>
+      <p class="disc-knowledge-note">仅展示标题、短摘要与原文链接；文章版权归原作者及来源网站所有。</p>
     </section>
 
-    <p class="disc-lab-disclaimer">旅行海报与反馈当前保存在当前浏览器；AI 纸感插画与公开反馈将在后续版本接入。</p>
+    <p class="disc-lab-disclaimer">旅行海报与收藏保存在当前浏览器；文旅热点仅展示摘要并跳转至原始页面。</p>
   </main>
 
   <div class="modal-backdrop" id="discResultModal" hidden>
@@ -209,9 +184,9 @@
     <p class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener"><img class="beian-icon" src="/images/beian-icon.png" alt="备案图标" />赣ICP备2026019601号-1</a></p>
   </footer>
 
-  <script src="/js/i18n.js?v=20261101enfull2"></script>
+  <script src="/js/i18n.js?v=20261102search1"></script>
   <script src="/js/common.js?v=20261101clean"></script>
   <script src="/js/detail.js?v=20261101r"></script>
-  <script src="/js/discovery.js?v=20261101enfull4"></script>
+  <script src="/js/discovery.js?v=20261102search2"></script>
 </body>
 </html>

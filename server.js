@@ -17,6 +17,7 @@ const auth = require('./lib/auth');
 const weather = require('./lib/weather');
 const collector = require('./lib/collector');
 const train = require('./lib/train');
+const travelSearch = require('./lib/travel-search');
 
 const ROOT = __dirname;
 const PUBLIC = path.join(ROOT, 'public');
@@ -40,10 +41,12 @@ function readJson(file) {
 
 /* ---------- 安全防护：AI 限流 / 登录锁定 / 任务表清理 ---------- */
 const RATE = { windowMs: 60000, max: 30 };                    // AI 接口：每 IP 每分钟 30 次
+const WEB_SEARCH = { windowMs: 10 * 60 * 1000, max: 20 };    // 免费全网搜索：每 IP 每 10 分钟 20 次
 const LOGIN = { windowMs: 60000, max: 5, lockMs: 60000 };     // 登录失败：每 IP 每分钟 5 次后锁 1 分钟
 const JOB_TTL = 5 * 60 * 1000;                                // 任务结果保留 5 分钟
 const MAX_JOBS = 20;                                          // 最大并发任务数
 const hits = new Map();                                       // ip -> { n, reset }
+const searchHits = new Map();                                 // ip -> { n, reset }
 const loginFails = new Map();                                 // ip -> { n, reset, lockedUntil }
 // 仅信任来自本机 nginx 的代理头（remoteAddress 不可伪造）；直连请求一律忽略伪造头，防绕过限流/锁定
 const TRUSTED_PROXY = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
@@ -68,6 +71,13 @@ function allowAi(req) {
   rec.n++; hits.set(clientIp(req), rec);
   return rec.n <= RATE.max;
 }
+function allowTravelSearch(req) {
+  const ip = clientIp(req);
+  const rec = bucket(searchHits, ip, WEB_SEARCH.windowMs);
+  rec.n++;
+  searchHits.set(ip, rec);
+  return rec.n <= WEB_SEARCH.max;
+}
 function loginAllowed(req) {
   const rec = bucket(loginFails, clientIp(req), LOGIN.windowMs);
   const allowed = !(rec.lockedUntil && Date.now() < rec.lockedUntil);
@@ -77,6 +87,7 @@ function loginAllowed(req) {
 setInterval(() => {
   const now = Date.now();
   for (const [k, v] of hits) if (now > v.reset) hits.delete(k);
+  for (const [k, v] of searchHits) if (now > v.reset) searchHits.delete(k);
   for (const [k, v] of loginFails) if (now > v.reset && now > (v.lockedUntil || 0)) loginFails.delete(k);
 }, 5 * 60 * 1000).unref();
 
@@ -358,6 +369,27 @@ async function handleApi(req, res, pathname) {
     const month = new Date().getMonth() + 1;
     const items = collector.monthlyRank(collector.merge(data.results), month);
     return sendJson(res, 200, { collectedAt: data.collectedAt, sources: data.results, month, monthLabel: month + '月', items });
+  }
+
+  // GET /api/travel-search?q=xxx —— 本地无结果时使用 Tavily 免费额度补充全网文旅文章
+  if (pathname === '/api/travel-search' && req.method === 'GET') {
+    const q = url.parse(req.url, true).query;
+    const keyword = String(q.q || '').trim();
+    if (!keyword) return sendJson(res, 400, { enabled: travelSearch.isEnabled(), error: reqLang(req) === 'en' ? 'Please enter a search keyword' : '请输入搜索关键词' });
+    if (!allowTravelSearch(req)) {
+      return sendJson(res, 429, { enabled: travelSearch.isEnabled(), error: reqLang(req) === 'en' ? 'Too many web searches — please try again later' : '免费全网搜索次数过多，请稍后再试' });
+    }
+    try {
+      const result = await travelSearch.searchWeb(keyword, reqLang(req));
+      return sendJson(res, 200, result);
+    } catch (e) {
+      console.error('[Travel Search Error]', e);
+      return sendJson(res, e.statusCode || 502, {
+        enabled: true,
+        results: [],
+        error: reqLang(req) === 'en' ? 'Free web search is temporarily unavailable' : '免费全网搜索暂时不可用，请稍后再试'
+      });
+    }
   }
 
   // POST /api/recommend —— AI/规则 出行打包清单

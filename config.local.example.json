@@ -10,5 +10,9 @@
     "provider": "amap",
     "amapJsKey": "你的高德Web端JSKey",
     "amapSecurityCode": "你的高德安全密钥"
+  },
+  "travelSearch": {
+    "provider": "tavily",
+    "apiKey": "tvly-你的Tavily免费APIKey"
   }
 }

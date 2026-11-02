@@ -32,5 +32,11 @@
                                                        }
                                   }
                   },
+    "travelSearch":  {
+                          "provider":  "tavily",
+                          "apiKey":  "",
+                          "maxResults":  8,
+                          "timeoutMs":  15000
+                      },
     "imageBase":  ""
 }

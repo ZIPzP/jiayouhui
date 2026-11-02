@@ -2,7 +2,6 @@
   'use strict';
 
   const SELECTED_KEY = 'jyh_discovery_lab_cities_v1';
-  const FEEDBACK_KEY = 'jyh_discovery_lab_feedback_v1';
   const DRAW_KEY = 'jyh_draw_history';
   const VIEW_KEY = 'jyh_view_history_v1';
   const FAVORITE_KEY = 'jyh_favorites_v1';
@@ -11,12 +10,17 @@
     destinations: [],
     hot: [],
     featured: [],
+    knowledge: [],
+    knowledgeQuery: '',
+    webKnowledge: [],
+    webSearchMessage: '',
     selected: [],
     mode: 'random',
     current: null
   };
   const uiEn = () => !!(window.i18n && window.i18n.lang === 'en');
   const tr = (s) => (uiEn() && window.i18n ? window.i18n.t(s) : s);
+  let knowledgeSearchSeq = 0;
 
   window.pageInit = async function () {
     if (window.matchMedia('(max-width: 900px)').matches) {
@@ -30,10 +34,9 @@
     renderCityChips();
     renderFeaturedCities();
     renderMeta();
-    renderFeedback();
     const initialMode = new URLSearchParams(location.search).get('mode');
     if (initialMode === 'limited') setMode('limited');
-    await loadHot();
+    await Promise.all([loadHot(), loadKnowledge()]);
   };
 
   function bindEvents() {
@@ -52,7 +55,21 @@
     document.getElementById('discResultModal').addEventListener('click', (e) => {
       if (e.target.id === 'discResultModal') closeResult();
     });
-    document.getElementById('discFeedbackForm').addEventListener('submit', submitFeedback);
+    document.getElementById('discKnowledgeSearchForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      runKnowledgeSearch(document.getElementById('discKnowledgeSearch').value);
+    });
+    document.getElementById('discKnowledgeSearch').addEventListener('input', (e) => {
+      knowledgeSearchSeq++;
+      state.knowledgeQuery = e.target.value.trim();
+      state.webKnowledge = [];
+      state.webSearchMessage = '';
+      renderKnowledge();
+    });
+    document.getElementById('discKnowledgeReset').addEventListener('click', () => setKnowledgeQuery(''));
+    document.querySelectorAll('[data-search-tag]').forEach((btn) => {
+      btn.addEventListener('click', () => runKnowledgeSearch(btn.dataset.searchTag));
+    });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeResult();
     });
@@ -250,7 +267,6 @@
         accent: picked.accent || '#0f766e',
         ts: Date.now()
       });
-      document.getElementById('discFbDestination').value = picked.name;
       showResult(picked);
     };
     tick();
@@ -382,55 +398,123 @@
     }
   }
 
-  function loadFeedback() {
+  async function loadKnowledge() {
+    const list = document.getElementById('discKnowledgeList');
+    if (!list) return;
     try {
-      const arr = JSON.parse(localStorage.getItem(FEEDBACK_KEY) || '[]');
-      if (Array.isArray(arr) && arr.length) return arr;
-    } catch (e) { /* ignore */ }
-    return uiEn()
-      ? [
-          { nickname: 'Xiaoman family', destination: '杭州', type: '去过推荐', rating: 5, text: 'West Lake is stroller-friendly, and the boat ride is easy for seniors.', ts: Date.now() - 86400000 },
-          { nickname: 'A-You', destination: '长沙', type: '想去', rating: 5, text: 'I want to take my parents to Orange Isle and find a non-spicy Hunan meal.', ts: Date.now() - 3600000 }
-        ]
-      : [
-          { nickname: '小满一家', destination: '杭州', type: '去过推荐', rating: 5, text: '西湖边推婴儿车很方便，坐游船老人也不累。', ts: Date.now() - 86400000 },
-          { nickname: '阿柚', destination: '长沙', type: '想去', rating: 5, text: '想带爸妈去橘子洲，顺便吃一顿不辣的湘菜。', ts: Date.now() - 3600000 }
-        ];
+      const response = await fetch('/data/discovery-knowledge.json?v=20261102c', {
+        headers: { Accept: 'application/json' }
+      });
+      if (!response.ok) throw new Error('knowledge request failed');
+      const data = await response.json();
+      state.knowledge = Array.isArray(data.items) ? data.items.slice(0, 18) : [];
+      renderKnowledge();
+    } catch (e) {
+      list.innerHTML = `<p class="disc-knowledge-empty">${uiEn() ? 'Travel stories are temporarily unavailable.' : '文旅资讯暂时不可用，请稍后再试。'}</p>`;
+      const status = document.getElementById('discKnowledgeStatus');
+      if (status) status.textContent = uiEn() ? 'Travel stories are temporarily unavailable.' : '文旅热点暂时不可用，请稍后再试。';
+    }
   }
 
-  function renderFeedback() {
-    const items = loadFeedback();
-    const list = document.getElementById('discFeedbackList');
-    document.getElementById('discFbCount').textContent = uiEn() ? items.length + ' items' : items.length + ' 条';
-    list.innerHTML = items.slice(0, 8).map((item) => `
-      <article class="disc-feedback-item">
-        <div class="disc-feedback-avatar">🧳</div>
-        <div>
-          <b>${app.esc(item.nickname || '匿名旅人')}</b>
-          <small>${app.esc(tr(item.destination))} · ${'★'.repeat(Number(item.rating) || 0)}</small>
-          <span class="disc-feedback-tag">${app.esc(tr(item.type || '反馈'))}</span>
-          <p>${app.esc(item.text)}</p>
-        </div>
-      </article>`).join('');
-  }
-
-  function submitFeedback(e) {
-    e.preventDefault();
-    const destination = document.getElementById('discFbDestination').value.trim();
-    const nickname = document.getElementById('discFbNickname').value.trim();
-    const type = document.getElementById('discFbType').value;
-    const rating = Number(document.getElementById('discFbRating').value);
-    const text = document.getElementById('discFbText').value.trim();
-    if (!destination || text.length < 4) {
-      app.toast('请填写目的地和至少 4 个字的留言');
+  function renderKnowledge() {
+    const list = document.getElementById('discKnowledgeList');
+    if (!list) return;
+    const en = uiEn();
+    const query = state.knowledgeQuery.toLocaleLowerCase();
+    const localItems = query
+      ? state.knowledge.filter((item) => knowledgeSearchText(item).includes(query))
+      : state.knowledge;
+    const seen = new Set(localItems.map((item) => item.url));
+    const items = localItems.concat(state.webKnowledge.filter((item) => {
+      if (!item.url || seen.has(item.url)) return false;
+      seen.add(item.url);
+      return true;
+    }));
+    const status = document.getElementById('discKnowledgeStatus');
+    if (status) {
+      status.textContent = state.webSearchMessage || (query
+        ? (en ? `${items.length} result${items.length === 1 ? '' : 's'} for “${state.knowledgeQuery}”` : `找到 ${items.length} 条与“${state.knowledgeQuery}”相关的文旅热点`)
+        : (en ? `${items.length} public travel stories` : `已收录 ${items.length} 条公开文旅资讯`));
+    }
+    if (!state.knowledge.length) {
+      list.innerHTML = `<p class="disc-knowledge-empty">${uiEn() ? 'No travel stories yet.' : '暂时还没有文旅资讯。'}</p>`;
       return;
     }
-    const items = loadFeedback();
-    items.unshift({ destination, nickname, type, rating, text, ts: Date.now() });
-    try { localStorage.setItem(FEEDBACK_KEY, JSON.stringify(items.slice(0, 30))); } catch (err) { /* ignore */ }
-    document.getElementById('discFbText').value = '';
-    renderFeedback();
-    app.toast('旅行反馈已保存在当前浏览器');
+    if (!items.length) {
+      list.innerHTML = `<p class="disc-knowledge-empty">${en ? 'No matching destinations or topics. Try another keyword.' : '没有找到匹配的目的地或主题，换个关键词试试。'}</p>`;
+      return;
+    }
+    list.innerHTML = items.map((item) => {
+      const dateText = item.publishedAt ? formatKnowledgeDate(item.publishedAt) : (en ? 'Live web' : '全网实时');
+      return `
+      <article class="disc-knowledge-item">
+        <div class="disc-knowledge-meta">
+          <span>${app.esc(en ? item.categoryEn : item.category)}</span>
+          <time datetime="${app.esc(item.publishedAt || '')}">${dateText}</time>
+        </div>
+        <h3>${app.esc(en ? item.titleEn : item.title)}</h3>
+        <p>${app.esc(en ? item.summaryEn : item.summary)}</p>
+        <div class="disc-knowledge-footer">
+          <small>${en ? 'Source: ' : '来源：'}${app.esc(en ? item.sourceEn : item.source)}</small>
+          <a href="${app.esc(item.url)}" target="_blank" rel="noopener noreferrer">${en ? 'Read original ↗' : '阅读原文 ↗'}</a>
+        </div>
+      </article>`;
+    }).join('');
+  }
+
+  function knowledgeSearchText(item) {
+    return [
+      item.category, item.categoryEn,
+      item.title, item.titleEn,
+      item.summary, item.summaryEn,
+      item.source, item.sourceEn
+    ].join(' ').toLocaleLowerCase();
+  }
+
+  function setKnowledgeQuery(value) {
+    knowledgeSearchSeq++;
+    state.knowledgeQuery = String(value || '').trim();
+    state.webKnowledge = [];
+    state.webSearchMessage = '';
+    const input = document.getElementById('discKnowledgeSearch');
+    if (input) input.value = state.knowledgeQuery;
+    renderKnowledge();
+  }
+
+  async function runKnowledgeSearch(rawValue) {
+    const query = String(rawValue || '').trim();
+    setKnowledgeQuery(query);
+    const seq = knowledgeSearchSeq;
+    if (!query) return;
+    const localCount = state.knowledge.filter((item) => knowledgeSearchText(item).includes(query.toLocaleLowerCase())).length;
+    if (localCount >= 3) return;
+    const status = document.getElementById('discKnowledgeStatus');
+    if (status) status.textContent = uiEn() ? 'Searching free web results…' : '正在使用免费额度补充全网结果…';
+    try {
+      const data = await app.api('/api/travel-search?q=' + encodeURIComponent(query) + '&lang=' + (uiEn() ? 'en' : 'zh'));
+      if (seq !== knowledgeSearchSeq || state.knowledgeQuery !== query) return;
+      state.webKnowledge = Array.isArray(data.results) ? data.results : [];
+      if (data.enabled === false) {
+        state.webSearchMessage = uiEn()
+          ? 'Free web search is not configured; local results only.'
+          : '免费全网搜索尚未配置，当前仅显示本地结果。';
+      }
+      renderKnowledge();
+    } catch (e) {
+      if (seq !== knowledgeSearchSeq || state.knowledgeQuery !== query) return;
+      state.webSearchMessage = uiEn()
+        ? 'Free web search is temporarily unavailable; local results are still shown.'
+        : '免费全网搜索暂时不可用，仍可查看本地结果。';
+      renderKnowledge();
+    }
+  }
+
+  function formatKnowledgeDate(value) {
+    const [year, month, day] = String(value || '').split('-').map(Number);
+    if (!year || !month || !day) return String(value || '');
+    if (!uiEn()) return `${year}.${String(month).padStart(2, '0')}.${String(day).padStart(2, '0')}`;
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${day} ${months[month - 1]} ${year}`;
   }
 
   function loadImage(src) {
