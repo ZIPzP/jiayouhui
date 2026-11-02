@@ -261,10 +261,12 @@ html.elderly .modal-close { width: 52px; height: 52px; font-size: 1.3rem; }
 .about-card h3 { margin-bottom: 10px; color: var(--primary-dark); }
 .about-card p { color: var(--ink-soft); font-size: .95rem; }
 
-.footer { text-align: center; padding: 28px 20px; color: var(--ink-soft); font-size: .88rem; border-top: 1px solid var(--line); background: #fff; }
+.footer { text-align: center; padding: 48px 20px; color: #94A3B8; font-size: .88rem; border-top: none; background: #1E293B; }
+.footer p { max-width: 980px; margin: 0 auto; line-height: 1.7; }
+.footer .footer-slogan { display: block; color: #E2E8F0; font-size: 15px; font-weight: 600; margin-bottom: 8px; }
 .footer .icp { margin-top: 10px; font-size: .82rem; }
 .footer .icp a { color: inherit; text-decoration: none; }
-.footer .icp a:hover { color: var(--primary); text-decoration: underline; }
+.footer .icp a:hover { color: #5EEAD4; text-decoration: underline; }
 
 /* ---------- 响应式 ---------- */
 @media (max-width: 900px) {
@@ -1223,7 +1225,7 @@ html.js [data-reveal].in { opacity: 1; transform: none; }
 @keyframes heroFloat { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-16px) rotate(4deg); } }
 
 /* 10. 页脚波浪分隔 */
-.footer-wave { display: block; width: 100%; height: 44px; margin-bottom: -1px; }
+.footer-wave { display: block; width: 100%; height: 44px; margin-bottom: -1px; color: #1E293B; }
 .footer-wave + .footer { border-top: none; }
 
 
