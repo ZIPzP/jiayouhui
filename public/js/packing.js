@@ -261,7 +261,7 @@
     const form = document.querySelector('.packing-layout > .form-card');
     const result = document.querySelector('.packing-layout > .result-card');
     if (!form || !result) return;
-    if (window.matchMedia('(max-width: 900px)').matches) {
+    if (window.matchMedia('(max-width: 900px)').matches || document.body.classList.contains('packing-linked-plan')) {
       form.style.maxHeight = '';
       result.style.height = '';
       result.style.maxHeight = '';
