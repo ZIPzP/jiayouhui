@@ -6,6 +6,7 @@
   <title>家游汇 · 家庭旅游推荐与攻略</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>" />
   <link rel="stylesheet" href="/css/style.css?v=20261101navspace2" />
+  <link rel="stylesheet" href="/css/packing-integration.css?v=20261102k" />
 </head>
 <body class="packing-page">    <header class="nav" id="topnav">
     <div class="nav-inner">
@@ -42,6 +43,47 @@
     </nav>
   </div>
   <div class="nav-backdrop" id="navBackdrop"></div>  <section id="packing" class="section section-alt">
+    <div class="packing-shell">
+      <div class="packing-rail-wrap">
+        <aside class="packing-trip-rail" id="packingTripRail" hidden>
+        <a class="packing-trip-cover" id="packingTripCover" href="/destinations.html">
+          <img id="packingTripImage" alt="" />
+          <span class="packing-trip-copy">
+            <strong id="packingTripTitle"></strong>
+            <small id="packingTripDates"></small>
+          </span>
+        </a>
+        <nav class="packing-rail-nav" aria-label="本次出行导航">
+          <a class="active" href="/packing.html" aria-current="page">
+            <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M4.2 4h9.6M4.2 9h9.6M4.2 14h6"></path><path d="m1.8 4 .7.7 1.3-1.4M1.8 9l.7.7 1.3-1.4"></path></svg>
+            <span>打包清单</span>
+            <span class="packing-rail-count" id="packingRailPending">—</span>
+          </a>
+          <a href="/plan.html">
+            <svg viewBox="0 0 18 18" aria-hidden="true"><rect x="2.5" y="4" width="13" height="11.5" rx="2"></rect><path d="M5.6 2.4v3.2M12.4 2.4v3.2M2.5 7.2h13"></path></svg>
+            <span>行程规划</span>
+          </a>
+          <a href="/destinations.html">
+            <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M9 16s5-4.4 5-8.5a5 5 0 1 0-10 0C4 11.6 9 16 9 16Z"></path><circle cx="9" cy="7.4" r="1.7"></circle></svg>
+            <span>目的地</span>
+          </a>
+          <a href="/hot.html">
+            <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 13.5V9M7.5 13.5V6M12 13.5V3.5M16 13.5H2"></path></svg>
+            <span>热门目的地</span>
+          </a>
+        </nav>
+        <dl class="packing-trip-facts">
+          <div><dt>同行</dt><dd id="packingTripTravelers"></dd></div>
+          <div><dt>节奏</dt><dd id="packingTripPace"></dd></div>
+          <div><dt>交通</dt><dd id="packingTripTransport"></dd></div>
+        </dl>
+        <div class="packing-rail-tip">
+          <strong>出发前再核对</strong>
+          <span>证件、常用药和充电设备优先放随身包。</span>
+        </div>
+        </aside>
+      </div>
+      <div class="packing-main">
     <div class="section-head" data-reveal>
       <h2><span class="tt-emoji">🎒</span> <span class="tt-grad">出行打包清单</span></h2>
       <p>选择目的地与出行时段，AI 为你和家人量身推荐该带的旅行用品</p>
@@ -111,10 +153,12 @@
         <div id="resultBody" hidden></div>
       </div>
     </div>
+      </div>
+    </div>
   </section>  <footer class="footer"><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习研究与技术交流，严禁商业用途；请遵守中国法律法规及 12306 官方相关规定，合理合规使用</p><p class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener"><img class="beian-icon" src="/images/beian-icon.png" alt="备案图标" />赣ICP备2026019601号-1</a></p></footer>  <script src="/js/i18n.js?v=20261101enfull2"></script>
   <script src="/js/common.js?v=20261101clean"></script>
   <script src="/js/html2canvas.min.js?v=20261101r"></script>
-  <script src="/js/packing.js?v=20261101audit"></script>
+  <script src="/js/packing.js?v=20261102k"></script>
 </body>
 </html>
 

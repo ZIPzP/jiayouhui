@@ -1,0 +1,822 @@
+/* 出行清单页专属表面与配色。全局导航和页面骨架保持现有实现。 */
+body.packing-page {
+  --pack-ink: #1f2926;
+  --pack-muted: #5d6864;
+  --pack-accent: #1b6e66;
+  --pack-accent-dark: #155c55;
+  --pack-accent-soft: #e6f0ed;
+  --pack-line: #dce6e2;
+  --pack-canvas: #f4f8f6;
+  color: var(--pack-ink);
+  background: var(--pack-canvas);
+}
+
+body.packing-page::before {
+  background:
+    radial-gradient(circle at 7% 8%, rgba(27, 110, 102, .12), transparent 27rem),
+    radial-gradient(circle at 93% 22%, rgba(217, 154, 61, .08), transparent 23rem),
+    linear-gradient(180deg, #f3f7f5 0%, #fbfaf7 46%, #f1f7f4 100%);
+  animation: none;
+}
+
+body.packing-page .bg-fx {
+  display: none;
+}
+
+body.packing-page ::selection {
+  background: #cfe4de;
+  color: #173c36;
+}
+
+body.packing-page :focus-visible {
+  outline: 3px solid rgba(27, 110, 102, .38);
+  outline-offset: 3px;
+}
+
+body.packing-page #packing {
+  overflow: visible;
+  background:
+    radial-gradient(circle at 4% 8%, rgba(27, 110, 102, .08), transparent 22rem),
+    radial-gradient(circle at 96% 28%, rgba(217, 154, 61, .07), transparent 20rem),
+    linear-gradient(180deg, rgba(245, 249, 247, .7), rgba(251, 250, 247, .9) 45%, rgba(241, 247, 244, .82));
+}
+
+body.packing-page #packing .section-head {
+  display: none;
+}
+
+body.packing-page #packing::before {
+  background-image: radial-gradient(circle, rgba(27, 110, 102, .13) 1px, transparent 1.2px);
+  background-size: 30px 30px;
+  -webkit-mask-image: linear-gradient(to bottom, #000, rgba(0, 0, 0, .32) 48%, transparent 82%);
+  mask-image: linear-gradient(to bottom, #000, rgba(0, 0, 0, .32) 48%, transparent 82%);
+}
+
+body.packing-page #packing::after {
+  display: none;
+}
+
+body.packing-page .packing-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+body.packing-page .packing-main {
+  min-width: 0;
+}
+
+body.packing-page .packing-rail-wrap,
+body.packing-page .packing-trip-rail {
+  display: none;
+}
+
+body.packing-page .form-card,
+body.packing-page .result-card {
+  border: 1px solid var(--pack-line);
+  background: rgba(255, 255, 255, .93);
+  box-shadow: 0 18px 48px rgba(32, 66, 57, .07);
+}
+
+body.packing-page .form-card {
+  border-radius: 18px;
+}
+
+body.packing-page .form-card:hover {
+  transform: none;
+}
+
+body.packing-page .result-card {
+  border-radius: 18px;
+}
+
+body.packing-page .plan-context,
+body.packing-page .tips-box,
+body.packing-page .weather-box {
+  border-color: #d6e6e0;
+  background: #f1f7f4;
+  color: var(--pack-accent-dark);
+}
+
+body.packing-page .input,
+body.packing-page select.input,
+body.packing-page textarea.input {
+  border-color: #d7e1dd;
+  background: #fcfdfc;
+}
+
+body.packing-page .input:focus,
+body.packing-page select.input:focus,
+body.packing-page textarea.input:focus {
+  border-color: var(--pack-accent);
+  box-shadow: 0 0 0 3px rgba(27, 110, 102, .1);
+}
+
+body.packing-page .chip-group label {
+  border-color: #dce5e1;
+  color: var(--pack-muted);
+}
+
+body.packing-page .chip-group label:has(input:checked) {
+  border-color: var(--pack-accent);
+  background: var(--pack-accent-soft);
+  color: var(--pack-accent-dark);
+}
+
+body.packing-page .btn-primary {
+  background: var(--pack-accent);
+  box-shadow: 0 6px 16px rgba(27, 110, 102, .16);
+}
+
+body.packing-page .btn-primary:hover {
+  background: var(--pack-accent-dark);
+}
+
+body.packing-page .btn-ghost {
+  border-color: var(--pack-line);
+  background: #fff;
+  box-shadow: none;
+}
+
+/* 有关联行程时，页面内部采用“行程摘要 + 清单工作台”，顶部全站导航保持不变。 */
+body.packing-linked-plan #packing .packing-shell {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 20px;
+  max-width: 1360px;
+}
+
+body.packing-linked-plan .packing-rail-wrap {
+  display: block;
+  min-width: 0;
+  align-self: stretch;
+}
+
+body.packing-linked-plan .packing-layout .form-card {
+  display: none;
+}
+
+body.packing-linked-plan .packing-layout {
+  display: block;
+}
+
+body.packing-linked-plan .result-card {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+body.packing-linked-plan .packing-trip-rail {
+  display: flex;
+  position: fixed;
+  top: 84px;
+  left: max(24px, calc((100vw - 1360px) / 2));
+  align-self: start;
+  flex-direction: column;
+  gap: 16px;
+  width: 240px;
+  height: calc(100vh - 220px);
+  min-height: 680px;
+  overflow-y: auto;
+  padding: 16px;
+  border: 1px solid var(--pack-line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .72);
+}
+
+.packing-trip-cover {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--pack-accent-soft);
+  color: #fff;
+  text-decoration: none;
+}
+
+.packing-trip-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.packing-trip-copy {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 24px 12px 10px;
+  background: linear-gradient(transparent, rgba(17, 31, 27, .78));
+}
+
+.packing-trip-copy strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.packing-trip-copy small {
+  color: rgba(255, 255, 255, .84);
+  font-size: 11px;
+}
+
+.packing-trip-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin: 0;
+  padding: 0 4px;
+}
+
+.packing-rail-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.packing-rail-nav a {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  min-height: 38px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  color: var(--pack-muted);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color .15s ease, color .15s ease;
+}
+
+.packing-rail-nav a:hover {
+  background: rgba(255, 255, 255, .72);
+  color: var(--pack-ink);
+}
+
+.packing-rail-nav a.active {
+  background: #e7ece9;
+  color: var(--pack-ink);
+}
+
+.packing-rail-nav svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+.packing-rail-count {
+  min-width: 24px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--pack-accent-dark);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.packing-trip-facts div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.packing-trip-facts dt {
+  color: var(--pack-muted);
+  font-size: 12px;
+}
+
+.packing-trip-facts dd {
+  margin: 0;
+  color: var(--pack-ink);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: right;
+}
+
+.packing-rail-tip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: auto;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--pack-accent-soft);
+}
+
+.packing-rail-tip strong {
+  color: var(--pack-accent-dark);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.packing-rail-tip span {
+  color: var(--pack-muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+/* 生成结果：保留右侧结果栏的位置，只重排面板内部形状。 */
+body.packing-page .packing-result-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+body.packing-page .packing-result-head h3 {
+  margin: 0;
+  color: var(--pack-ink);
+  font-size: clamp(1.45rem, 2.3vw, 1.85rem);
+  line-height: 1.3;
+}
+
+body.packing-page .packing-result-meta {
+  margin: 8px 0 0;
+  color: var(--pack-muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+body.packing-page .packing-result-head .provider-tag {
+  flex: none;
+  border-radius: 999px;
+  background: var(--pack-accent-soft);
+  color: var(--pack-accent-dark);
+}
+
+body.packing-page .packing-dashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(210px, .72fr);
+  gap: 14px;
+}
+
+body.packing-page .packing-progress-card,
+body.packing-page .packing-priority-card,
+body.packing-page .packing-list-panel,
+body.packing-page .packing-notes {
+  border: 1px solid var(--pack-line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(32, 66, 57, .045);
+}
+
+body.packing-page .packing-progress-card,
+body.packing-page .packing-priority-card {
+  padding: 18px;
+}
+
+body.packing-page .packing-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+body.packing-page .packing-section-head h4 {
+  margin: 0;
+  color: var(--pack-ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+body.packing-page .packing-section-head span {
+  color: var(--pack-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+body.packing-page .packing-progress-score {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin-top: 18px;
+  color: var(--pack-muted);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+body.packing-page .packing-progress-score strong {
+  color: var(--pack-ink);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+body.packing-page .packing-progress-track {
+  height: 9px;
+  margin-top: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eef2f0;
+}
+
+body.packing-page .packing-progress-track span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--pack-accent);
+  transition: width .2s ease;
+}
+
+body.packing-page .packing-progress-copy {
+  margin: 9px 0 0;
+  color: var(--pack-muted);
+  font-size: 12px;
+}
+
+body.packing-page .packing-category-progress {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px 14px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #edf1ef;
+}
+
+body.packing-page .packing-category-line {
+  min-width: 0;
+}
+
+body.packing-page .packing-category-copy {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 7px;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+body.packing-page .packing-category-copy b {
+  overflow: hidden;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.packing-page .packing-category-copy span {
+  color: var(--pack-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+body.packing-page .packing-category-track {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #edf2ef;
+}
+
+body.packing-page .packing-category-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--pack-accent);
+}
+
+body.packing-page .packing-priority-note {
+  margin: 12px 0 5px;
+  color: var(--pack-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+body.packing-page .packing-priority-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 2px;
+  border: 0;
+  border-bottom: 1px solid #edf1ef;
+  background: transparent;
+  color: var(--pack-ink);
+  text-align: left;
+}
+
+body.packing-page .packing-priority-item:last-child {
+  border-bottom: 0;
+}
+
+body.packing-page .packing-priority-item:hover {
+  color: var(--pack-accent-dark);
+}
+
+body.packing-page .packing-priority-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+body.packing-page .packing-priority-copy strong {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.packing-page .packing-priority-copy span {
+  overflow: hidden;
+  color: var(--pack-muted);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.packing-page .packing-priority-action {
+  align-self: center;
+  color: var(--pack-accent);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+body.packing-page .packing-priority-item.done .packing-priority-copy strong {
+  color: var(--pack-muted);
+  text-decoration: line-through;
+}
+
+body.packing-page .packing-priority-item.done .packing-priority-action {
+  color: var(--pack-muted);
+}
+
+body.packing-page .packing-list-panel {
+  margin-top: 14px;
+  padding: 18px;
+}
+
+body.packing-page .packing-list-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+body.packing-page .packing-list-head h4 {
+  margin: 0;
+  color: var(--pack-ink);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+body.packing-page .packing-list-head span {
+  color: var(--pack-muted);
+  font-size: 12px;
+}
+
+body.packing-page .check-group {
+  margin: 0;
+  padding-top: 14px;
+  animation: none;
+}
+
+body.packing-page .check-group h4 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 6px;
+  padding: 0;
+  border: 0;
+  color: var(--pack-ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+body.packing-page .group-progress {
+  color: var(--pack-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+}
+
+body.packing-page .check-item {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 10px;
+  min-height: 58px;
+  margin: 0;
+  padding: 10px 4px;
+  border: 0;
+  border-bottom: 1px solid #edf1ef;
+  border-radius: 0;
+  background: transparent;
+}
+
+body.packing-page .check-item:last-child {
+  border-bottom-color: transparent;
+}
+
+body.packing-page .check-item:hover {
+  background: #f7faf8;
+}
+
+body.packing-page .check-item input {
+  width: 19px;
+  height: 19px;
+  margin-top: 2px;
+  accent-color: var(--pack-accent);
+}
+
+body.packing-page .check-item > span:nth-child(2) {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+body.packing-page .check-item .item-name {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+body.packing-page .check-item .item-reason {
+  color: var(--pack-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+body.packing-page .check-item.done .item-name {
+  color: var(--pack-muted);
+  text-decoration-color: #b7c2be;
+}
+
+body.packing-page .prio {
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+body.packing-page .prio-3 {
+  color: #a5382a;
+}
+
+body.packing-page .prio-2 {
+  color: var(--pack-accent);
+}
+
+body.packing-page .packing-notes {
+  margin-top: 14px;
+  padding: 18px;
+}
+
+body.packing-page .packing-notes .tips-box {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+body.packing-page .packing-notes .tips-box ul {
+  margin-top: 8px;
+}
+
+body.packing-page .result-actions {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #edf1ef;
+}
+
+html.elderly body.packing-page {
+  background: #fff;
+}
+
+@media (max-width: 1100px) {
+  body.packing-linked-plan #packing .packing-shell {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+
+  body.packing-linked-plan .packing-trip-rail {
+    left: 24px;
+    width: 220px;
+  }
+
+  body.packing-page .packing-dashboard {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  body.packing-linked-plan #packing .packing-shell {
+    grid-template-columns: 1fr;
+  }
+
+  body.packing-linked-plan .packing-trip-rail {
+    position: static;
+    display: grid;
+    grid-template-columns: 132px minmax(0, 1fr);
+    align-items: start;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  body.packing-linked-plan .packing-rail-wrap {
+    display: block;
+  }
+
+  body.packing-linked-plan .packing-trip-cover {
+    grid-row: 1 / span 3;
+    aspect-ratio: 4 / 3;
+  }
+
+  body.packing-linked-plan .packing-trip-facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    padding: 2px 0 0;
+  }
+
+  body.packing-linked-plan .packing-rail-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  body.packing-linked-plan .packing-rail-nav a {
+    min-height: 40px;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  body.packing-linked-plan .packing-rail-nav a span:nth-child(2) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  body.packing-linked-plan .packing-trip-facts div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  body.packing-linked-plan .packing-trip-facts dd {
+    text-align: left;
+  }
+
+  body.packing-linked-plan .packing-rail-tip {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  body.packing-page .packing-result-head {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  body.packing-linked-plan .packing-trip-rail {
+    grid-template-columns: 108px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  body.packing-linked-plan .packing-trip-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.packing-linked-plan .packing-rail-nav {
+    grid-column: 1 / -1;
+  }
+
+  body.packing-linked-plan .packing-trip-facts div:last-child {
+    display: none;
+  }
+
+  body.packing-page .packing-category-progress {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.packing-page .check-item {
+    grid-template-columns: 22px minmax(0, 1fr);
+  }
+
+  body.packing-page .check-item .prio {
+    grid-column: 2;
+    margin-top: -2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.packing-page *,
+  body.packing-page *::before,
+  body.packing-page *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
