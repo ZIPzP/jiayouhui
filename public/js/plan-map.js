@@ -391,6 +391,12 @@
       if (token !== buildToken) return;
       const dest = destinationFor(vals, data);
       const city = dest ? dest.name : '';
+      const initialCenter = dest && Number.isFinite(Number(dest.lon)) && Number.isFinite(Number(dest.lat))
+        ? [Number(dest.lon), Number(dest.lat)]
+        : [116.397, 39.908];
+      map = new AMap.Map(canvas, { zoom: 11, center: initialCenter, viewMode: '2D', resizeEnable: true, lang: (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh_cn' });
+      infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -28) });
+      await new Promise((resolve) => requestAnimationFrame(resolve));
       const days = itineraryDays(data);
       // 没有具体景点的天，在城市中心给一个「自由活动」点，保证 5–6 天都出现在地图上
       days.forEach((day) => {
@@ -431,11 +437,6 @@
       }));
       const unlocatedShown = unlocated.filter((item) => !approxItems.includes(item)).filter((item) => item.type !== '餐饮' || item.foodSpecific);
       const mapped = valid.concat(approximate);
-      const center = dest && Number.isFinite(Number(dest.lon)) && Number.isFinite(Number(dest.lat))
-        ? [Number(dest.lon), Number(dest.lat)]
-        : (valid[0] && valid[0].poi ? [valid[0].poi.lng, valid[0].poi.lat] : [116.397, 39.908]);
-      map = new AMap.Map(canvas, { zoom: 11, center, viewMode: '2D', resizeEnable: true, lang: (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh_cn' });
-      infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -28) });
       const markerItems = [];
       const markerObjects = [];
       const groupsByDay = new Map();
@@ -480,13 +481,18 @@
         if (group) group.items.push({ ...item, index: -1, name: item.keyword, unlocated: true });
       });
       const groups = [...groupsByDay.values()];
-      const routeTasks = [];
       groups.forEach((group) => {
         group.summary = { routed: false, distance: 0, time: 0 };
+      });
+      renderStopList(stopList, groups, markerItems);
+      currentStops = markerItems;
+      if (markerObjects.length) map.setFitView(markerObjects, false, [40, 40, 40, 40], 15);
+      const routeTasks = [];
+      groups.forEach((group) => {
         for (let i = 0; i < group.path.length - 1; i++) routeTasks.push({ group, from: group.path[i], to: group.path[i + 1], mode: routeModeFor(group, vals) });
       });
       if (routeTasks.length) status(t('正在计算每日路线…', 'Calculating daily routes…'));
-      const routeResults = await mapLimit(routeTasks, 2, async (task) => ({ task, route: await routeSegment(AMap, task.from, task.to, task.mode) }));
+      const routeResults = await mapLimit(routeTasks, 3, async (task) => ({ task, route: await routeSegment(AMap, task.from, task.to, task.mode) }));
       groups.forEach((group) => { group.routePath = []; });
       routeResults.forEach(({ task, route }) => {
         if (route && route.path.length) {
@@ -502,8 +508,6 @@
         if (group.routePath.length > 1) map.add(new AMap.Polyline({ path: group.routePath, strokeColor: group.color, strokeWeight: 5, strokeOpacity: 0.9, strokeStyle: group.summary.routed ? 'solid' : 'dashed', lineJoin: 'round' }));
       });
       renderStopList(stopList, groups, markerItems);
-      currentStops = markerItems;
-      if (markerObjects.length) map.setFitView(markerObjects, false, [40, 40, 40, 40], 15);
       const routedDays = groups.filter((group) => group.summary.routed).length;
       const hiddenFood = unlocated.length - approximate.length - unlocatedShown.length;
       const unlocatedText = unlocatedShown.length ? (t(' · ' + unlocatedShown.length + ' 个未定位', ' · ' + unlocatedShown.length + ' not located')) : '';

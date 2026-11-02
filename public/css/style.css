@@ -1757,6 +1757,47 @@ body.plan-workspace-mode .plan-layout { display: none !important; }
 
 .plan-mobile-note { display: none; }
 
+.restored-plan-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.restored-plan-summary span {
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--primary-light);
+  color: var(--ink-soft);
+  font-size: .85rem;
+  text-align: center;
+}
+
+.restored-plan-summary b {
+  display: block;
+  color: var(--primary-dark);
+  font-size: 1.15rem;
+}
+
+body.plan-workspace-mode::before {
+  background: #f3f7f5;
+  animation: none;
+}
+
+body.plan-workspace-mode .bg-fx {
+  display: none;
+}
+
+body.plan-workspace-mode .nav {
+  background: rgba(250, 252, 250, .98);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+body.plan-workspace-mode .dpw-map {
+  contain: layout paint;
+}
+
 .plan-empty-steps {
   display: grid;
   gap: 9px;

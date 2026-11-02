@@ -209,6 +209,10 @@
     document.getElementById('pl-submit').addEventListener('click', generatePlan);
     // 结果区 打印/朗读
     document.getElementById('planBody').addEventListener('click', (e) => {
+      if (e.target.closest('[data-open-workspace]')) {
+        if (renderedPlan) renderPlan(document.getElementById('planBody'), renderedPlan.data, renderedPlan.vals);
+        return;
+      }
       if (e.target.closest('[data-print-plan]')) { window.print(); return; }
       if (e.target.closest('[data-save-img]')) { app.saveAsImage('planBody', '家游汇-行程规划.png'); return; }
       if (e.target.closest('[data-save-parts]')) { app.saveAsImageParts('planBody', '家游汇-行程规划.png', 3); return; }
@@ -515,7 +519,10 @@
       if (!p) return;
       if (p.result) {
         empty.hidden = true; bodyEl.hidden = false;
-        renderPlan(bodyEl, p.result, p.vals);
+        document.body.classList.remove('plan-workspace-mode');
+        const workspace = document.getElementById('desktopPlanWorkspace');
+        if (workspace) workspace.hidden = true;
+        renderRestoredPlan(bodyEl, p.result, p.vals);
         showLangMismatch(p);
         return;
       }
@@ -528,6 +535,29 @@
         });
       }
     } catch (e) { /* 忽略 */ }
+  }
+  function renderRestoredPlan(el, data, vals) {
+    const days = Array.isArray(data.days) ? data.days.length : 0;
+    const travelers = Number(vals.elderly || 0) + Number(vals.adults || 0) + Number(vals.children || 0);
+    const budget = data.budget && data.budget.totalPerPerson ? data.budget.totalPerPerson : '';
+    renderedPlan = { data, vals };
+    document.body.classList.add('plan-has-result');
+    el.innerHTML = `
+      <div class="result-head">
+        <h3>🗺️ ${app.esc(data.title || '上次行程规划')}</h3>
+        <span class="provider-tag">${data.provider === 'ai' ? '🐱 AI 主理人生成' : '📋 最近一次规划'}</span>
+      </div>
+      ${data.summary ? `<p style="color:var(--ink-soft);margin-bottom:14px">${app.esc(data.summary)}</p>` : ''}
+      <div class="restored-plan-summary">
+        <span><b>${days}</b> 天行程</span>
+        <span><b>${travelers || '—'}</b> 人同行</span>
+        <span><b>${budget || '—'}</b> 人均预算</span>
+      </div>
+      <p class="form-hint">上次生成的行程已恢复。需要查看地图和逐日安排时再进入工作台。</p>
+      <div class="result-actions">
+        <button class="btn btn-primary" type="button" data-open-workspace>进入地图工作台</button>
+        <button class="btn btn-ghost" type="button" data-print-plan>打印 / 存为 PDF</button>
+      </div>`;
   }
   /* 旧行程是在另一种语言下生成的：提示用户，并允许一键用当前语言重生成 */
   function showLangMismatch(p) {
