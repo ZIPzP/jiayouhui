@@ -3,6 +3,7 @@
   let linkedPlan = null;
   const PLAN_KEYS = ['jyh_last_plan_v2', 'jyh_last_plan'];
   const previewMode = new URLSearchParams(location.search).get('demo') === '1';
+  const packStorageKey = previewMode ? 'jyh_last_pack_demo' : 'jyh_last_pack';
   window.pageInit = async function () {
     fillMonths();
     bindEvents();
@@ -155,14 +156,16 @@
     const days = Number(vals.durationDays) || 0;
     const people = Number(vals.elderly || 0) + Number(vals.adults || 0) + Number(vals.children || 0);
     const en = !!(window.i18n && window.i18n.lang === 'en');
+    const tr = (value) => (en && window.i18n && window.i18n.t ? window.i18n.t(value) : value);
+    const monthsEn = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     image.src = destination && destination.id ? `/images/${destination.id}/cover.jpg` : '/images/hero-home.jpg';
     image.alt = en ? `${destName} travel photo` : `${destName}旅行图片`;
     image.onerror = () => { rail.hidden = true; };
     title.textContent = destName;
-    dates.textContent = [month ? (en ? month + ' month' : month + ' 月') : '', days ? (en ? days + ' days' : days + ' 天') : ''].filter(Boolean).join(' · ');
+    dates.textContent = [month ? (en ? monthsEn[month - 1] : month + ' 月') : '', days ? (en ? days + ' days' : days + ' 天') : ''].filter(Boolean).join(' · ');
     travelers.textContent = people ? (en ? people + ' people' : people + ' 人') : '—';
-    pace.textContent = planVals.pace || '—';
-    transport.textContent = planVals.transport || '—';
+    pace.textContent = planVals.pace ? tr(planVals.pace) : '—';
+    transport.textContent = planVals.transport ? tr(planVals.transport) : '—';
     rail.hidden = false;
   }
   function destinationNameFromVals(vals) {
@@ -238,7 +241,7 @@
   }
 
   function savePack(vals, result) {
-    localStorage.setItem('jyh_last_pack', JSON.stringify({ vals, result, lang: (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh', ts: Date.now() }));
+    localStorage.setItem(packStorageKey, JSON.stringify({ vals, result, lang: (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh', ts: Date.now() }));
   }
   async function generatePacking(vals) {
     const empty = document.getElementById('resultEmpty');
@@ -267,7 +270,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(app.aiPayload(vals))
       });
-      localStorage.setItem('jyh_last_pack', JSON.stringify({ jobId: st.jobId, vals, result: null, lang: (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh', ts: Date.now() }));
+      localStorage.setItem(packStorageKey, JSON.stringify({ jobId: st.jobId, vals, result: null, lang: (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh', ts: Date.now() }));
       app.pollJob(st.jobId, {
         onDone: (result) => { renderResult(bodyEl, result, vals); savePack(vals, result); },
         onError: (msg) => {
@@ -283,7 +286,7 @@
     const empty = document.getElementById('resultEmpty');
     if (!bodyEl) return false;
     try {
-      const p = JSON.parse(localStorage.getItem('jyh_last_pack') || 'null');
+      const p = JSON.parse(localStorage.getItem(packStorageKey) || 'null');
       if (!p || !packMatchesLinkedPlan(p)) return false;
       if (p.result) {
         empty.hidden = true; bodyEl.hidden = false;
@@ -336,7 +339,7 @@
     if (btn) btn.addEventListener('click', () => { notice.remove(); generatePacking(p.vals || formValues()); });
     bodyEl.prepend(notice);
   }
-  function checkedKey(vals) { return `jyh_ck_${vals.destinationId}_${vals.month}`; }
+  function checkedKey(vals) { return `jyh_ck_${previewMode ? 'demo_' : ''}${vals.destinationId}_${vals.month}`; }
   function isChecked(vals, name) {
     try { return JSON.parse(localStorage.getItem(checkedKey(vals)) || '[]').includes(name); } catch { return false; }
   }

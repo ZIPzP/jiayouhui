@@ -397,6 +397,7 @@
       map = new AMap.Map(canvas, { zoom: 11, center: initialCenter, viewMode: '2D', resizeEnable: true, lang: (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh_cn' });
       infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -28) });
       await new Promise((resolve) => requestAnimationFrame(resolve));
+      if (token !== buildToken) return;
       const days = itineraryDays(data);
       // 没有具体景点的天，在城市中心给一个「自由活动」点，保证 5–6 天都出现在地图上
       days.forEach((day) => {

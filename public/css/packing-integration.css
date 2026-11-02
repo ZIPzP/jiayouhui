@@ -176,7 +176,7 @@ body.packing-linked-plan .packing-trip-rail {
   gap: 16px;
   width: 240px;
   height: calc(100vh - 220px);
-  min-height: 680px;
+  min-height: 0;
   overflow-y: auto;
   padding: 16px;
   border: 1px solid var(--pack-line);
