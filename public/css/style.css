@@ -347,6 +347,9 @@ html.elderly .modal-close { width: 52px; height: 52px; font-size: 1.3rem; }
 
 /* ============ 老年人模式 ============ */
 html.elderly {
+  /* 全站正文与说明文字大量使用 rem（相对根字号）。只改 body 的 --fs-base 无法放大这些文字，
+     必须抬高根字号，长辈模式才是「整体放大」而不是「只有按钮变大」。 */
+  font-size: 125%;
   --fs-base: 20px;
   --nav-h: 76px;
 }
@@ -370,6 +373,9 @@ html.elderly .quick-planner { font-size: 1.1rem; }
 html.elderly .modal { font-size: 1.1rem; }
 /* 长辈模式运行时：关闭装饰动画与 hover 上浮（保留模式切换瞬间的字体/间距平滑过渡） */
 html.elderly *, html.elderly *::before, html.elderly *::after { animation: none !important; }
+/* 首页标题被拆成逐字 span 后依赖 chIn 动画填充（基态 opacity:0）。
+   动画被上面这条禁用后必须显式复位，否则长辈模式下 H1 整段不可见。 */
+html.elderly .ch { opacity: 1 !important; transform: none !important; }
 html.elderly .anim, html.elderly .reveal { opacity: 1 !important; }
 html.elderly .btn:hover, html.elderly .btn:active, html.elderly .entry-card:hover,
 html.elderly .dest-card:hover, html.elderly .hot-item.clickable:hover,

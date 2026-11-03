@@ -746,6 +746,9 @@
   function animateHeroTitles() {
     const els = document.querySelectorAll('.hero-title, .hd-title');
     if (!els.length) return;
+    // 长辈模式 / 减少动态：不拆字。拆字后每个字是 opacity:0 + 动画填充，
+    // 而长辈模式会全局禁用动画，结果整段标题不可见。
+    if (state.elderly) return;
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     els.forEach((el) => {
       if (el.querySelector('.ch')) return;
