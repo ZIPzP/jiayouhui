@@ -1,29 +1,96 @@
-# GitHub Actions：推送到 main 分支后自动部署到阿里云服务器
-# 使用前请在 GitHub 仓库 Settings -> Secrets 添加：
+# GitHub Actions：先验证，再部署到阿里云服务器
+#
+# 使用前请在 GitHub 仓库 Settings -> Secrets and variables -> Actions 添加：
 #   SSH_HOST    服务器公网 IP
 #   SSH_USER    服务器用户名（如 root）
-#   SSH_KEY    服务器私钥内容（部署用账号的 ~/.ssh/id_ed25519）
-name: Deploy to Aliyun ECS
+#   SSH_KEY     部署用账号的私钥内容（~/.ssh/id_ed25519）
+#
+# 只有 verify 通过才会部署；部署脚本任何一步失败都会中止，不会用旧代码重启服务。
+name: Verify and deploy
 
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+# 同一分支同时只跑一个部署，避免两次 push 并发 SSH 到同一目录做 git pull
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  verify:
+    name: 语法检查与冒烟测试
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 语法检查（全部 JS）
+        run: |
+          set -e
+          for f in server.js lib/*.js ecosystem.config.js; do node --check "$f"; done
+          for f in public/js/*.js; do case "$f" in *.min.js) ;; *) node --check "$f";; esac; done
+          echo "全部 JS 语法检查通过"
+
+      - name: 单元测试（node:test，零依赖）
+        run: node --test "test/*.test.js"
+
+      - name: 启动服务并做接口冒烟
+        run: |
+          set -e
+          PORT=3100 node server.js &
+          SERVER_PID=$!
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3100/api/health >/dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:3100/api/health
+          curl -fsS -o /dev/null -w "首页 %{http_code}\n" http://127.0.0.1:3100/
+          curl -fsS -o /dev/null -w "目的地列表 %{http_code}\n" http://127.0.0.1:3100/api/destinations
+          # 畸形路径不应把进程打挂（回归曾经的 %00 崩溃）
+          curl -s -o /dev/null -w "畸形请求 %{http_code}\n" "http://127.0.0.1:3100/%00" || true
+          sleep 1
+          if ! kill -0 $SERVER_PID 2>/dev/null; then echo "服务在畸形请求后退出"; exit 1; fi
+          curl -fsS http://127.0.0.1:3100/api/health
+          kill $SERVER_PID
+
+  deploy:
+    name: 部署到阿里云
+    needs: verify
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
       - name: SSH 部署
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
+          script_stop: true
           script: |
+            set -euo pipefail
             export PATH=$PATH:/usr/local/bin:/usr/bin
             cd /opt/jiayouhui
-            git pull origin main
-            pm2 restart jiayouhui || pm2 start ecosystem.config.js
+            PREV=$(git rev-parse HEAD)
+            echo "回滚点：$PREV"
+            git fetch origin main
+            git reset --hard origin/main
+            pm2 start ecosystem.config.js >/dev/null 2>&1 || true
+            pm2 restart jiayouhui
+            sleep 3
+            if curl -fsS http://127.0.0.1:3000/api/health; then
+              echo "部署成功"
+            else
+              echo "健康检查失败，回滚到 $PREV"
+              git reset --hard "$PREV"
+              pm2 restart jiayouhui
+              exit 1
+            fi

@@ -1,0 +1,83 @@
+# GitHub Actions：dev-test-opt 分支自动部署到测试环境
+#
+# 与 deploy.yml 的区别：
+#   deploy.yml      main 分支      -> /opt/jiayouhui     端口 3000（生产，80/443）
+#   本文件          dev-test-opt  -> /opt/jiayouhui-test 端口 3001（测试，8080）
+#
+# 首次使用需在服务器执行一次初始化（见 deploy/README-测试环境.md）。
+name: Deploy test env
+
+on:
+  push:
+    branches: [ dev-test-opt ]
+
+concurrency:
+  group: deploy-test
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: 语法检查与冒烟测试
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 语法检查（全部 JS）
+        run: |
+          set -e
+          for f in server.js lib/*.js ecosystem*.js deploy/*.js 2>/dev/null; do [ -f "$f" ] && node --check "$f"; done
+          for f in public/js/*.js; do case "$f" in *.min.js) ;; *) node --check "$f";; esac; done
+          echo "全部 JS 语法检查通过"
+
+      - name: 单元测试
+        run: node --test "test/*.test.js"
+
+      - name: 启动服务并做接口冒烟
+        run: |
+          set -e
+          PORT=3200 node server.js &
+          SERVER_PID=$!
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3200/api/health >/dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:3200/api/health
+          curl -s -o /dev/null -w "畸形请求 %{http_code}\n" "http://127.0.0.1:3200/%00" || true
+          sleep 1
+          if ! kill -0 $SERVER_PID 2>/dev/null; then echo "服务在畸形请求后退出"; exit 1; fi
+          kill $SERVER_PID
+
+  deploy-test:
+    name: 部署到测试实例（3001）
+    needs: verify
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+      - name: SSH 部署测试环境
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            export PATH=$PATH:/usr/local/bin:/usr/bin
+            if [ ! -d /opt/jiayouhui-test ]; then
+              echo "测试目录不存在，请先按 deploy/README-测试环境.md 初始化"; exit 1
+            fi
+            cd /opt/jiayouhui-test
+            git fetch origin dev-test-opt
+            git reset --hard origin/dev-test-opt
+            mkdir -p logs
+            pm2 delete jiayouhui-test >/dev/null 2>&1 || true
+            pm2 start ecosystem.test.config.js
+            pm2 save
+            sleep 3
+            curl -fsS http://127.0.0.1:3001/api/health && echo "测试环境部署成功"

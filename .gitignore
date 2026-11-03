@@ -4,12 +4,17 @@ node_modules/
 
 # 敏感配置：服务端内置的 DeepSeek Key（绝不提交）
 config.local.json
+config.local.json.*
+.env
+.env.*
 
 # 系统文件
 .DS_Store
 Thumbs.db
+
 # 构建产物
 家游汇-发布版.zip
+*.zip
 
 # 本地工具与构建产物（不入 git）
 旧电脑部署包/
@@ -20,6 +25,10 @@ tools/tunnel.log
 # 测试/调试残留
 _live/
 _live_*
+
+# 评审/文档生成用的临时目录：截图、PDF 拆页、命名稿、抓取脚本，体积大且含内部材料，永不入库
+tmp/
+.taste-skill/
 
 # 本地照片素材库（2026-08-19 安全加固：曾误提交 184 张家庭照片到公开仓库，已用 filter-repo 从历史清除，此处永不入库）
 待上传图片/
