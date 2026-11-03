@@ -226,11 +226,12 @@
   }
 
   /** 轮询后台任务，直到完成（AI 生成期间可放心离开页面） */
-  async function pollJob(jobId, { interval = 2000, timeout = 240000, onDone, onError } = {}) {
+  async function pollJob(jobId, { interval = 2000, timeout = 240000, onProgress, onDone, onError } = {}) {
     const started = Date.now();
     while (Date.now() - started < timeout) {
       try {
         const j = await api('/api/job?id=' + encodeURIComponent(jobId));
+        if (onProgress) onProgress(j.progress || null);
         if (j.status === 'done') { onDone(j.result); return; }
         if (j.status === 'error') { onError(j.error || '生成失败'); return; }
       } catch (e) { /* 继续轮询 */ }
@@ -299,7 +300,7 @@
 
   /* ---------------- AI 设置（共享） ---------------- */
   const PROVIDERS = {
-    deepseek: { baseUrl: 'https://api.deepseek.com/v1', model: 'deepseek-chat' },
+    deepseek: { baseUrl: 'https://api.deepseek.com/v1', model: 'deepseek-flash' },
     openai: { baseUrl: 'https://api.openai.com/v1', model: 'gpt-4o-mini' },
     qwen: { baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1', model: 'qwen-plus' },
     moonshot: { baseUrl: 'https://api.moonshot.cn/v1', model: 'moonshot-v1-8k' }
@@ -518,7 +519,7 @@
           </div>
           <div class="form-group">
             <label class="form-label" for="ai-model">模型</label>
-            <input id="ai-model" type="text" class="input" placeholder="deepseek-chat" />
+            <input id="ai-model" type="text" class="input" placeholder="deepseek-flash" />
           </div>
           <button id="ai-save" class="btn btn-primary btn-lg btn-block" type="button">保存设置</button>
         </div>

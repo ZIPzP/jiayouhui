@@ -29,11 +29,7 @@ jobs:
           node-version: '20'
 
       - name: 语法检查（全部 JS）
-        run: |
-          set -e
-          for f in server.js lib/*.js ecosystem*.js deploy/*.js 2>/dev/null; do [ -f "$f" ] && node --check "$f"; done
-          for f in public/js/*.js; do case "$f" in *.min.js) ;; *) node --check "$f";; esac; done
-          echo "全部 JS 语法检查通过"
+        run: npm run check
 
       - name: 单元测试
         run: node --test "test/*.test.js"

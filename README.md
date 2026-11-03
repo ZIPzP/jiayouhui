@@ -51,6 +51,10 @@
 | 能力 | 说明 |
 | --- | --- |
 | 🤖 AI 家庭行程规划 | 根据出发地、目的地、日期、老人儿童、预算、节奏、兴趣和特殊要求生成逐日行程 |
+| 🔎 本地 RAG 引用 | BM25 双字检索目的地、适老、餐饮与打包知识，行程中展示可点击依据 |
+| 🧰 Agent 工具编排 | 模型自主选择本地检索、12306 和天气工具，记录调用轨迹并限制轮次与白名单 |
+| 💬 流式 AI 管家 | SSE 阶段状态、逐字输出与安全降级，回答附带本次采用的来源 |
+| 📷 攻略截图导入 | 识别截图中的目的地、日期、同行人与忌口，经用户确认后预填规划表单 |
 | 🚄 12306 真实车次 | 高铁与火车方案优先使用真实车次、时刻和票价，避免让 AI 编造班次 |
 | 🗺️ 高德地图路线 | 按天展示景点、餐饮、车站和自由活动点，支持步行、驾车路线与地点详情 |
 | 🌤️ 目的地天气 | 结合所选出行日期展示天气预报，主数据源失败时自动切换备用数据源 |
@@ -76,6 +80,8 @@
 
 > 评审老师请直接看 [`docs/评委快速上手.md`](docs/评委快速上手.md)：3 分钟走完主链路，含 AI 体验方式与常见问题。
 
+> 部署到 Ubuntu 前按 [`docs/Ubuntu上线前检查.md`](docs/Ubuntu上线前检查.md) 完成真实 Key、SSE 代理、地图域名和回滚检查。
+
 ## 功能截图
 
 | 首页 | 目的地库 |
@@ -89,6 +95,8 @@
 | 出行清单 | 发现下一站 |
 | --- | --- |
 | ![出行清单](docs/screenshots/05-packing.jpg) | ![发现下一站](docs/screenshots/06-discovery.jpg) |
+
+![AI 依据、流式回答与工具轨迹测试](docs/screenshots/08-ai-evidence.png)
 
 <p align="center">
   <img src="docs/screenshots/07-mobile-home.jpg" alt="手机端首页" width="320" />
@@ -105,6 +113,8 @@ flowchart LR
     S[server.js<br/>静态服务 + REST API]
     A[lib/ai.js<br/>AI 接入与安全]
     P[lib/planner.js<br/>行程规划与规则降级]
+    G[lib/rag.js<br/>本地知识检索与引用]
+    K[lib/agent.js<br/>工具调用循环]
     R[lib/recommend.js<br/>清单与攻略]
     T[lib/train.js<br/>12306 车次]
     W[lib/weather.js<br/>天气预报]
@@ -115,6 +125,8 @@ flowchart LR
   F --> S
   S --> A
   S --> P
+  S --> G
+  S --> K
   S --> R
   S --> T
   S --> W
@@ -141,12 +153,12 @@ flowchart LR
 ## 一次 AI 行程如何生成
 
 1. 浏览器提交目的地、日期、家庭偏好和交通要求。
-2. 服务端校验城市、日期与人数等参数。
-3. 查询 12306 车次与票价，并准备天气等上下文。
-4. 通过 OpenAI 兼容接口生成结构化逐日行程。
-5. 对 AI 结果进行 JSON 清洗、景点去重与语言规范化。
-6. 后台任务返回结果，前端刷新逐日行程卡。
-7. AI 超时或失败时，由内置规则引擎生成可执行的备用方案。
+2. 服务端从本地知识库检索适老、餐饮、景点与打包依据，并保留来源。
+3. 模型在检索、12306 和天气三个白名单工具之间自主选择并调用。
+4. 工具结果回填后，通过 OpenAI 兼容接口生成结构化逐日行程。
+5. 对 AI 结果进行 JSON 清洗、景点去重，并附上引用与工具轨迹。
+6. 后台任务返回结果，前端展示逐日行程、可点击依据和 Agent 调用记录。
+7. AI 超时或失败时，由内置规则引擎生成可执行方案；核心事实仍来自工具和本地数据。
 
 ## 快速开始
 
@@ -197,8 +209,12 @@ Copy-Item config.local.example.json config.local.json
 | `AI_API_KEY` | AI 服务端 API Key |
 | `AI_BASE_URL` | OpenAI 兼容接口地址 |
 | `AI_MODEL` | 模型名称 |
+| `AI_VISION_MODEL` | 截图识别模型，默认 `deepseek-flash` |
+| `AI_MAX_TOKENS` | 单次模型输出上限，默认 8000 |
 | `AI_TIMEOUT_MS` | AI 请求超时时间（默认 120000） |
 | `AI_ALLOW_PRIVATE_BASE_URL` | 设为 `1` 时才允许浏览器填写内网 AI 地址，仅私有化部署使用，默认关闭 |
+| `AI_MAX_CONCURRENT` | 同时打到上游模型的最大请求数（默认 3），超出排队，防止小服务器被一起拖慢 |
+| `AI_MAX_QUEUE` | 上游排队上限（默认 40），超过直接提示稍后再试 |
 | `AMAP_JS_KEY` | 高德地图 Web 端 JS API Key |
 | `AMAP_SECURITY_CODE` | 高德地图安全密钥 |
 | `TAVILY_API_KEY` | Tavily 全网搜索 Key，用于「发现」页补充文旅文章（可选） |
@@ -213,7 +229,7 @@ Copy-Item config.local.example.json config.local.json
 
 ```text
 Base URL: https://api.deepseek.com/v1
-Model:    deepseek-chat
+Model:    deepseek-flash
 ```
 
 也支持其他 OpenAI 兼容服务。推荐将服务端 Key 写入本地配置，而不是提交到代码中：
@@ -284,6 +300,8 @@ jiayouhui/
 ├── lib/
 │   ├── ai.js                  # OpenAI 兼容客户端
 │   ├── planner.js             # 行程规划与规则引擎
+│   ├── rag.js                 # 本地知识分块、BM25 检索与引用
+│   ├── agent.js               # 白名单工具调用循环
 │   ├── recommend.js           # 清单与攻略
 │   ├── train.js               # 12306 车次查询
 │   ├── weather.js             # 天气查询
@@ -319,6 +337,9 @@ jiayouhui/
 | `POST` | `/api/recommend` | 生成出行清单 |
 | `POST` | `/api/ai-guide` | 生成目的地攻略 |
 | `POST` | `/api/chat` | AI 主理人问答 |
+| `POST` | `/api/chat/stream` | SSE 流式问答、阶段状态与引用 |
+| `POST` | `/api/vision` | 攻略截图结构化预填 |
+| `GET` | `/api/rag/search` | 本地知识检索与引用调试 |
 | `GET` | `/api/map/config` | 地图前端配置 |
 | `GET` | `/api/health` | 健康检查 |
 
@@ -327,7 +348,7 @@ jiayouhui/
 项目零依赖，测试直接用 Node 自带的 test runner，不需要安装任何框架：
 
 ```bash
-npm test        # 单元测试 + 接口冒烟，共 23 项
+npm test        # 单元测试 + AI 客户端 + Agent 闭环 + 接口冒烟
 npm run check   # 全部 JS 文件语法检查（含 public/js）
 ```
 
@@ -339,6 +360,9 @@ npm run check   # 全部 JS 文件语法检查（含 public/js）
 | 规则引擎 | 天数钳制 1–14 天、中英文输出结构、自定义目的地骨架 |
 | 数据完整性 | 目的地字段与坐标、城市库规模、图片路径都指向真实文件 |
 | 接口冒烟 | 真实启动服务后检查健康接口、只读接口、404 与路径穿越、参数校验、后台任务全流程；并回归「畸形路径不能打挂进程」 |
+| RAG / Agent | 中文双字检索、来源字段、工具循环、白名单拒绝、工具结果回填和真实后台任务闭环 |
+| AI 交互 | DeepSeek 当前模型参数、工具调用解析、SSE 思考与逐字内容解析、无 Key 流式降级 |
+| 多模态安全 | 图片格式与大小校验、无 Key 错误边界、截图结果只预填不自动提交 |
 
 CI（`.github/workflows/deploy.yml`）会先跑语法检查 + 测试 + 冒烟，全部通过才部署到服务器；部署后健康检查失败会自动回滚到上一个提交。
 
@@ -381,6 +405,7 @@ curl -s https://familytravelhublz.top/api/health
 - 扩充更多适合家庭出行的国内目的地。
 - 改进景点顺序与每日路线的时间、距离约束。
 - 增强中英文生成内容的一致性。
+- 使用真实 DeepSeek Key 完成线上视觉识别与工具选择复测。
 - 增加更多合规的交通、天气和城市数据源。
 - 完善无障碍与长辈模式。
 - 增加自动化回归测试和部署检查。

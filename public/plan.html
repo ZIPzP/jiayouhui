@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>家游汇 · 家庭旅游推荐与攻略</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>" />
-  <link rel="stylesheet" href="/css/style.css?v=20261103navprofile3" />
+  <link rel="stylesheet" href="/css/style.css?v=20261104airag2" />
 </head>
 <body class="plan-page">    <header class="nav" id="topnav">
     <div class="nav-inner">
@@ -214,6 +214,18 @@
           </div>
         </div>
         <div class="plan-form-section-label"><span>04</span> 补充要求</div>
+        <div class="plan-vision-import" id="planVisionImport">
+          <div class="plan-vision-copy">
+            <b>📷 从攻略截图导入</b>
+            <span>识别目的地、日期、同行人和忌口，结果只用于预填，不会自动生成。</span>
+          </div>
+          <div class="plan-vision-actions">
+            <input id="pl-vision-file" type="file" accept="image/jpeg,image/png,image/webp" hidden />
+            <button id="pl-vision-btn" class="btn btn-ghost" type="button">选择截图</button>
+            <span id="pl-vision-status" class="plan-vision-status" role="status" aria-live="polite"></span>
+          </div>
+          <img id="pl-vision-preview" class="plan-vision-preview" alt="待识别的攻略截图" hidden />
+        </div>
         <div class="form-group">
           <label class="form-label" for="pl-notes">其他需求（自由填写，可选）</label>
           <textarea id="pl-notes" class="input" rows="3" placeholder="如：想坐竹筏看日出、老人腿脚不便需要少走路、预算不含购物……"></textarea>
@@ -282,12 +294,12 @@
     </div>
   </section>
   <svg class="footer-wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0,28 C240,52 480,8 720,24 C960,40 1200,52 1440,28 L1440,60 L0,60 Z" fill="#1E293B"/></svg>
-  <footer class="footer"><p class="footer-slogan">🏡 家游汇 · 让每一次家庭旅行都充满美好回忆</p><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习研究与技术交流，严禁商业用途；请遵守中国法律法规及 12306 官方相关规定，合理合规使用</p><p class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener"><img class="beian-icon" src="/images/beian-icon.png" alt="备案图标" />赣ICP备2026019601号-1</a></p></footer>  <script src="/js/i18n.js?v=20261103profile2"></script>
-  <script src="/js/common.js?v=20261103navprofile2"></script>
+  <footer class="footer"><p class="footer-slogan">🏡 家游汇 · 让每一次家庭旅行都充满美好回忆</p><p>🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习研究与技术交流，严禁商业用途；请遵守中国法律法规及 12306 官方相关规定，合理合规使用</p><p class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener"><img class="beian-icon" src="/images/beian-icon.png" alt="备案图标" />赣ICP备2026019601号-1</a></p></footer>  <script src="/js/i18n.js?v=20261104airag2"></script>
+  <script src="/js/common.js?v=20261104airag2"></script>
   <script src="/js/html2canvas.min.js?v=20261101r"></script>
   <script src="/js/plan-map.js?v=20261102final2"></script>
   <script src="/js/Sortable.min.js?v=20261101s"></script>
-  <script src="/js/plan.js?v=20261102final2"></script>
+  <script src="/js/plan.js?v=20261104airag2"></script>
 </body>
 </html>
 

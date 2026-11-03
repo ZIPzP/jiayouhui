@@ -63,6 +63,11 @@ test('只读接口可用且结构正确', async () => {
   const images = await (await fetch(BASE + '/api/images')).json();
   assert.ok(images.count > 100);
 
+  const rag = await (await fetch(BASE + '/api/rag/search?q=' + encodeURIComponent('杭州 老人 茶园') + '&destinationId=hangzhou')).json();
+  assert.ok(rag.count >= 1);
+  assert.equal(rag.provider, 'local-bm25-char-bigram');
+  assert.ok(rag.citations[0].title && rag.citations[0].url);
+
   const one = await fetch(BASE + '/api/destinations/' + dest.destinations[0].id);
   assert.equal(one.status, 200);
 });
@@ -134,11 +139,113 @@ test('后台任务：提交 → 轮询 → 拿到规则引擎行程', async () =
   assert.equal(job.status, 'done', '任务应完成: ' + (job.error || ''));
   assert.ok(Array.isArray(job.result.days) && job.result.days.length === 3);
   assert.ok(job.result.title);
+  assert.ok(Array.isArray(job.result.citations) && job.result.citations.length >= 1, '规则降级也应返回可点击依据');
 });
 
 test('不存在的任务返回 404', async () => {
   const r = await fetch(BASE + '/api/job?id=not-a-real-job');
   assert.equal(r.status, 404);
+});
+
+test('AI 对话 SSE：无 Key 也能输出阶段、逐字内容和依据', async () => {
+  const r = await fetch(BASE + '/api/chat/stream', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      message: '为什么第 2 天这样安排？老人腿脚不便',
+      history: [],
+      tripContext: {
+        destinationId: 'hangzhou',
+        destinationName: '杭州',
+        days: 3,
+        elderly: 1,
+        adults: 2,
+        children: 1,
+        notes: '老人少走路，孩子需要午休'
+      },
+      lang: 'zh'
+    })
+  });
+  assert.equal(r.status, 200);
+  assert.match(r.headers.get('content-type') || '', /text\/event-stream/);
+  const text = await r.text();
+  assert.match(text, /event: stage/);
+  assert.match(text, /event: delta/);
+  assert.match(text, /event: done/);
+  assert.match(text, /citations/);
+  assert.match(text, /杭州|老人|午休/);
+});
+
+test('截图识别：校验图片格式，并在无 Key 时明确提示', async () => {
+  let malformed = await fetch(BASE + '/api/vision', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: '{'
+  });
+  assert.equal(malformed.status, 400);
+
+  let r = await fetch(BASE + '/api/vision', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ image: 'https://example.com/guide.jpg', lang: 'zh' })
+  });
+  assert.equal(r.status, 400);
+
+  const onePixelPng = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
+  r = await fetch(BASE + '/api/vision', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ image: onePixelPng, lang: 'zh' })
+  });
+  assert.equal(r.status, 503);
+  const body = await r.json();
+  assert.match(body.error, /AI Key/);
+});
+
+test('任务 id 不能用于路径穿越（避免任意文件读取）', async () => {
+  const evil = ['../../config.json', 'j' + 'a'.repeat(32) + '/../../config.json'];
+  for (const id of evil) {
+    const r = await fetch(BASE + '/api/job?id=' + encodeURIComponent(id));
+    assert.equal(r.status, 404, '非法 id 必须 404: ' + id);
+    const body = await r.json();
+    assert.ok(!body.result, '不应返回任何文件内容');
+  }
+});
+
+test('任务结果落盘：服务重启后仍能取回（部署重启不丢已生成的行程）', async () => {
+  const r = await fetch(BASE + '/api/plan', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      destinationId: 'beijing', origin: '上海',
+      startDate: '2026-12-01', endDate: '2026-12-02',
+      days: 2, transport: '飞机', lang: 'zh'
+    })
+  });
+  assert.equal(r.status, 200);
+  const { jobId } = await r.json();
+
+  let job;
+  for (let i = 0; i < 60; i++) {
+    await new Promise((s) => setTimeout(s, 500));
+    job = await (await fetch(BASE + '/api/job?id=' + jobId)).json();
+    if (job.status !== 'running') break;
+  }
+  assert.equal(job.status, 'done');
+
+  // 强制结束进程（模拟部署重启，内存任务全部丢失），再在同一端口拉起
+  child.kill('SIGKILL');
+  await new Promise((resolve) => {
+    if (child.exitCode !== null) return resolve();
+    child.on('exit', resolve);
+  });
+  await startServer();
+
+  const after = await fetch(BASE + '/api/job?id=' + jobId);
+  assert.equal(after.status, 200, '重启后应仍能取回任务结果');
+  const body = await after.json();
+  assert.equal(body.status, 'done');
+  assert.ok(Array.isArray(body.result.days) && body.result.days.length === 2);
 });
 
 test('静态页面与安全响应头', async () => {

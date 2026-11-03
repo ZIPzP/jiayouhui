@@ -207,6 +207,16 @@
     }
     // 生成
     document.getElementById('pl-submit').addEventListener('click', generatePlan);
+    const visionBtn = document.getElementById('pl-vision-btn');
+    const visionFile = document.getElementById('pl-vision-file');
+    if (visionBtn && visionFile) {
+      visionBtn.addEventListener('click', () => visionFile.click());
+      visionFile.addEventListener('change', () => {
+        const file = visionFile.files && visionFile.files[0];
+        visionFile.value = '';
+        if (file) recognizeGuideImage(file);
+      });
+    }
     // 结果区 打印/朗读
     document.getElementById('planBody').addEventListener('click', (e) => {
       if (e.target.closest('[data-open-workspace]')) {
@@ -231,6 +241,136 @@
     setChatMode(chatMode);
     const planForm = document.getElementById('planForm');
     if (planForm) { planForm.addEventListener('input', scheduleDraftSave); planForm.addEventListener('change', scheduleDraftSave); }
+  }
+
+  function planVisionStatus(text, isError) {
+    const node = document.getElementById('pl-vision-status');
+    if (!node) return;
+    node.textContent = text;
+    node.style.color = isError ? '#b91c1c' : 'var(--primary-dark)';
+  }
+
+  async function compressGuideImage(file) {
+    if (!file || !/^image\/(jpeg|png|webp)$/.test(file.type)) throw new Error(uiEnNow() ? 'Choose a JPEG, PNG or WebP image' : '请选择 JPEG、PNG 或 WebP 图片');
+    if (file.size > 12 * 1024 * 1024) throw new Error(uiEnNow() ? 'The original image must be under 12 MB' : '原图不能超过 12 MB');
+    const image = await new Promise((resolve, reject) => {
+      const objectUrl = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => { URL.revokeObjectURL(objectUrl); resolve(img); };
+      img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error(uiEnNow() ? 'The image could not be read' : '图片读取失败')); };
+      img.src = objectUrl;
+    });
+    const maxSide = 1200;
+    const scale = Math.min(1, maxSide / Math.max(image.naturalWidth, image.naturalHeight));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+    canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+    canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+    let dataUrl = '';
+    for (const mime of ['image/webp', 'image/jpeg']) {
+      for (const quality of [0.88, 0.78, 0.68, 0.58, 0.48]) {
+        dataUrl = canvas.toDataURL(mime, quality);
+        if (!dataUrl.startsWith('data:' + mime)) continue;
+        if (Math.floor((dataUrl.length - dataUrl.indexOf(',') - 1) * 3 / 4) <= 460 * 1024) break;
+      }
+      if (dataUrl && Math.floor((dataUrl.length - dataUrl.indexOf(',') - 1) * 3 / 4) <= 460 * 1024) break;
+    }
+    if (!dataUrl || dataUrl.length > 680000) throw new Error(uiEnNow() ? 'The image is still too large after compression' : '图片压缩后仍然过大');
+    return dataUrl;
+  }
+
+  function setChipSelection(selector, values) {
+    const wanted = new Set(values || []);
+    if (!wanted.size) return;
+    document.querySelectorAll(`#planForm [${selector}] .chip`).forEach((chip) => {
+      chip.classList.toggle('active', wanted.has(chip.dataset.value));
+    });
+  }
+
+  function mapDietary(values) {
+    const map = [
+      [/不.*辣|少辣|忌辣/, '不吃辣'],
+      [/素|plant/i, '素食'],
+      [/清真|halal/i, '清真'],
+      [/海鲜|seafood/i, '海鲜过敏'],
+      [/坚果|花生|nut/i, '花生坚果过敏'],
+      [/乳糖|奶|milk|lactose/i, '乳糖不耐']
+    ];
+    return map.filter(([pattern]) => (values || []).some((item) => pattern.test(String(item)))).map(([, value]) => value);
+  }
+
+  function mapInterests(values) {
+    const map = [
+      [/自然|山|湖|风景|nature/i, '自然风光'],
+      [/历史|人文|history|heritage/i, '历史人文'],
+      [/美食|food/i, '美食'],
+      [/博物馆|museum/i, '博物馆'],
+      [/海|沙滩|海滨|beach/i, '海滨玩水'],
+      [/古城|老街|古镇|old town/i, '古城老街'],
+      [/夜景|night/i, '夜景'],
+      [/亲子|乐园|children|kids/i, '亲子乐园']
+    ];
+    return map.filter(([pattern]) => (values || []).some((item) => pattern.test(String(item)))).map(([, value]) => value);
+  }
+
+  function applyVisionFields(fields) {
+    const fill = (id, value) => {
+      if (value === undefined || value === null || value === '') return false;
+      document.getElementById(id).value = value;
+      return true;
+    };
+    let count = 0;
+    count += fill('pl-dest', fields.destination) ? 1 : 0;
+    count += fill('pl-origin', fields.origin) ? 1 : 0;
+    count += fill('pl-start', fields.startDate) ? 1 : 0;
+    count += fill('pl-end', fields.endDate) ? 1 : 0;
+    count += fill('pl-elderly', fields.elderly) ? 1 : 0;
+    count += fill('pl-adults', fields.adults) ? 1 : 0;
+    count += fill('pl-children', fields.children) ? 1 : 0;
+    const dietary = mapDietary(fields.dietary);
+    const interests = mapInterests(fields.interests);
+    if (dietary.length) { setChipSelection('data-multi="pl-dietary"', dietary); count++; }
+    if (interests.length) { setChipSelection('data-multi="pl-interests"', interests); count++; }
+    if (fields.notes) {
+      const notes = document.getElementById('pl-notes');
+      const prefix = uiEnNow() ? 'Imported from screenshot: ' : '截图识别补充：';
+      notes.value = [notes.value.trim(), prefix + fields.notes].filter(Boolean).join('\n');
+      count++;
+    }
+    document.getElementById('pl-start').dispatchEvent(new Event('change', { bubbles: true }));
+    document.getElementById('pl-end').dispatchEvent(new Event('change', { bubbles: true }));
+    document.getElementById('planForm').dispatchEvent(new Event('input', { bubbles: true }));
+    return count;
+  }
+
+  async function recognizeGuideImage(file) {
+    const btn = document.getElementById('pl-vision-btn');
+    const preview = document.getElementById('pl-vision-preview');
+    if (btn) btn.disabled = true;
+    try {
+      planVisionStatus(uiEnNow() ? 'Compressing image…' : '正在压缩图片…');
+      const image = await compressGuideImage(file);
+      if (preview) {
+        preview.src = image;
+        preview.hidden = false;
+      }
+      planVisionStatus(uiEnNow() ? 'Reading guide screenshot…' : '正在识别攻略截图…');
+      const result = await app.api('/api/vision', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(app.aiPayload({ image }))
+      });
+      const count = applyVisionFields(result.fields || {});
+      const warnings = (result.fields && result.fields.warnings) || [];
+      planVisionStatus(
+        (uiEnNow() ? `Filled ${count} fields — please review. ` : `已预填 ${count} 项，请核对。`) + warnings.join(' ')
+      );
+      app.toast(uiEnNow() ? 'Screenshot fields added — review before generating' : '截图信息已预填，请核对后生成');
+    } catch (error) {
+      planVisionStatus(error.message || (uiEnNow() ? 'Recognition failed' : '识别失败'), true);
+    } finally {
+      if (btn) btn.disabled = false;
+    }
   }
 
   /* ---------- 表单草稿自动保存（切页不丢） ---------- */
@@ -501,6 +641,12 @@
       const st = await app.api('/api/plan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(app.aiPayload(Object.assign({}, vals, { patch }))) });
       saveLast({ jobId: st.jobId, vals, result: null, lang: (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh' });
       app.pollJob(st.jobId, {
+        onProgress: (progress) => {
+          if (!progress) return;
+          const message = progress.summary || progress.message || '';
+          const name = progress.name ? ({ search_travel_knowledge: '检索本地知识', get_transport_options: '查询 12306', get_weather_forecast: '查询天气' }[progress.name] || progress.name) : '';
+          bodyEl.innerHTML = `<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>${uiEn ? 'AI planner is working…' : 'AI 主理人正在工作…'}<br/><span class="agent-progress">${app.esc(name || message || '正在生成行程')}${name && message ? ' · ' + app.esc(message) : ''}</span></p>`;
+        },
         onDone: (result) => { renderPlan(bodyEl, result, vals); savePlan(vals, result); revealPlanResult(); },
         onError: (msg) => { bodyEl.innerHTML = `<div class="ai-feedback">${uiEn ? '🐱 AI planner: ' : '🐱 AI 主理人：'}${app.esc(msg)}</div>`; }
       });
@@ -784,7 +930,7 @@
     const box = document.getElementById('dpwInfo');
     if (!box || !desktopData) return;
     const tabs = `<div class="dpw-tabs">
-      ${[['transport', '交通'], ['hotel', '酒店'], ['budget', '预算'], ['weather', '天气'], ['tips', '建议']].map(([k, l]) => `<button type="button" data-dpw-tab="${k}" class="${tab === k ? 'active' : ''}">${l}</button>`).join('')}
+      ${[['transport', '交通'], ['hotel', '酒店'], ['budget', '预算'], ['weather', '天气'], ['tips', '建议'], ['sources', '依据']].map(([k, l]) => `<button type="button" data-dpw-tab="${k}" class="${tab === k ? 'active' : ''}">${l}</button>`).join('')}
     </div>`;
     let body = '';
     let needWeather = false;
@@ -805,6 +951,15 @@
       body = `${d.length ? `<div class="dietary-box"><h4>🥢 忌食与用餐提醒</h4><ul>${d.map((n) => `<li>${app.esc(n)}</li>`).join('')}</ul></div>` : ''}${t.length ? `<div class="tips-box"><strong>💡 出行提醒</strong><ul>${t.map((n) => `<li>${app.esc(n)}</li>`).join('')}</ul></div>` : '<p class="dpw-empty">暂无额外建议。</p>'}`;
     } else if (tab === 'hotel') {
       body = `<p class="dpw-empty">只搜索当前城市的酒店；选中后定位到地图。</p><div class="dpw-hotel-search"><input id="dpwHotelSearch" placeholder="输入酒店名，如 王府井 / 国贸" /><button type="button" id="dpwHotelSearchBtn">搜索</button></div><div id="dpwHotelResults"><p class="dpw-empty">输入关键词搜索，或直接搜“酒店”。</p></div>`;
+    } else if (tab === 'sources') {
+      const citations = desktopData.citations || [];
+      const trace = desktopData.toolTrace || [];
+      const traceHtml = trace.length
+        ? `<div class="agent-trace"><h4>🧰 Agent 工具轨迹</h4><ol>${trace.map((item) => `<li><b>${app.esc(item.name)}</b><span>${app.esc(item.summary || (item.ok ? '已完成' : '失败'))}</span><small>${Number(item.durationMs || 0)} ms${item.source === 'system-fallback' ? ' · 系统兜底' : ''}</small></li>`).join('')}</ol></div>`
+        : '';
+      body = citations.length
+        ? traceHtml + `<div class="source-box"><h4>🔎 本行程采用的依据</h4><p class="source-note">由本地知识库检索生成，点击可查看对应目的地或规则页。</p><ol class="source-list">${citations.map((item) => `<li><a href="${app.esc(item.url)}" target="_blank" rel="noopener"><b>${app.esc(item.title)}</b></a><span>${app.esc(item.snippet)}</span><small>${app.esc(item.source)} · 匹配度 ${Number(item.score || 0).toFixed(2)}</small></li>`).join('')}</ol></div>`
+        : traceHtml + '<p class="dpw-empty">本次生成未命中本地知识片段。</p>';
     }
     box.innerHTML = tabs + `<div id="dpwInfoBody">${body}</div>`;
     if (needWeather) loadDesktopWeather();
@@ -1052,6 +1207,8 @@
       ${(data.dietaryNotes || []).length ? `<div class="dietary-box"><h4>🥢 忌食与用餐提醒</h4><ul>${data.dietaryNotes.map((n) => `<li>${app.esc(n)}</li>`).join('')}</ul></div>` : ''}
       ${dayHtml}
       ${(data.tips || []).length ? `<div class="tips-box"><strong>💡 出行提醒</strong><ul>${data.tips.map((t) => `<li>${app.esc(t)}</li>`).join('')}</ul></div>` : ''}
+      ${(data.toolTrace || []).length ? `<div class="agent-trace"><h4>🧰 AI 工具轨迹</h4><ol>${data.toolTrace.map((item) => `<li><b>${app.esc(item.name)}</b><span>${app.esc(item.summary || (item.ok ? '已完成' : '失败'))}</span><small>${Number(item.durationMs || 0)} ms</small></li>`).join('')}</ol></div>` : ''}
+      ${(data.citations || []).length ? `<div class="source-box"><h4>🔎 依据来源</h4><p class="source-note">以下内容经本地知识库检索后加入 AI 上下文。</p><ol class="source-list">${data.citations.map((item) => `<li><a href="${app.esc(item.url)}" target="_blank" rel="noopener"><b>${app.esc(item.title)}</b></a><span>${app.esc(item.snippet)}</span><small>${app.esc(item.source)}</small></li>`).join('')}</ol></div>` : ''}
       <div class="result-actions">
         <button class="btn btn-primary" type="button" data-print-plan>🖨️ 打印 / 存为 PDF</button>
         <button class="btn btn-ghost" type="button" data-save-img>📷 保存为图片</button>
@@ -1105,18 +1262,95 @@
 
   async function sendExplainChat(msg, typing) {
     try {
-      const data = await app.api('/api/chat', {
+      const responseHeaders = {
+        'Content-Type': 'application/json',
+        'x-lang': (window.i18n && window.i18n.lang) || 'zh'
+      };
+      try {
+        const token = localStorage.getItem('jyh_token');
+        if (token) responseHeaders.Authorization = 'Bearer ' + token;
+      } catch (e) { /* ignore */ }
+      const response = await fetch('/api/chat/stream', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: responseHeaders,
         body: JSON.stringify(app.aiPayload({ message: msg, history: chatHistory, tripContext: buildTripContext() }))
       });
-      chatHistory.push({ role: 'user', content: msg }, { role: 'assistant', content: data.reply });
+      if (!response.ok) {
+        let detail = '';
+        try { detail = (await response.json()).error || ''; } catch (e) { /* ignore */ }
+        throw new Error(detail || ('HTTP ' + response.status));
+      }
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let full = '';
+      let firstDelta = true;
+      let citations = [];
+      const handleBlock = (block) => {
+        let event = 'message';
+        const dataLines = [];
+        block.split('\n').forEach((line) => {
+          if (line.startsWith('event:')) event = line.slice(6).trim();
+          if (line.startsWith('data:')) dataLines.push(line.slice(5).trim());
+        });
+        if (!dataLines.length) return;
+        let data;
+        try { data = JSON.parse(dataLines.join('\n')); } catch { return; }
+        if (event === 'stage') {
+          if (firstDelta) {
+            typing.classList.remove('chat-typing');
+            typing.innerHTML = `<span class="chat-stage">${app.esc(data.label || '正在处理')}${data.detail ? ' · ' + app.esc(data.detail) : ''}</span>`;
+          }
+        } else if (event === 'delta') {
+          if (firstDelta) {
+            firstDelta = false;
+            typing.classList.remove('chat-typing');
+            typing.textContent = '';
+          }
+          full += data.text || '';
+          typing.textContent = full;
+          const body = document.getElementById('chatBody');
+          if (body) body.scrollTop = body.scrollHeight;
+        } else if (event === 'done') {
+          citations = Array.isArray(data.citations) ? data.citations : [];
+        }
+      };
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, '\n');
+        let split;
+        while ((split = buffer.indexOf('\n\n')) >= 0) {
+          handleBlock(buffer.slice(0, split));
+          buffer = buffer.slice(split + 2);
+        }
+      }
+      if (buffer.trim()) handleBlock(buffer);
+      if (!full) throw new Error(uiEnNow() ? 'The AI returned an empty answer' : 'AI 未返回有效内容');
       typing.classList.remove('chat-typing');
-      typing.textContent = data.reply;
+      typing.textContent = full;
+      renderChatCitations(typing, citations);
+      chatHistory.push({ role: 'user', content: msg }, { role: 'assistant', content: full });
     } catch (e) {
       typing.classList.remove('chat-typing');
       typing.textContent = (uiEnNow() ? 'Error: ' : '出错了：') + e.message;
     }
+  }
+
+  function renderChatCitations(node, citations) {
+    if (!node || !Array.isArray(citations) || !citations.length) return;
+    const box = document.createElement('div');
+    box.className = 'chat-citations';
+    box.innerHTML = `<b>${uiEnNow() ? 'Sources' : '本次回答依据'}</b>`;
+    citations.slice(0, 5).forEach((item, index) => {
+      const link = document.createElement('a');
+      link.href = item.url || '/destinations.html';
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = `${index + 1}. ${item.title}`;
+      box.appendChild(link);
+    });
+    node.appendChild(box);
   }
 
   async function sendPlanRevision(msg, typing) {

@@ -3,7 +3,7 @@
     "ai":  {
                "apiKey":  "",
                "baseUrl":  "https://api.deepseek.com/v1",
-               "model":  "deepseek-chat",
+               "model":  "deepseek-flash",
                "inviteCode":  "",
                "tokenTtlDays":  365,
                "tokenVersion":  1,

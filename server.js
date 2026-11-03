@@ -19,6 +19,7 @@ const weather = require('./lib/weather');
 const collector = require('./lib/collector');
 const train = require('./lib/train');
 const travelSearch = require('./lib/travel-search');
+const rag = require('./lib/rag');
 
 const ROOT = __dirname;
 const PUBLIC = path.join(ROOT, 'public');
@@ -120,6 +121,7 @@ setInterval(() => {
   for (const [k, v] of cheapHits) if (now > v.reset) cheapHits.delete(k);
   for (const [k, v] of outHits) if (now > v.reset) outHits.delete(k);
   for (const [k, v] of inviteFails) if (now > v.reset && now > (v.lockedUntil || 0)) inviteFails.delete(k);
+  sweepJobFiles();
 }, 5 * 60 * 1000).unref();
 
 /* ---------- 响应安全头 ---------- */
@@ -148,10 +150,72 @@ function sendJson(res, status, obj) {
   res.end(body);
 }
 
+function writeSse(res, event, data) {
+  if (res.writableEnded || res.destroyed) return false;
+  res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+  return true;
+}
+
+function writeSseComment(res, text) {
+  if (res.writableEnded || res.destroyed) return false;
+  res.write(': ' + text + '\n\n');
+  return true;
+}
+
 /** 后台任务：AI 生成在服务器后台继续，客户端可随时轮询结果 */
 const jobs = new Map();
 /** 队列容量不足：单独类型，便于返回 503 而不是 500 */
 class CapacityError extends Error {}
+
+/* ---------- 任务结果落盘 ----------
+ * 内存任务有个真实缺陷：pm2 restart（包括自动部署）会把已生成但客户端还没取走的结果一起丢掉，
+ * 用户看到的是「任务不存在或已过期」，只能重来一次、再烧一次额度。
+ * 因此任务完成 / 失败时把结果写一份到 tmp/jobs/，重启后仍可取回；过期由清扫任务删除。
+ * 注意：id 来自查询参数，必须严格校验格式后再拼路径，否则会变成任意文件读取。
+ */
+const JOBS_DIR = path.join(ROOT, 'tmp', 'jobs');
+const JOB_ID_RE = /^j[0-9a-f]{32}$/;
+function jobFile(id) { return path.join(JOBS_DIR, id + '.json'); }
+function persistJob(id, job) {
+  try {
+    fs.mkdirSync(JOBS_DIR, { recursive: true });
+    const payload = {
+      status: job.status,
+      result: job.result === undefined ? null : job.result,
+      error: job.error || null,
+      createdAt: job.createdAt,
+      owner: job.owner || '',
+      expiresAt: Date.now() + JOB_TTL
+    };
+    fs.writeFileSync(jobFile(id), JSON.stringify(payload), 'utf8');
+  } catch (e) {
+    console.error('[job persist]', e && e.message);
+  }
+}
+function loadJobFromDisk(id) {
+  if (!JOB_ID_RE.test(String(id || ''))) return null;
+  try {
+    const data = JSON.parse(fs.readFileSync(jobFile(id), 'utf8'));
+    if (!data || typeof data.expiresAt !== 'number' || data.expiresAt < Date.now()) return null;
+    return data;
+  } catch { return null; }
+}
+/** 删除超过 TTL 的落盘任务（防止 tmp/jobs 长期增长） */
+function sweepJobFiles() {
+  fs.readdir(JOBS_DIR, (err, names) => {
+    if (err || !names) return;
+    const now = Date.now();
+    for (const name of names) {
+      if (!name.endsWith('.json')) continue;
+      const file = path.join(JOBS_DIR, name);
+      fs.stat(file, (e, st) => {
+        if (e || !st.isFile()) return;
+        if (now - st.mtimeMs > JOB_TTL * 2) fs.unlink(file, () => {});
+      });
+    }
+  });
+}
+
 /** 只统计「正在生成」的任务；已完成待过期的任务不占用并发名额 */
 function runningJobs() {
   let n = 0;
@@ -165,9 +229,28 @@ function runJob(fn, owner) {
   jobs.set(id, { status: 'running', createdAt: Date.now(), owner: owner || '' });
   const expire = () => { jobs.delete(id); };
   Promise.resolve()
-    .then(fn)
-    .then((result) => { const j = jobs.get(id); if (j) { j.status = 'done'; j.result = result; setTimeout(expire, JOB_TTL).unref(); } })
-    .catch((e) => { const j = jobs.get(id); if (j) { j.status = 'error'; j.error = String((e && e.message) || e); setTimeout(expire, JOB_TTL).unref(); } });
+    .then(() => fn((event) => {
+      const current = jobs.get(id);
+      if (current && current.status === 'running') {
+        current.progress = { ...event, at: Date.now() };
+      }
+    }))
+    .then((result) => {
+      const j = jobs.get(id);
+      if (!j) return;
+      j.status = 'done';
+      j.result = result;
+      persistJob(id, j);
+      setTimeout(expire, JOB_TTL).unref();
+    })
+    .catch((e) => {
+      const j = jobs.get(id);
+      if (!j) return;
+      j.status = 'error';
+      j.error = String((e && e.message) || e);
+      persistJob(id, j);
+      setTimeout(expire, JOB_TTL).unref();
+    });
   // 兜底：卡死的 running 任务也按时清理
   setTimeout(() => { const j = jobs.get(id); if (j && j.status === 'running') jobs.delete(id); }, JOB_TTL * 4).unref();
   return id;
@@ -181,6 +264,58 @@ function startJob(res, lang, fn, req) {
     throw e;
   }
   return sendJson(res, 200, { jobId, status: 'running' });
+}
+
+async function fetchPlanTrainData(params, overrides) {
+  const transport = String(params.transport || '');
+  if (!['高铁', '火车', '未定', ''].includes(transport)) return null;
+  if (!params.origin || !params.destination || !params.destination.name) return null;
+  const returnDest = params.returnDest || params.origin;
+  const [outbound, inbound] = await Promise.all([
+    train.queryTrainsWithPrices(params.origin, params.destination.name, String(params.startDate || '').slice(0, 10), MAX_TRAINS),
+    train.queryTrainsWithPrices(params.destination.name, returnDest, String(params.endDate || '').slice(0, 10), MAX_TRAINS)
+  ]);
+  const en = overrides.lang === 'en';
+  const timeEn = (value) => ({ '上午': 'morning', '中午': 'midday', '下午': 'afternoon' }[value] || value);
+  const note = (result) => {
+    if (!result || !result.ok) return en ? ('12306 lookup failed (' + ((result && result.error) || 'unknown') + ') — please confirm on the official 12306 website') : ('12306 查询失败（' + ((result && result.error) || '未知') + '），请到 12306 官网确认实际车次');
+    if (!result.trains || !result.trains.length) return en ? 'No direct trains — a transfer is needed (check connections on 12306)' : '暂无直达，需中转（可到 12306 查询中转方案）';
+    if (result.refNote) return en ? 'Your date is beyond the 12306 sales window; the services above are recent reference trains — confirm on 12306 for your travel date' : '出行日期超出预售期，以上为近期参考班次，车次基本每日固定，请以出行日 12306 实际为准';
+    return '';
+  };
+  const hour = (trainItem) => {
+    const match = /^(\d{1,2}):/.exec(String(trainItem.fromTime || ''));
+    return match ? Number(match[1]) : -1;
+  };
+  const pickByTime = (items) => {
+    if (!Array.isArray(items) || !items.length) return { trains: [], filtered: false, fellBack: false };
+    const preferred = params.travelTime || '上午';
+    if (preferred === '未定' || !preferred) return { trains: items, filtered: false, fellBack: false };
+    const inWindow = (h) => preferred === '上午' ? (h >= 5 && h < 12) : preferred === '中午' ? (h >= 12 && h < 14) : (h >= 14);
+    const hit = items.filter((item) => inWindow(hour(item)));
+    if (hit.length) return { trains: hit, filtered: true, fellBack: false };
+    const morning = items.filter((item) => hour(item) >= 5 && hour(item) < 12);
+    return { trains: morning.length ? morning : items, filtered: false, fellBack: true };
+  };
+  const outboundPick = pickByTime(outbound.ok ? outbound.trains : []);
+  const inboundPick = pickByTime(inbound.ok ? inbound.trains : []);
+  const timeNote = (item) => item.filtered ? (en ? ' (filtered to ' + timeEn(params.travelTime) + ' departures)' : '（已按「' + params.travelTime + '」时段筛选）') : '';
+  params.realTrains = {
+    outbound: outboundPick.trains.slice(0, MAX_TRAIN_DISPLAY),
+    inbound: inboundPick.trains.slice(0, MAX_TRAIN_DISPLAY),
+    display: {
+      outboundLabel: (en ? 'Outbound (' : '去程（') + (en ? planner.cityEn(params.origin) : params.origin) + ' → ' + (en ? planner.cityEn(params.destination.name) : params.destination.name) + (en ? ')' : '）'),
+      outboundNote: note(outbound) + timeNote(outboundPick),
+      inboundLabel: (en ? 'Return' : '返程') + (en ? ' (' : '（') + (en ? planner.cityEn(params.destination.name) : params.destination.name) + ' → ' + (en ? planner.cityEn(returnDest) : returnDest) + (en ? ')' : '）'),
+      inboundNote: note(inbound) + timeNote(inboundPick),
+      outboundFellBack: outboundPick.fellBack,
+      inboundFellBack: inboundPick.fellBack,
+      timeFallbackNote: (outboundPick.fellBack || inboundPick.fellBack) && params.travelTime !== '未定'
+        ? (en ? 'No trains in the chosen window — morning services suggested instead' : '所选「' + params.travelTime + '」时段暂无车次，自动推荐上午车次')
+        : ''
+    }
+  };
+  return params.realTrains;
 }
 const MAX_BODY_BYTES = 512 * 1024;                            // 请求体上限（字节，含中文多字节）
 /** 读取请求体：按字节限长、预检 Content-Length、处理 aborted，避免慢速上传与半截数据 */
@@ -466,6 +601,24 @@ async function handleApi(req, res, pathname) {
     return sendPacked(res, STATIC_JSON.images);
   }
 
+  // GET /api/rag/search —— 本地知识检索与可点击依据（用于调试和评委核验）
+  if (pathname === '/api/rag/search' && req.method === 'GET') {
+    if (!allowCheap(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
+    const q = url.parse(req.url, true).query;
+    const query = String(q.q || '').trim();
+    if (!query) return sendJson(res, 400, { error: reqLang(req) === 'en' ? 'Please enter a search query' : '请输入检索内容' });
+    const citations = rag.publicCitations(rag.retrieve(query, {
+      destinationId: String(q.destinationId || '').trim(),
+      limit: Number(q.limit) || 6
+    }));
+    return sendJson(res, 200, {
+      query,
+      count: citations.length,
+      provider: 'local-bm25-char-bigram',
+      citations
+    });
+  }
+
   // GET /api/destinations/:id —— 详情
   const dm = pathname.match(/^\/api\/destinations\/([^/]+)$/);
   if (dm && req.method === 'GET') {
@@ -627,54 +780,68 @@ async function handleApi(req, res, pathname) {
     if (body.patch && JSON.stringify(body.patch).length > MAX_PATCH_CHARS) {
       return sendJson(res, 413, { error: L.tooLarge });
     }
-    return startJob(res, body.lang, async () => {
-      // 高铁/火车：从 12306 拉取当天真实车次，供 AI 直接采用
-      const tr = String(params.transport || '');
-      if (['高铁', '火车', '未定', ''].includes(tr) && params.origin && params.destination) {
-        const ret = params.returnDest || params.origin;
-        // 并发出网：串行时去程+返程各含 12s 超时，最坏会叠成 24s 以上的空等
-        const [od, id2] = await Promise.all([
-          train.queryTrainsWithPrices(params.origin, params.destination.name, String(params.startDate || '').slice(0, 10), MAX_TRAINS),
-          train.queryTrainsWithPrices(params.destination.name, ret, String(params.endDate || '').slice(0, 10), MAX_TRAINS)
-        ]);
-        const en = overrides.lang === 'en';
-        const timeEn = (v) => ({ '上午': 'morning', '中午': 'midday', '下午': 'afternoon' }[v] || v);
-        const rtNote = (res) => {
-          if (!res || !res.ok) return en ? ('12306 lookup failed (' + ((res && res.error) || 'unknown') + ') — please confirm the actual trains on the official 12306 website') : ('12306 查询失败（' + ((res && res.error) || '未知') + '），请到 12306 官网确认实际车次');
-          if (!res.trains || !res.trains.length) return en ? 'No direct trains — a transfer is needed (check connections on 12306)' : '暂无直达，需中转（可到 12306 查询中转方案）';
-          if (res.refNote) return en ? 'Your date is beyond the 12306 sales window; the services above are recent reference trains (schedules are largely fixed) — confirm on 12306 for your travel date' : '出行日期超出预售期，以上为近期参考班次，车次基本每日固定，请以出行日 12306 实际为准';
-          return '';
-        };
-        // 按用户选择的交通出行时间（上午/中午/下午）筛选车次；该时段无车次则自动推荐上午车次（上午也无则显示全部）
-        const tt = params.travelTime || '上午';
-        const hh = (x) => { const m = /^(\d{1,2}):/.exec(String(x.fromTime || '')); return m ? Number(m[1]) : -1; };
-        const pickByTime = (arr) => {
-          if (!Array.isArray(arr) || !arr.length) return { trains: [], filtered: false, fellBack: false, recMorning: false };
-          if (tt === '未定' || !tt) return { trains: arr, filtered: false, fellBack: false, recMorning: false };
-          const win = (h) => tt === '上午' ? (h >= 5 && h < 12) : tt === '中午' ? (h >= 12 && h < 14) : (h >= 14);
-          const hit = arr.filter((x) => win(hh(x)));
-          if (hit.length) return { trains: hit, filtered: true, fellBack: false, recMorning: false };
-          const morn = arr.filter((x) => { const h = hh(x); return h >= 5 && h < 12; });
-          return morn.length ? { trains: morn, filtered: false, fellBack: true, recMorning: true } : { trains: arr, filtered: false, fellBack: true, recMorning: false };
-        };
-        const ob = pickByTime(od.ok ? od.trains : []);
-        const ib = pickByTime(id2.ok ? id2.trains : []);
-        const timeNote = (r) => r.filtered ? (en ? ' (filtered to ' + timeEn(tt) + ' departures)' : '（已按「' + tt + '」时段筛选）') : '';
-        params.realTrains = {
-          outbound: ob.trains.slice(0, MAX_TRAIN_DISPLAY),
-          inbound: ib.trains.slice(0, MAX_TRAIN_DISPLAY),
-          display: {
-            outboundLabel: (en ? 'Outbound (' : '去程（') + (en ? planner.cityEn(params.origin) : (params.origin || '')) + ' → ' + (en ? planner.cityEn(params.destination.name) : params.destination.name) + (en ? ')' : '）'),
-            outboundNote: rtNote(od) + timeNote(ob),
-            inboundLabel: (en ? 'Return' : '返程') + (en ? ' (' : '（') + (en ? planner.cityEn(params.destination.name) : params.destination.name) + ' → ' + (en ? planner.cityEn(ret) : ret) + (en ? ')' : '）'),
-            inboundNote: rtNote(id2) + timeNote(ib),
-            outboundFellBack: ob.fellBack,
-            inboundFellBack: ib.fellBack,
-            timeFallbackNote: (ob.fellBack || ib.fellBack) && tt !== '未定' ? (en ? 'No trains in the chosen ' + timeEn(tt) + ' window — morning services suggested instead' : '所选「' + tt + '」时段暂无车次，自动推荐上午车次') : ''
+    return startJob(res, body.lang, async (updateJob) => {
+      const settings = ai.getSettings(overrides);
+      let trainPromise = null;
+      let weatherPromise = null;
+      const executeTool = async (name, args) => {
+        if (name === 'search_travel_knowledge') {
+          const query = String(args.query || '').trim().slice(0, 300);
+          if (!query) throw new Error('检索词为空');
+          const raw = rag.retrieve(query, { destinationId: params.destination.id, limit: 6 });
+          const citations = rag.publicCitations(raw);
+          return {
+            summary: `检索到 ${citations.length} 条本地依据`,
+            citations,
+            context: rag.promptBlock(raw)
+          };
+        }
+        if (name === 'get_transport_options') {
+          if (!['高铁', '火车', '未定', ''].includes(String(params.transport || ''))) {
+            return { summary: '用户已选择非铁路交通，跳过 12306', trains: [] };
           }
-        };
+          if (!trainPromise) trainPromise = fetchPlanTrainData(params, overrides);
+          const data = await trainPromise;
+          return {
+            summary: `已获取 ${(data && data.outbound || []).length} 趟去程和 ${(data && data.inbound || []).length} 趟返程参考车次`,
+            rail: data
+          };
+        }
+        if (name === 'get_weather_forecast') {
+          const requestedId = String(args.destinationId || params.destination.id);
+          if (requestedId !== params.destination.id) throw new Error('只能查询当前行程目的地天气');
+          if (!weatherPromise) weatherPromise = weather.getForecast(params.destination);
+          const data = await weatherPromise;
+          const days = (data.days || []).slice(0, 8);
+          return {
+            summary: `已获取未来 ${days.length} 天天气`,
+            days,
+            source: data.source || '天气预报数据源'
+          };
+        }
+        throw new Error('未知工具：' + name);
+      };
+
+      // 无模型 Key 时仍让规则引擎获得真实车次；有 Key 时由模型自主选择工具。
+      if (!settings.apiKey) await fetchPlanTrainData(params, overrides);
+      updateJob({ stage: 'planning', message: settings.apiKey ? 'AI 正在规划并选择工具' : '规则引擎正在生成行程' });
+      const result = await planner.buildPlan(params, overrides, body.patch || null, {
+        executeTool: settings.apiKey ? executeTool : null,
+        onEvent: (event) => updateJob({ stage: 'agent', ...event })
+      });
+      if (!params.realTrains && ['高铁', '火车', '未定', ''].includes(String(params.transport || ''))) {
+        const started = Date.now();
+        await fetchPlanTrainData(params, overrides);
+        result.toolTrace = Array.isArray(result.toolTrace) ? result.toolTrace : [];
+        result.toolTrace.push({
+          name: 'get_transport_options',
+          ok: !!params.realTrains,
+          durationMs: Date.now() - started,
+          args: {},
+          summary: '模型未选择铁路工具，系统执行可靠性兜底',
+          source: 'system-fallback'
+        });
       }
-      const result = await planner.buildPlan(params, overrides, body.patch || null);
       result.realTrains = params.realTrains;
       return result;
     }, req);
@@ -713,13 +880,175 @@ async function handleApi(req, res, pathname) {
     return sendJson(res, 200, result);
   }
 
-  // GET /api/job?id=xxx —— 轮询后台任务结果（仅提交者本人可读）
+  // POST /api/chat/stream —— AI 主理人 SSE：阶段状态 + 逐字输出 + 引用
+  if (pathname === '/api/chat/stream' && req.method === 'POST') {
+    if (!allowAi(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
+    let body;
+    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: MSG(reqLang(req)).badJson }); }
+    const message = String(body.message || '').trim();
+    if (!message) return sendJson(res, 400, { error: MSG(reqLang(req)).needQuestion });
+    if (message.length > 2000) return sendJson(res, 400, { error: MSG(body.lang).tooLarge });
+    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '', lang: body.lang === 'en' ? 'en' : 'zh' };
+    const history = Array.isArray(body.history) ? body.history.slice(-MAX_HISTORY) : [];
+    const prepared = planner.prepareChat(message, history, overrides, body.tripContext || null);
+    const settings = ai.getSettings(overrides);
+    const citations = rag.publicCitations(prepared.citations);
+    const controller = new AbortController();
+    let heartbeat = null;
+    res.on('close', () => {
+      if (heartbeat) clearInterval(heartbeat);
+      if (!res.writableEnded) controller.abort(new Error('client disconnected'));
+    });
+    res.writeHead(200, Object.assign({}, SEC_HEADERS, {
+      'Content-Type': 'text/event-stream; charset=utf-8',
+      'Cache-Control': 'no-cache, no-transform',
+      Connection: 'keep-alive',
+      'X-Accel-Buffering': 'no'
+    }));
+    res.flushHeaders?.();
+    heartbeat = setInterval(() => writeSseComment(res, 'keep-alive'), 15000);
+    heartbeat.unref?.();
+    writeSse(res, 'stage', {
+      phase: 'retrieval',
+      label: overrides.lang === 'en' ? 'Local knowledge retrieved' : '本地知识检索完成',
+      detail: overrides.lang === 'en' ? citations.length + ' sources' : citations.length + ' 条依据'
+    });
+
+    const streamFallback = async () => {
+      if (heartbeat) clearInterval(heartbeat);
+      writeSse(res, 'stage', {
+        phase: 'fallback',
+        label: overrides.lang === 'en' ? 'Using reliable fallback' : '已切换到可靠降级回答'
+      });
+      const text = prepared.fallback;
+      for (let i = 0; i < text.length; i += 18) {
+        if (!writeSse(res, 'delta', { text: text.slice(i, i + 18) })) return;
+        await new Promise((resolve) => setTimeout(resolve, 8));
+      }
+      writeSse(res, 'done', { provider: 'rule', citations });
+      res.end();
+    };
+
+    if (!settings.apiKey) return streamFallback();
+    try {
+      writeSse(res, 'stage', {
+        phase: 'thinking',
+        label: overrides.lang === 'en' ? 'AI is thinking' : 'AI 正在思考',
+        detail: overrides.lang === 'en' ? 'Reading family constraints and retrieved sources' : '正在结合家庭约束与检索依据'
+      });
+      let first = true;
+      let reasoningStageSent = false;
+      const result = await ai.chatStream(settings, prepared.messages, {
+        signal: controller.signal,
+        thinking: 'enabled',
+        temperature: 0.7,
+        onReasoning: () => {
+          if (!reasoningStageSent) {
+            reasoningStageSent = true;
+            writeSse(res, 'stage', { phase: 'reasoning', label: overrides.lang === 'en' ? 'Reasoning' : '正在推理' });
+          }
+        },
+        onDelta: (text) => {
+          if (first) {
+            first = false;
+            writeSse(res, 'stage', { phase: 'generating', label: overrides.lang === 'en' ? 'Writing answer' : '正在生成回答' });
+          }
+          writeSse(res, 'delta', { text });
+        }
+      });
+      if (!result.content && !res.writableEnded) throw new Error('empty stream');
+      if (heartbeat) clearInterval(heartbeat);
+      writeSse(res, 'done', { provider: 'ai', citations });
+      res.end();
+    } catch (error) {
+      if (!res.writableEnded && !res.destroyed) {
+        console.error('[AI Stream Error]', error && error.message);
+        await streamFallback();
+      }
+    }
+    return;
+  }
+
+  // POST /api/vision —— 攻略截图结构化：图片只在本次请求中转发，不落盘
+  if (pathname === '/api/vision' && req.method === 'POST') {
+    if (!allowAi(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
+    let raw;
+    try {
+      raw = await readBody(req, 700 * 1024);
+    } catch (error) {
+      return sendJson(res, error && error.statusCode === 413 ? 413 : 400, {
+        error: error && error.statusCode === 413
+          ? MSG(reqLang(req)).tooLarge
+          : (reqLang(req) === 'en' ? 'The image request was interrupted' : '图片请求不完整')
+      });
+    }
+    let body;
+    try { body = JSON.parse(raw); } catch { return sendJson(res, 400, { error: MSG(reqLang(req)).badJson }); }
+    const lang = body.lang === 'en' ? 'en' : 'zh';
+    const image = String(body.image || '');
+    const match = /^data:image\/(jpeg|png|webp);base64,([A-Za-z0-9+/=]+)$/.exec(image);
+    if (!match) return sendJson(res, 400, { error: lang === 'en' ? 'Please upload a JPEG, PNG or WebP image' : '请上传 JPEG、PNG 或 WebP 图片' });
+    const bytes = Buffer.from(match[2], 'base64');
+    if (!bytes.length || bytes.length > 480 * 1024) {
+      return sendJson(res, 413, { error: lang === 'en' ? 'The compressed image must be under 480 KB' : '压缩后的图片需小于 480 KB' });
+    }
+    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '', lang };
+    const settings = ai.getSettings(overrides);
+    if (!settings.apiKey) {
+      return sendJson(res, 503, { error: lang === 'en' ? 'Screenshot recognition needs an AI key' : '攻略截图识别需要配置 AI Key' });
+    }
+    if (/deepseek\.com/i.test(settings.baseUrl || '')) settings.model = process.env.AI_VISION_MODEL || 'deepseek-flash';
+    const prompt = lang === 'en'
+      ? 'Read this travel guide screenshot and extract only what is visibly supported. Return JSON with keys destination, origin, startDate, endDate, adults, elderly, children, dietary, interests, notes, confidence, warnings. Dates use YYYY-MM-DD only if explicit; otherwise empty. Dietary/interests are short arrays. Do not invent details.'
+      : '读取这张旅行攻略截图，只提取图片明确显示的信息。输出 JSON，键为 destination、origin、startDate、endDate、adults、elderly、children、dietary、interests、notes、confidence、warnings。日期只有明确出现时才用 YYYY-MM-DD，否则留空。dietary 和 interests 为简短数组。不得补造信息。';
+    try {
+      const content = await ai.chat(settings, [{
+        role: 'user',
+        content: [
+          { type: 'text', text: prompt },
+          { type: 'image_url', image_url: { url: image, detail: 'high' } }
+        ]
+      }], { jsonMode: true, thinking: 'disabled', temperature: 0.1, maxTokens: 1600 });
+      const parsed = ai.extractJson(content);
+      if (!parsed || typeof parsed !== 'object') return sendJson(res, 502, { error: lang === 'en' ? 'The image result was not valid JSON' : '图片识别结果不是有效 JSON' });
+      const clampPeople = (value) => {
+        const number = Math.trunc(Number(value));
+        return Number.isFinite(number) ? Math.min(9, Math.max(0, number)) : null;
+      };
+      const text = (value, max = 300) => String(value || '').trim().slice(0, max);
+      const list = (value) => (Array.isArray(value) ? value : []).map((item) => text(item, 40)).filter(Boolean).slice(0, 12);
+      return sendJson(res, 200, {
+        provider: 'vision',
+        model: settings.model,
+        fields: {
+          destination: text(parsed.destination, 40),
+          origin: text(parsed.origin, 40),
+          startDate: /^\d{4}-\d{2}-\d{2}$/.test(String(parsed.startDate || '')) ? parsed.startDate : '',
+          endDate: /^\d{4}-\d{2}-\d{2}$/.test(String(parsed.endDate || '')) ? parsed.endDate : '',
+          adults: clampPeople(parsed.adults),
+          elderly: clampPeople(parsed.elderly),
+          children: clampPeople(parsed.children),
+          dietary: list(parsed.dietary),
+          interests: list(parsed.interests),
+          notes: text(parsed.notes, 500),
+          confidence: Math.min(1, Math.max(0, Number(parsed.confidence) || 0)),
+          warnings: list(parsed.warnings)
+        }
+      });
+    } catch (error) {
+      console.error('[Vision Error]', error && error.message);
+      return sendJson(res, 502, { error: lang === 'en' ? 'Image recognition is temporarily unavailable' : '图片识别暂时不可用，请稍后再试' });
+    }
+  }
+
+  // GET /api/job?id=xxx —— 轮询后台任务结果（仅提交者本人可读；重启后仍可从落盘结果取回）
   if (pathname === '/api/job' && req.method === 'GET') {
     if (!allowCheap(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
     const q = url.parse(req.url, true).query;
-    const job = jobs.get(String(q.id || ''));
+    const id = String(q.id || '');
+    const job = jobs.get(id) || loadJobFromDisk(id);
     if (!job || (job.owner && job.owner !== clientIp(req))) return sendJson(res, 404, { error: MSG(reqLang(req)).jobGone });
-    return sendJson(res, 200, { jobId: String(q.id || ''), status: job.status, result: job.result || null, error: job.error || null });
+    return sendJson(res, 200, { jobId: id, status: job.status, result: job.result || null, error: job.error || null, progress: job.progress || null });
   }
 
   // GET /api/weather?id=xxx —— 目的地未来 15 天天气预报（出网接口，单独限流）
