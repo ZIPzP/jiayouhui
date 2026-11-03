@@ -52,6 +52,7 @@ const MAX_JOBS = 20;                                          // 最大并发任
 const MAX_PATCH_CHARS = 60000;                                // 局部修改补丁上限（防提示词膨胀）
 const MAX_PLAN_CHARS = 120000;                                // 修正行程原文上限
 const MAX_HISTORY = 20;                                       // 问答携带的历史条数
+const MAX_CHAT_CHARS = 2000;                                  // 单条问答最大字符数
 const MAX_TRAINS = 60;                                        // 12306 每次最多拉取车次数
 const MAX_TRAIN_DISPLAY = 12;                                 // 返回给前端的车次数（前端最多展示 6 条）
 const HOT_DATA_TTL = 5 * 60 * 1000;                           // 平台热度数据缓存 5 分钟
@@ -335,6 +336,14 @@ function readBody(req, limit = MAX_BODY_BYTES) {
     req.on('error', fail);
     req.on('end', () => { if (done) return; done = true; resolve(Buffer.concat(chunks).toString('utf8')); });
   });
+}
+
+function sanitizeChatHistory(value) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((item) => item && (item.role === 'user' || item.role === 'assistant') && typeof item.content === 'string')
+    .slice(-8)
+    .map((item) => ({ role: item.role, content: item.content.slice(0, MAX_CHAT_CHARS) }));
 }
 
 const config = ai.loadConfig();
@@ -877,8 +886,9 @@ async function handleApi(req, res, pathname) {
     const message = String(body.message || '').trim();
     if (!message) return sendJson(res, 400, { error: MSG(body.lang).needQuestion });
     const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '', lang: body.lang === 'en' ? 'en' : 'zh' };
-    // 历史只取最近若干条，避免请求体被撑大
-    const history = Array.isArray(body.history) ? body.history.slice(-MAX_HISTORY) : [];
+    if (message.length > MAX_CHAT_CHARS) return sendJson(res, 400, { error: MSG(body.lang).tooLarge });
+    // 历史只接受 user/assistant 文本，防止客户端伪造 system 指令或撑大提示词。
+    const history = sanitizeChatHistory(body.history);
     const result = await planner.chatReply(message, history, overrides, body.tripContext || null);
     return sendJson(res, 200, result);
   }
@@ -890,9 +900,9 @@ async function handleApi(req, res, pathname) {
     try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: MSG(reqLang(req)).badJson }); }
     const message = String(body.message || '').trim();
     if (!message) return sendJson(res, 400, { error: MSG(reqLang(req)).needQuestion });
-    if (message.length > 2000) return sendJson(res, 400, { error: MSG(body.lang).tooLarge });
+    if (message.length > MAX_CHAT_CHARS) return sendJson(res, 400, { error: MSG(body.lang).tooLarge });
     const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '', lang: body.lang === 'en' ? 'en' : 'zh' };
-    const history = Array.isArray(body.history) ? body.history.slice(-MAX_HISTORY) : [];
+    const history = sanitizeChatHistory(body.history);
     const prepared = planner.prepareChat(message, history, overrides, body.tripContext || null);
     const settings = ai.getSettings(overrides);
     const citations = rag.publicCitations(prepared.citations);
@@ -941,6 +951,7 @@ async function handleApi(req, res, pathname) {
       });
       let first = true;
       let reasoningStageSent = false;
+      let streamedChars = 0;
       const result = await ai.chatStream(settings, prepared.messages, {
         signal: controller.signal,
         thinking: 'enabled',
@@ -952,6 +963,7 @@ async function handleApi(req, res, pathname) {
           }
         },
         onDelta: (text) => {
+          streamedChars += text.length;
           if (first) {
             first = false;
             writeSse(res, 'stage', { phase: 'generating', label: overrides.lang === 'en' ? 'Writing answer' : '正在生成回答' });
@@ -966,7 +978,17 @@ async function handleApi(req, res, pathname) {
     } catch (error) {
       if (!res.writableEnded && !res.destroyed) {
         console.error('[AI Stream Error]', error && error.message);
-        await streamFallback();
+        if (streamedChars > 0) {
+          if (heartbeat) clearInterval(heartbeat);
+          writeSse(res, 'stage', {
+            phase: 'error',
+            label: overrides.lang === 'en' ? 'Connection interrupted' : '回答中断，请重试',
+            detail: overrides.lang === 'en' ? 'Partial answer kept; no fallback was appended' : '已保留部分回答，未混入完整兜底文本'
+          });
+          res.end();
+        } else {
+          await streamFallback();
+        }
       }
     }
     return;

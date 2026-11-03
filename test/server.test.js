@@ -176,6 +176,15 @@ test('AI 对话 SSE：无 Key 也能输出阶段、逐字内容和依据', async
   assert.match(text, /杭州|老人|午休/);
 });
 
+test('AI 对话拒绝过长消息', async () => {
+  const r = await fetch(BASE + '/api/chat', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ message: 'x'.repeat(2001), lang: 'zh' })
+  });
+  assert.equal(r.status, 400);
+});
+
 test('截图识别：校验图片格式，并在无 Key 时明确提示', async () => {
   let malformed = await fetch(BASE + '/api/vision', {
     method: 'POST',
