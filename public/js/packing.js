@@ -371,7 +371,7 @@
         app.pollJob(p.jobId, {
           onDone: (result) => { renderResult(bodyEl, result, p.vals); savePack(p.vals, result); },
           onError: () => {
-            bodyEl.innerHTML = '<p style="padding:40px;text-align:center;color:var(--ink-soft)">上次任务已结束或过期，请重新生成。</p>';
+            bodyEl.innerHTML = '<p style="padding:40px;text-align:center;color:var(--ink-soft)">上次任务已结束或过期，请重新生成</p>';
           }
         });
         return true;

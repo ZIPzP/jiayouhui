@@ -16,7 +16,7 @@
         "amapSecurityCode":  ""
     },
     "access":  {
-                   "enabled":  true,
+                   "enabled":  false,
                    "passcode":  "",
                    "tokenTtlDays":  30
                },

@@ -531,7 +531,7 @@
         bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>上次的生成任务还在后台跑，正在恢复…</p>';
         app.pollJob(p.jobId, {
           onDone: (result) => { renderPlan(bodyEl, result, p.vals); savePlan(p.vals, result); revealPlanResult(); },
-          onError: () => { bodyEl.innerHTML = '<p style="padding:40px;text-align:center;color:var(--ink-soft)">上次任务已结束或过期，请重新生成。</p>'; }
+          onError: () => { bodyEl.innerHTML = '<p style="padding:40px;text-align:center;color:var(--ink-soft)">上次任务已结束或过期，请重新生成</p>'; }
         });
       }
     } catch (e) { /* 忽略 */ }
@@ -881,8 +881,8 @@
     if (body) {
       body.hidden = false;
       body.innerHTML = '<div class="result-empty"><p>行程已生成，修改后可重新打开地图工作台。</p><button class="btn btn-primary" type="button" data-open-workspace>打开地图工作台</button></div>';
-      const btn = body.querySelector('[data-open-workspace]');
-      if (btn) btn.addEventListener('click', () => renderDesktopWorkspace(desktopData, desktopVals, desktopCtx));
+      // 不再单独绑定 click：#planBody 上已有 [data-open-workspace] 的事件委托，
+      // 两处同时绑会让一次点击执行两遍（工作台重建两次、地图 build 两次）。
     }
     const layout = document.querySelector('.plan-layout');
     if (layout) layout.scrollIntoView({ behavior: 'smooth', block: 'start' });
