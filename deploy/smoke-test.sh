@@ -11,15 +11,15 @@ curl -fsS "$BASE_URL/api/health"
 echo
 
 echo "== RAG =="
-curl -fsS --get "$BASE_URL/api/rag/search" \
-  --data-urlencode "q=杭州 老人 茶园 午休" \
-  --data-urlencode "destinationId=hangzhou" >"$TMP_DIR/rag.json"
-node -e "const x=require(process.argv[1]); if(!Array.isArray(x.citations)||!x.citations.length)process.exit(1); console.log('citations='+x.citations.length)" "$TMP_DIR/rag.json"
+RAG_QUERY='%E6%9D%AD%E5%B7%9E%20%E8%80%81%E4%BA%BA%20%E8%8C%B6%E5%9B%AD%20%E5%8D%88%E4%BC%91'
+curl -fsS "$BASE_URL/api/rag/search?q=$RAG_QUERY&destinationId=hangzhou" >"$TMP_DIR/rag.json"
+grep -q '"citations":\[{' "$TMP_DIR/rag.json"
+echo "RAG citations verified"
 
 echo "== SSE fallback =="
 curl -fsS -N -X POST "$BASE_URL/api/chat/stream" \
   -H "Content-Type: application/json" \
-  --data '{"message":"为什么第 2 天这样安排？","history":[],"tripContext":{"destinationId":"hangzhou","destinationName":"杭州","days":3,"elderly":1,"children":1},"lang":"zh"}' \
+  --data '{"message":"Why is day 2 arranged this way?","history":[],"tripContext":{"destinationId":"hangzhou","days":3,"elderly":1,"children":1},"lang":"zh"}' \
   >"$TMP_DIR/stream.txt"
 grep -q "event: stage" "$TMP_DIR/stream.txt"
 grep -q "event: delta" "$TMP_DIR/stream.txt"

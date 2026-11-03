@@ -10,7 +10,6 @@ const zlib = require('zlib');
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
-const url = require('url');
 const ai = require('./lib/ai');
 const rec = require('./lib/recommend');
 const planner = require('./lib/planner');
@@ -604,12 +603,12 @@ async function handleApi(req, res, pathname) {
   // GET /api/rag/search —— 本地知识检索与可点击依据（用于调试和评委核验）
   if (pathname === '/api/rag/search' && req.method === 'GET') {
     if (!allowCheap(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
-    const q = url.parse(req.url, true).query;
-    const query = String(q.q || '').trim();
+    const q = new URL(req.url, 'http://localhost').searchParams;
+    const query = String(q.get('q') || '').trim();
     if (!query) return sendJson(res, 400, { error: reqLang(req) === 'en' ? 'Please enter a search query' : '请输入检索内容' });
     const citations = rag.publicCitations(rag.retrieve(query, {
-      destinationId: String(q.destinationId || '').trim(),
-      limit: Number(q.limit) || 6
+      destinationId: String(q.get('destinationId') || '').trim(),
+      limit: Number(q.get('limit')) || 6
     }));
     return sendJson(res, 200, {
       query,
@@ -642,8 +641,8 @@ async function handleApi(req, res, pathname) {
 
   // GET /api/travel-search?q=xxx —— 本地无结果时使用 Tavily 免费额度补充全网文旅文章
   if (pathname === '/api/travel-search' && req.method === 'GET') {
-    const q = url.parse(req.url, true).query;
-    const keyword = String(q.q || '').trim();
+    const q = new URL(req.url, 'http://localhost').searchParams;
+    const keyword = String(q.get('q') || '').trim();
     if (!keyword) return sendJson(res, 400, { enabled: travelSearch.isEnabled(), error: reqLang(req) === 'en' ? 'Please enter a search keyword' : '请输入搜索关键词' });
     if (!allowTravelSearch(req)) {
       return sendJson(res, 429, { enabled: travelSearch.isEnabled(), error: reqLang(req) === 'en' ? 'Too many web searches — please try again later' : '免费全网搜索次数过多，请稍后再试' });
@@ -804,7 +803,11 @@ async function handleApi(req, res, pathname) {
           const data = await trainPromise;
           return {
             summary: `已获取 ${(data && data.outbound || []).length} 趟去程和 ${(data && data.inbound || []).length} 趟返程参考车次`,
-            rail: data
+            rail: data ? {
+              outbound: (data.outbound || []).slice(0, 6),
+              inbound: (data.inbound || []).slice(0, 6),
+              display: data.display
+            } : null
           };
         }
         if (name === 'get_weather_forecast') {
@@ -1044,8 +1047,8 @@ async function handleApi(req, res, pathname) {
   // GET /api/job?id=xxx —— 轮询后台任务结果（仅提交者本人可读；重启后仍可从落盘结果取回）
   if (pathname === '/api/job' && req.method === 'GET') {
     if (!allowCheap(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
-    const q = url.parse(req.url, true).query;
-    const id = String(q.id || '');
+    const q = new URL(req.url, 'http://localhost').searchParams;
+    const id = String(q.get('id') || '');
     const job = jobs.get(id) || loadJobFromDisk(id);
     if (!job || (job.owner && job.owner !== clientIp(req))) return sendJson(res, 404, { error: MSG(reqLang(req)).jobGone });
     return sendJson(res, 200, { jobId: id, status: job.status, result: job.result || null, error: job.error || null, progress: job.progress || null });
@@ -1054,8 +1057,8 @@ async function handleApi(req, res, pathname) {
   // GET /api/weather?id=xxx —— 目的地未来 15 天天气预报（出网接口，单独限流）
   if (pathname === '/api/weather' && req.method === 'GET') {
     if (!allowOutbound(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
-    const q = url.parse(req.url, true).query;
-    const dest = destinations.find((d) => d.id === String(q.id || ''));
+    const q = new URL(req.url, 'http://localhost').searchParams;
+    const dest = destinations.find((d) => d.id === String(q.get('id') || ''));
     if (!dest || !dest.lat) return sendJson(res, 400, { error: MSG(reqLang(req)).noCoord });
     try {
       const data = await weather.getForecast(dest);
@@ -1147,7 +1150,7 @@ const server = http.createServer(async (req, res) => {
   try {
     let pathname;
     try {
-      pathname = decodeURIComponent(url.parse(req.url).pathname || '/');
+      pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname || '/');
     } catch {
       return sendJson(res, 400, { error: MSG(reqLang(req)).badPath });
     }

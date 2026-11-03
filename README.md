@@ -82,6 +82,8 @@
 
 > 部署到 Ubuntu 前按 [`docs/Ubuntu上线前检查.md`](docs/Ubuntu上线前检查.md) 完成真实 Key、SSE 代理、地图域名和回滚检查。
 
+> 本次 AI 升级的自动化、浏览器、并发和作品包结果见 [`docs/AI升级验收记录.md`](docs/AI升级验收记录.md)。
+
 ## 功能截图
 
 | 首页 | 目的地库 |
