@@ -6,15 +6,30 @@
 const test = require('node:test');
 const assert = require('node:assert');
 const { spawn } = require('node:child_process');
+const net = require('node:net');
 const path = require('node:path');
 
 const ROOT = path.join(__dirname, '..');
-const PORT = 3000 + Math.floor(Math.random() * 2000) + 300;
-const BASE = `http://127.0.0.1:${PORT}`;
+let PORT;
+let BASE;
 
 let child;
 
-function startServer() {
+function reservePort() {
+  return new Promise((resolve, reject) => {
+    const probe = net.createServer();
+    probe.unref();
+    probe.once('error', reject);
+    probe.listen(0, '127.0.0.1', () => {
+      const port = probe.address().port;
+      probe.close((error) => error ? reject(error) : resolve(port));
+    });
+  });
+}
+
+async function startServer() {
+  PORT = await reservePort();
+  BASE = `http://127.0.0.1:${PORT}`;
   return new Promise((resolve, reject) => {
     child = spawn(process.execPath, ['server.js'], {
       cwd: ROOT,
