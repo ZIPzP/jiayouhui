@@ -74,6 +74,27 @@
 6. 前往「出行清单」，生成与行程关联的打包方案。
 7. 切换中英文和长辈模式，检查不同家庭成员的体验。
 
+> 评审老师请直接看 [`docs/评委快速上手.md`](docs/评委快速上手.md)：3 分钟走完主链路，含 AI 体验方式与常见问题。
+
+## 功能截图
+
+| 首页 | 目的地库 |
+| --- | --- |
+| ![首页](docs/screenshots/01-home.jpg) | ![目的地库](docs/screenshots/02-destinations.jpg) |
+
+| 家庭约束输入 | 行程地图工作台 |
+| --- | --- |
+| ![家庭约束输入](docs/screenshots/03-plan.jpg) | ![行程地图工作台](docs/screenshots/04-map.jpg) |
+
+| 出行清单 | 发现下一站 |
+| --- | --- |
+| ![出行清单](docs/screenshots/05-packing.jpg) | ![发现下一站](docs/screenshots/06-discovery.jpg) |
+
+<p align="center">
+  <img src="docs/screenshots/07-mobile-home.jpg" alt="手机端首页" width="320" />
+</p>
+
+
 ## 技术架构
 
 ```mermaid
@@ -151,6 +172,8 @@ http://localhost:3000
 
 项目不需要执行 `npm install`。
 
+Windows 可以直接双击根目录的 `启动.bat`（macOS / Linux 用 `bash 启动.sh`）：它会检查 Node 版本、端口占用，缺少配置时自动复制模板，然后打开浏览器。
+
 ## 环境配置
 
 复制配置模板：
@@ -174,10 +197,15 @@ Copy-Item config.local.example.json config.local.json
 | `AI_API_KEY` | AI 服务端 API Key |
 | `AI_BASE_URL` | OpenAI 兼容接口地址 |
 | `AI_MODEL` | 模型名称 |
-| `AI_TIMEOUT_MS` | AI 请求超时时间 |
+| `AI_TIMEOUT_MS` | AI 请求超时时间（默认 120000） |
+| `AI_ALLOW_PRIVATE_BASE_URL` | 设为 `1` 时才允许浏览器填写内网 AI 地址，仅私有化部署使用，默认关闭 |
 | `AMAP_JS_KEY` | 高德地图 Web 端 JS API Key |
 | `AMAP_SECURITY_CODE` | 高德地图安全密钥 |
+| `TAVILY_API_KEY` | Tavily 全网搜索 Key，用于「发现」页补充文旅文章（可选） |
 | `PORT` | 服务端口，默认 `3000` |
+| `HOST` | 监听地址，默认 `0.0.0.0` |
+
+以上变量都可以不配置：不配 AI Key 时走内置规则引擎，不配地图 Key 时保留文字行程与清单。
 
 ## AI 配置
 
@@ -265,8 +293,15 @@ jiayouhui/
 │   ├── css/style.css          # 全站样式
 │   ├── js/                    # 页面脚本与地图逻辑
 │   └── images/                # 目的地实景图片
+├── docs/
+│   ├── 评委快速上手.md         # 3 分钟主链路、AI 体验方式、常见问题
+│   └── screenshots/           # README 与文档配图（截图 / 架构图）
+├── test/                      # node:test 单元测试与接口冒烟测试
+├── scripts/check-syntax.js    # 全仓 JS 语法自检（npm run check）
 ├── tools/                     # 配置与数据维护脚本
-└── deploy/                    # 部署配置
+├── deploy/                    # 部署配置（Nginx / 服务器初始化 / 测试环境说明）
+├── 启动.bat / 启动.sh          # 本地一键启动（Windows / macOS·Linux）
+└── logs/                      # pm2 运行日志（不入 git）
 ```
 
 ## API 一览
@@ -286,6 +321,26 @@ jiayouhui/
 | `POST` | `/api/chat` | AI 主理人问答 |
 | `GET` | `/api/map/config` | 地图前端配置 |
 | `GET` | `/api/health` | 健康检查 |
+
+## 测试
+
+项目零依赖，测试直接用 Node 自带的 test runner，不需要安装任何框架：
+
+```bash
+npm test        # 单元测试 + 接口冒烟，共 23 项
+npm run check   # 全部 JS 文件语法检查（含 public/js）
+```
+
+覆盖内容：
+
+| 层次 | 覆盖点 |
+| --- | --- |
+| 安全函数 | 内网地址判定（含 `::ffff:127.0.0.1`、解析到内网的域名）、AI 返回 JSON 清洗 |
+| 规则引擎 | 天数钳制 1–14 天、中英文输出结构、自定义目的地骨架 |
+| 数据完整性 | 目的地字段与坐标、城市库规模、图片路径都指向真实文件 |
+| 接口冒烟 | 真实启动服务后检查健康接口、只读接口、404 与路径穿越、参数校验、后台任务全流程；并回归「畸形路径不能打挂进程」 |
+
+CI（`.github/workflows/deploy.yml`）会先跑语法检查 + 测试 + 冒烟，全部通过才部署到服务器；部署后健康检查失败会自动回滚到上一个提交。
 
 ## 部署
 
@@ -310,6 +365,8 @@ curl -s https://familytravelhublz.top/api/health
 项目还提供阿里云部署脚本、Nginx 配置与运维文档。
 
 ## 团队
+
+**团队名称：** 糯叽叽队
 
 | 成员 | 负责内容 |
 | --- | --- |

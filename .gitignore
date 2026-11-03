@@ -1,6 +1,7 @@
 # 依赖与日志
 node_modules/
 *.log
+logs/
 
 # 敏感配置：服务端内置的 DeepSeek Key（绝不提交）
 config.local.json
