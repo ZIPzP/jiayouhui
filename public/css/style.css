@@ -910,9 +910,6 @@ html.js .reveal.reveal-in { animation: jyh-rise .36s cubic-bezier(.22, .61, .36,
   .entry-card:hover { transform: translateY(-6px); }
 }
 
-/* 信任数字强调（数字滚动目标） */
-.hd-count { color: var(--primary-dark); font-weight: 800; }
-
 /* ⑥ 长辈模式切换：字体/间距平滑过渡（一次性布局过渡，仅切换瞬间约 300ms） */
 .brand, .hero-title, .hero-sub, .quick-planner, .quick-title, .section-head h2,
 .dest-name, .dest-tagline, .badge, .food-name, .food-desc, .modal,
