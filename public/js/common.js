@@ -481,7 +481,7 @@
         <div class="auth-card card">
           <div class="auth-logo">🏡 家游汇</div>
           <p class="auth-sub">家庭旅行推荐与攻略 · 请输入邀请码</p>
-          <input id="authPasscode" type="password" class="input" placeholder="邀请码" autocomplete="off" />
+          <input id="authPasscode" type="password" class="input" placeholder="邀请码" aria-label="邀请码" autocomplete="off" />
           <button id="authSubmit" class="btn btn-primary btn-lg btn-block" type="button" style="margin-top:12px">进入</button>
           <p class="form-hint" id="authError" style="color:var(--danger);text-align:center" hidden>口令错误，请重试</p>
         </div>

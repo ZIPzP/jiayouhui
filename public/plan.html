@@ -155,9 +155,9 @@
         <div class="form-group">
           <label class="form-label">同行人数</label>
           <div class="num-group">
-            <span>👴<input id="pl-elderly" type="number" min="0" max="9" value="2" class="input num" /></span>
-            <span>🧑<input id="pl-adults" type="number" min="0" max="9" value="2" class="input num" /></span>
-            <span>🧒<input id="pl-children" type="number" min="0" max="9" value="1" class="input num" /></span>
+            <span>👴<input id="pl-elderly" type="number" min="0" max="9" value="2" class="input num" aria-label="老人人数" /></span>
+            <span>🧑<input id="pl-adults" type="number" min="0" max="9" value="2" class="input num" aria-label="成人人数" /></span>
+            <span>🧒<input id="pl-children" type="number" min="0" max="9" value="1" class="input num" aria-label="儿童人数" /></span>
           </div>
         </div>
         <div class="form-group">
@@ -220,7 +220,7 @@
             <span>识别目的地、日期、同行人和忌口，结果只用于预填，不会自动生成。</span>
           </div>
           <div class="plan-vision-actions">
-            <input id="pl-vision-file" type="file" accept="image/jpeg,image/png,image/webp" hidden />
+            <input id="pl-vision-file" type="file" accept="image/jpeg,image/png,image/webp" aria-label="选择截图" hidden />
             <button id="pl-vision-btn" class="btn btn-ghost" type="button">选择截图</button>
             <span id="pl-vision-status" class="plan-vision-status" role="status" aria-live="polite"></span>
           </div>
@@ -288,7 +288,7 @@
         <div class="chat-msg ai chat-mobile-only">你好呀，我是「家游汇」的 AI 主理人 🏡 可以问我任何家庭旅行问题，比如「带老人孩子去西安怎么安排 5 天？」</div>
       </div>
       <div class="chat-input-row">
-        <input id="chatInput" class="input" placeholder="例如：把第 2 天下午换成室内景点…" />
+        <input id="chatInput" class="input" placeholder="例如：把第 2 天下午换成室内景点…" aria-label="向 AI 行程管家提问" />
         <button id="chatSend" class="btn btn-primary" type="button">应用修改</button>
       </div>
     </div>
