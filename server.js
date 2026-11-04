@@ -52,7 +52,6 @@ const JOB_TTL = 5 * 60 * 1000;                                // 任务结果保
 const MAX_JOBS = 20;                                          // 最大并发任务数
 const MAX_PATCH_CHARS = 60000;                                // 局部修改补丁上限（防提示词膨胀）
 const MAX_PLAN_CHARS = 120000;                                // 修正行程原文上限
-const MAX_HISTORY = 20;                                       // 问答携带的历史条数
 const MAX_CHAT_CHARS = 2000;                                  // 单条问答最大字符数
 const MAX_TRAINS = 60;                                        // 12306 每次最多拉取车次数
 const MAX_TRAIN_DISPLAY = 12;                                 // 返回给前端的车次数（前端最多展示 6 条）
@@ -126,7 +125,7 @@ setInterval(() => {
 }, 5 * 60 * 1000).unref();
 
 /* ---------- 响应安全头 ---------- */
-// 仅地图页放行高德插件的动态执行；其他页面继续使用严格 CSP
+// 仅行程地图页放行高德插件的动态执行；其他页面继续使用严格 CSP
 const MAP_CSP = "default-src 'self'; img-src 'self' data: blob: https://*.amap.com https://*.autonavi.com; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://webapi.amap.com https://*.amap.com; worker-src 'self' blob: data:; connect-src 'self' https://webapi.amap.com https://*.amap.com https://*.autonavi.com; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'";
 const SEC_HEADERS = {
   'X-Content-Type-Options': 'nosniff',
@@ -550,11 +549,15 @@ const STATIC_JSON = (() => {
     const body = JSON.stringify(obj);
     return { body, gz: zlib.gzipSync(body) };
   };
-  const list = applyImageBase(destinations.map(({ gallery, highlights, description, ...rest }) => ({
-    ...rest,
-    highlightCount: (highlights || []).length,
-    galleryCount: (gallery || []).length
-  })));
+  const list = applyImageBase(destinations.map(({ gallery, highlights, description, ...rest }) => {
+    // description 是详情页大字段，显式排除以缩小列表响应体积。
+    void description;
+    return {
+      ...rest,
+      highlightCount: (highlights || []).length,
+      galleryCount: (gallery || []).length
+    };
+  }));
   const seen = new Set();
   const images = [];
   destinations.forEach((d) => {
@@ -700,24 +703,6 @@ async function handleApi(req, res, pathname) {
   // GET /api/images —— 全部实景照片（封面/画廊/亮点，去重，供首页轮播使用）
   if (pathname === '/api/images' && req.method === 'GET') {
     return sendPacked(res, STATIC_JSON.images);
-  }
-
-  // GET /api/rag/search —— 本地知识检索与可点击依据（用于调试和评委核验）
-  if (pathname === '/api/rag/search' && req.method === 'GET') {
-    if (!allowCheap(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
-    const q = new URL(req.url, 'http://localhost').searchParams;
-    const query = String(q.get('q') || '').trim();
-    if (!query) return sendJson(res, 400, { error: reqLang(req) === 'en' ? 'Please enter a search query' : '请输入检索内容' });
-    const citations = rag.publicCitations(rag.retrieve(query, {
-      destinationId: String(q.get('destinationId') || '').trim(),
-      limit: Number(q.get('limit')) || 6
-    }));
-    return sendJson(res, 200, {
-      query,
-      count: citations.length,
-      provider: 'local-bm25-char-bigram',
-      citations
-    });
   }
 
   // GET /api/destinations/:id —— 详情
@@ -916,45 +901,48 @@ async function handleApi(req, res, pathname) {
         let trainPromise = null;
         let weatherPromise = null;
         const executeTool = async (name, args) => {
-        if (name === 'search_travel_knowledge') {
-          const query = String(args.query || '').trim().slice(0, 300);
-          if (!query) throw new Error('检索词为空');
-          const raw = rag.retrieve(query, { destinationId: params.destination.id, limit: 6 });
-          const citations = rag.publicCitations(raw);
-          return {
-            summary: `检索到 ${citations.length} 条本地依据`,
-            citations,
-            context: rag.promptBlock(raw)
-          };
-        }
-        if (name === 'get_transport_options') {
-          if (!['高铁', '火车', '未定', ''].includes(String(params.transport || ''))) {
-            return { summary: '用户已选择非铁路交通，跳过 12306', trains: [] };
+          // 工具一：只检索本次目的地范围内的本地家庭旅行知识，避免跨城市污染。
+          if (name === 'search_travel_knowledge') {
+            const query = String(args.query || '').trim().slice(0, 300);
+            if (!query) throw new Error('检索词为空');
+            const raw = rag.retrieve(query, { destinationId: params.destination.id, limit: 6 });
+            const citations = rag.publicCitations(raw);
+            return {
+              summary: `检索到 ${citations.length} 条本地依据`,
+              citations,
+              context: rag.promptBlock(raw)
+            };
           }
-          if (!trainPromise) trainPromise = fetchPlanTrainData(params, overrides);
-          const data = await trainPromise;
-          return {
-            summary: `已获取 ${(data && data.outbound || []).length} 趟去程和 ${(data && data.inbound || []).length} 趟返程参考车次`,
-            rail: data ? {
-              outbound: (data.outbound || []).slice(0, 6),
-              inbound: (data.inbound || []).slice(0, 6),
-              display: data.display
-            } : null
-          };
-        }
-        if (name === 'get_weather_forecast') {
-          const requestedId = String(args.destinationId || params.destination.id);
-          if (requestedId !== params.destination.id) throw new Error('只能查询当前行程目的地天气');
-          if (!weatherPromise) weatherPromise = weather.getForecast(params.destination);
-          const data = await weatherPromise;
-          const days = (data.days || []).slice(0, 8);
-          return {
-            summary: `已获取未来 ${days.length} 天天气`,
-            days,
-            source: data.source || '天气预报数据源'
-          };
-        }
-        throw new Error('未知工具：' + name);
+          // 工具二：仅在铁路出行时查询 12306；同一次行程复用 Promise，避免重复出网。
+          if (name === 'get_transport_options') {
+            if (!['高铁', '火车', '未定', ''].includes(String(params.transport || ''))) {
+              return { summary: '用户已选择非铁路交通，跳过 12306', trains: [] };
+            }
+            if (!trainPromise) trainPromise = fetchPlanTrainData(params, overrides);
+            const data = await trainPromise;
+            return {
+              summary: `已获取 ${(data && data.outbound || []).length} 趟去程和 ${(data && data.inbound || []).length} 趟返程参考车次`,
+              rail: data ? {
+                outbound: (data.outbound || []).slice(0, 6),
+                inbound: (data.inbound || []).slice(0, 6),
+                display: data.display
+              } : null
+            };
+          }
+          // 工具三：只允许查询当前行程目的地，并限制返回天数，降低无关出网与提示词体积。
+          if (name === 'get_weather_forecast') {
+            const requestedId = String(args.destinationId || params.destination.id);
+            if (requestedId !== params.destination.id) throw new Error('只能查询当前行程目的地天气');
+            if (!weatherPromise) weatherPromise = weather.getForecast(params.destination);
+            const data = await weatherPromise;
+            const days = (data.days || []).slice(0, 8);
+            return {
+              summary: `已获取未来 ${days.length} 天天气`,
+              days,
+              source: data.source || '天气预报数据源'
+            };
+          }
+          throw new Error('未知工具：' + name);
         };
 
         // 无模型 Key 时仍让规则引擎获得真实车次；有 Key 时由模型自主选择工具。
@@ -1021,29 +1009,6 @@ async function handleApi(req, res, pathname) {
     }, req);
   }
 
-  // POST /api/chat —— AI 主理人问答
-  if (pathname === '/api/chat' && req.method === 'POST') {
-    if (!allowAi(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
-    let body;
-    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: MSG(reqLang(req)).badJson }); }
-    const message = String(body.message || '').trim();
-    if (!message) return sendJson(res, 400, { error: MSG(body.lang).needQuestion });
-    const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '', lang: body.lang === 'en' ? 'en' : 'zh' };
-    if (message.length > MAX_CHAT_CHARS) return sendJson(res, 400, { error: MSG(body.lang).tooLarge });
-    // 历史只接受 user/assistant 文本，防止客户端伪造 system 指令或撑大提示词。
-    const history = sanitizeChatHistory(body.history);
-    const charge = chargeAiAction(res, body, 'chat');
-    if (!charge.ok) return sendJson(res, charge.status, { error: charge.error, code: charge.code, usage: charge.usage });
-    try {
-      const result = await planner.chatReply(message, history, overrides, body.tripContext || null);
-      if (result.provider !== 'ai') refundAiAction(charge);
-      return sendJson(res, 200, result);
-    } catch (error) {
-      refundAiAction(charge);
-      throw error;
-    }
-  }
-
   // POST /api/chat/stream —— AI 主理人 SSE：阶段状态 + 逐字输出 + 引用
   if (pathname === '/api/chat/stream' && req.method === 'POST') {
     if (!allowAi(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
@@ -1060,6 +1025,7 @@ async function handleApi(req, res, pathname) {
     if (!charge.ok) return sendJson(res, charge.status, { error: charge.error, code: charge.code, usage: charge.usage });
     const citations = rag.publicCitations(prepared.citations);
     const controller = new AbortController();
+    let streamedChars = 0;
     let heartbeat = null;
     res.on('close', () => {
       if (heartbeat) clearInterval(heartbeat);
@@ -1104,7 +1070,6 @@ async function handleApi(req, res, pathname) {
       });
       let first = true;
       let reasoningStageSent = false;
-      let streamedChars = 0;
       const result = await ai.chatStream(settings, prepared.messages, {
         signal: controller.signal,
         thinking: 'enabled',
@@ -1268,7 +1233,7 @@ async function handleApi(req, res, pathname) {
 
 const gzipCache = new Map(); // 静态文件 gzip 缓存（按 mtime 失效）
 function secHeaders(filePath) {
-  return filePath && /(?:plan|plan-map-lab)\.html$/i.test(filePath) ? Object.assign({}, SEC_HEADERS, { 'Content-Security-Policy': MAP_CSP }) : SEC_HEADERS;
+  return filePath && /plan\.html$/i.test(filePath) ? Object.assign({}, SEC_HEADERS, { 'Content-Security-Policy': MAP_CSP }) : SEC_HEADERS;
 }
 
 function serveStatic(req, res, pathname) {

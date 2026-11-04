@@ -14,7 +14,7 @@
   --radius: 16px;
   --shadow: 0 10px 30px rgba(31, 41, 55, .10);
   --shadow-lg: 0 24px 60px rgba(31, 41, 55, .18);
-  --font: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", "Segoe UI", system-ui, sans-serif;
+  --font: "PingFang SC", "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
   --fs-base: 16px;
   --nav-h: 64px;
 }
@@ -198,8 +198,10 @@ code { background: #f1f5f9; padding: 2px 6px; border-radius: 6px; font-size: .9e
 .date-field .date-display::placeholder { color: var(--ink-soft); opacity: 1; }
 .date-field:focus-within .date-display { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(15,118,110,.15); }
 .date-field .date-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; z-index: 1; font-size: .95rem; opacity: .75; }
-.num-group { display: flex; gap: 8px; }
-.num-group span { display: flex; align-items: center; gap: 6px; font-size: 1.05rem; }
+.num-group { display: flex; flex-wrap: wrap; gap: 10px; }
+.num-person { display: flex; align-items: center; gap: 8px; padding: 5px 8px 5px 12px; border: 1.5px solid var(--line); border-radius: 12px; background: #fff; }
+.num-person-label { font-weight: 800; color: var(--ink); white-space: nowrap; }
+.num-person .input.num { width: 56px; border: 0; padding: 6px 4px; background: var(--bg); }
 .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip-group label {
   display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--line);

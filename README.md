@@ -361,10 +361,8 @@ jiayouhui/
 | `POST` | `/api/plan` | 生成家庭行程 |
 | `POST` | `/api/recommend` | 生成出行清单 |
 | `POST` | `/api/ai-guide` | 生成目的地攻略 |
-| `POST` | `/api/chat` | AI 主理人问答 |
 | `POST` | `/api/chat/stream` | SSE 流式问答、阶段状态与引用 |
 | `POST` | `/api/vision` | 攻略截图结构化预填 |
-| `GET` | `/api/rag/search` | 本地知识检索与引用调试 |
 | `GET` | `/api/map/config` | 地图前端配置 |
 | `GET` | `/api/health` | 健康检查 |
 
@@ -375,7 +373,10 @@ jiayouhui/
 ```bash
 npm test        # 单元测试 + AI 客户端 + Agent 闭环 + 接口冒烟
 npm run check   # 全部 JS 文件语法检查（含 public/js）
+npm run security # 敏感文件、硬编码密钥、字体、前端引用与退役接口检查
 ```
+
+字体与第三方组件许可见 [`docs/字体与第三方组件许可.md`](docs/字体与第三方组件许可.md)。
 
 覆盖内容：
 

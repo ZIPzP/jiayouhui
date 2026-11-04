@@ -85,7 +85,7 @@ test('服务端额度状态与耗尽拦截', async () => {
   assert.equal(status.usage.credits, 12);
 
   for (let i = 0; i < 4; i++) assert.equal(credits.consume(clientId, 'plan').ok, true);
-  const blocked = await fetch(base + '/api/chat', {
+  const blocked = await fetch(base + '/api/chat/stream', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({

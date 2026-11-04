@@ -12,7 +12,7 @@ npm test
 npm run check
 ```
 
-当前基线为 40 项测试全部通过、61 个 JavaScript 文件语法通过。
+当前基线为 41 项测试全部通过、60 个 JavaScript 文件语法通过。
 
 不要上传：
 
@@ -109,10 +109,9 @@ location = /api/chat/stream {
 ```bash
 curl -fsS https://familytravelhublz.top/api/health
 curl -fsS https://familytravelhublz.top/api/destinations
-curl -fsS "https://familytravelhublz.top/api/rag/search?q=%E6%9D%AD%E5%B7%9E%20%E8%80%81%E4%BA%BA%20%E8%8C%B6%E5%9B%AD&destinationId=hangzhou"
 ```
 
-RAG 接口应返回非空 `citations`，且来源 URL 可打开。
+调用 `/api/chat/stream` 后，完成事件应包含非空 `citations`；页面“依据”中的来源 URL 应可打开。
 
 匿名请求健康检查不应包含 `hasServerKey`。
 

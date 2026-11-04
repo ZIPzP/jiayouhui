@@ -1126,11 +1126,10 @@
     });
   }
 
-  function renderPlan(el, data, vals, options = {}) {
+  function renderPlan(el, data, vals) {
     data = dedupePlanData(data);
     renderedPlan = { data, vals };
     document.body.classList.add('plan-has-result');
-    const dest = app.state.destinations.find((d) => d.id === vals.destinationId) || {};
     const dayHtml = (data.days || []).map((d, i) => `
       <div class="day-card" style="animation-delay:${(0.05 + i * 0.12).toFixed(2)}s">
         <div class="day-head">

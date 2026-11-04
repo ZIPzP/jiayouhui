@@ -1,5 +1,5 @@
-/* 家游汇 · 个人旅行档案测试页 */
-body.profile-test-page {
+/* 家游汇 · 个人旅行档案 */
+body.profile-page {
   --profile-ground: #f4f3f0;
   --profile-panel: #f0efec;
   --profile-panel-strong: #e6e3de;
@@ -13,28 +13,28 @@ body.profile-test-page {
   color: var(--profile-ink);
 }
 
-.profile-test-page .nav-drawer {
+.profile-page .nav-drawer {
   display: none;
 }
 
-.profile-test-page .nav-drawer.open {
+.profile-page .nav-drawer.open {
   display: block;
 }
 
-.profile-test-page .nav-backdrop {
+.profile-page .nav-backdrop {
   display: none;
 }
 
-.profile-test-page .nav-backdrop.show {
+.profile-page .nav-backdrop.show {
   display: block;
 }
 
-.profile-test-page .btn-primary {
+.profile-page .btn-primary {
   box-shadow: none; /* taste-skill-ignore: remove the legacy brand button shadow */
 }
 
-.profile-test-page .nav-links-inline a.active,
-.profile-test-page .nav-drawer .nav-links a.active {
+.profile-page .nav-links-inline a.active,
+.profile-page .nav-drawer .nav-links a.active {
   color: var(--profile-teal);
   background: #dff1ed;
 }

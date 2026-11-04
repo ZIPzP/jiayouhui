@@ -622,7 +622,7 @@
           </div>
           <div id="aiInviteStatus" class="ai-server-status form-hint" hidden></div>
           <div id="aiUsageStatus" class="ai-server-status form-hint" hidden></div>
-          <a id="aiRechargeLink" class="btn btn-ghost" href="/profile-test.html#billing" hidden style="margin:4px 0 10px;width:100%">查看额度与充值</a>
+          <a id="aiRechargeLink" class="btn btn-ghost" href="/profile.html#billing" hidden style="margin:4px 0 10px;width:100%">查看额度与充值</a>
           <button id="ai-unlock-off" class="btn btn-ghost" type="button" hidden style="margin:4px 0 10px;width:100%">退出解锁（改用自带 Key）</button>
           <div class="form-group" id="aiKeyGroup">
             <label class="form-label" for="ai-key">API Key</label>
@@ -686,7 +686,7 @@
     if (actions && !document.querySelector('.nav-profile-link')) {
       const link = document.createElement('a');
       link.className = 'btn btn-ghost nav-profile-link';
-      link.href = '/profile-test.html';
+      link.href = '/profile.html';
       link.dataset.nav = 'profile';
       link.textContent = '旅行档案';
       const start = actions.querySelector('.btn-start-desktop');
@@ -695,7 +695,7 @@
     const links = document.getElementById('navLinks');
     if (links && !links.querySelector('[data-nav="profile"]')) {
       const link = document.createElement('a');
-      link.href = '/profile-test.html';
+      link.href = '/profile.html';
       link.dataset.nav = 'profile';
       link.textContent = '旅行档案';
       links.appendChild(link);
@@ -718,7 +718,7 @@
   }
   function navActive() {
     const p = location.pathname.split('/').pop() || 'index.html';
-    const map = { 'index.html': 'home', 'destinations.html': 'destinations', 'plan.html': 'plan', 'packing.html': 'packing', 'hot.html': 'hot', 'draw.html': 'discovery', 'draw-mobile.html': 'draw', 'about.html': 'about', 'profile-test.html': 'profile' };
+    const map = { 'index.html': 'home', 'destinations.html': 'destinations', 'plan.html': 'plan', 'packing.html': 'packing', 'hot.html': 'hot', 'draw.html': 'discovery', 'draw-mobile.html': 'draw', 'about.html': 'about', 'profile.html': 'profile' };
     const key = map[p] || 'home';
     $$('#navLinks a, .nav-links-inline a, .nav-profile-link').forEach((a) => a.classList.toggle('active', a.dataset.nav === key));
   }

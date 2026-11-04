@@ -78,13 +78,19 @@ test('只读接口可用且结构正确', async () => {
   const images = await (await fetch(BASE + '/api/images')).json();
   assert.ok(images.count > 100);
 
-  const rag = await (await fetch(BASE + '/api/rag/search?q=' + encodeURIComponent('杭州 老人 茶园') + '&destinationId=hangzhou')).json();
-  assert.ok(rag.count >= 1);
-  assert.equal(rag.provider, 'local-bm25-char-bigram');
-  assert.ok(rag.citations[0].title && rag.citations[0].url);
-
   const one = await fetch(BASE + '/api/destinations/' + dest.destinations[0].id);
   assert.equal(one.status, 200);
+});
+
+test('旧调试接口与重复问答接口已下线', async () => {
+  const rag = await fetch(BASE + '/api/rag/search?q=' + encodeURIComponent('杭州 老人 茶园') + '&destinationId=hangzhou');
+  assert.equal(rag.status, 404);
+  const chat = await fetch(BASE + '/api/chat', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ message: '测试旧接口' })
+  });
+  assert.equal(chat.status, 404);
 });
 
 test('404 与路径穿越都被拦下', async () => {
@@ -192,7 +198,7 @@ test('AI 对话 SSE：无 Key 也能输出阶段、逐字内容和依据', async
 });
 
 test('AI 对话拒绝过长消息', async () => {
-  const r = await fetch(BASE + '/api/chat', {
+  const r = await fetch(BASE + '/api/chat/stream', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ message: 'x'.repeat(2001), lang: 'zh' })

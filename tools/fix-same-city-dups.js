@@ -54,7 +54,7 @@ function writeJsonSafe(file, obj) {
       groups.get(h).push(f);
     }
     const cands = (pools[city] || []).filter((s, i, a) => a.indexOf(s) === i);
-    for (const [h, flist] of groups) {
+    for (const flist of groups.values()) {
       if (flist.length < 2) continue;
       // 保留第一个，其余替换
       for (let k = 1; k < flist.length; k++) {

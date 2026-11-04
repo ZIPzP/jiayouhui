@@ -34,6 +34,9 @@ jobs:
       - name: 语法检查（全部 JS）
         run: npm run check
 
+      - name: 安全静态检查
+        run: npm run security
+
       - name: 单元测试（node:test，零依赖）
         run: npm test
 

@@ -111,7 +111,7 @@
     if (d.cover) { urls.push(d.cover); titles.push(d.name + ' · 封面'); }
     const seen = new Set(urls);
     (d.gallery || []).filter(Boolean).forEach((g, i) => { if (!seen.has(g)) { seen.add(g); urls.push(g); titles.push(tr(d.name) + (uiEn() ? ' · scenery ' : ' · 风光') + (i + 1)); } });
-    (d.highlights || []).forEach((h, i) => { if (h.image && !seen.has(h.image)) { seen.add(h.image); urls.push(h.image); titles.push(tr(h.title)); } });
+    (d.highlights || []).forEach((h) => { if (h.image && !seen.has(h.image)) { seen.add(h.image); urls.push(h.image); titles.push(tr(h.title)); } });
     lb.urls = urls; lb.titles = titles; lb.index = 0;
     const galleryImgs = [...body.querySelectorAll('.gallery-row img')];
     const hlImgs = [...body.querySelectorAll('.highlight-card img')];
@@ -125,7 +125,7 @@
     });
     // 图片加载失败兜底（addEventListener 替代内联 onerror，兼容 CSP script-src 'self'）
     const fbImg = (img, name, accent) => { img.addEventListener('error', () => { if (window.__jyhImgFallback) window.__jyhImgFallback(img, d.emoji || '🏡', name, accent); }, { once: true }); };
-    [...body.querySelectorAll('.gallery-row img')].forEach((img, i) => fbImg(img, d.name, d.accent || '#0f766e'));
+    [...body.querySelectorAll('.gallery-row img')].forEach((img) => fbImg(img, d.name, d.accent || '#0f766e'));
     [...body.querySelectorAll('.highlight-card img')].forEach((img, i) => fbImg(img, ((d.highlights || [])[i] || {}).title || '', d.accent || '#0f766e'));
     loadWeather(d);
   }
