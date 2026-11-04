@@ -506,15 +506,22 @@
         }
       });
       groups.forEach((group) => {
-        if (group.routePath.length > 1) map.add(new AMap.Polyline({ path: group.routePath, strokeColor: group.color, strokeWeight: 5, strokeOpacity: 0.9, strokeStyle: group.summary.routed ? 'solid' : 'dashed', lineJoin: 'round' }));
+        if (group.routePath.length > 1) {
+          const lineStyle = group.summary.routed ? 'solid' : 'dashed';
+          map.add(new AMap.Polyline({ path: group.routePath, strokeColor: '#ffffff', strokeWeight: 7, strokeOpacity: 0.95, strokeStyle: lineStyle, lineJoin: 'round' }));
+          map.add(new AMap.Polyline({ path: group.routePath, strokeColor: group.color, strokeWeight: 4, strokeOpacity: 0.95, strokeStyle: lineStyle, lineJoin: 'round' }));
+        }
       });
       renderStopList(stopList, groups, markerItems);
-      const routedDays = groups.filter((group) => group.summary.routed).length;
+      const drawableDays = groups.filter((group) => group.path.length > 1);
+      const routedDays = drawableDays.filter((group) => group.summary.routed).length;
+      const noRouteDays = groups.length - drawableDays.length;
       const hiddenFood = unlocated.length - approximate.length - unlocatedShown.length;
       const unlocatedText = unlocatedShown.length ? (t(' · ' + unlocatedShown.length + ' 个未定位', ' · ' + unlocatedShown.length + ' not located')) : '';
       const approxText = approximate.length ? (t(' · ' + approximate.length + ' 个近似位置', ' · ' + approximate.length + ' approximate locations')) : '';
       const hiddenText = hiddenFood ? (t(' · ' + hiddenFood + ' 条餐饮推荐未定位', ' · ' + hiddenFood + ' food recommendations not located')) : '';
-      status(t('已标记 ' + mapped.length + '/' + items.length + ' 个地点' + unlocatedText + approxText + hiddenText + '，已完成 ' + routedDays + '/' + groups.length + ' 天路线计算。', 'Marked ' + mapped.length + '/' + items.length + ' places' + unlocatedText + approxText + hiddenText + '; routed ' + routedDays + '/' + groups.length + ' days.'));
+      const noRouteText = noRouteDays ? t('；其余 ' + noRouteDays + ' 天无可连线地点', '; ' + noRouteDays + ' days have no connectable stops') : '';
+      status(t('已标记 ' + mapped.length + '/' + items.length + ' 个地点' + unlocatedText + approxText + hiddenText + '；已绘制 ' + routedDays + '/' + drawableDays.length + ' 条每日路线' + noRouteText + '。', 'Marked ' + mapped.length + '/' + items.length + ' places' + unlocatedText + approxText + hiddenText + '; drew ' + routedDays + '/' + drawableDays.length + ' daily routes' + noRouteText + '.'));
     } catch (error) {
       if (error && error.message === 'NO_KEY') {
         status(t('未配置高德地图 Key，暂时无法生成地图。请在 config.local.json 的 map 段填写 Web端 JS API Key 和安全密钥。', 'AMap key is not configured. Add a Web JS API key and security code to the map section of config.local.json.'));
