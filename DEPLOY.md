@@ -82,7 +82,7 @@ certbot --nginx -d 你的域名 -d www.你的域名
 ## 五、后续更新（手动或自动）
 
 - **手动**：服务器上 `cd /opt/jiayouhui && git pull && pm2 restart jiayouhui`
-- **自动**：已提供 `.github/workflows/deploy.yml`，在 GitHub 仓库 Settings → Secrets 填好 `SSH_HOST / SSH_USER / SSH_KEY`，以后 `git push` 到 main 就自动部署
+- **自动**：已提供 `.github/workflows/deploy.yml`，在 GitHub 仓库 Settings → Secrets 填好 `SSH_HOST / SSH_KEY`，以后 `git push` 到 main 就自动部署。工作流使用服务器上的 `admin` 账号。
 
 ## 六、安全建议
 

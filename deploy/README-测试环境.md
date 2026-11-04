@@ -61,7 +61,12 @@ DNS 加一条 A 记录（如 `test.familytravelhublz.top` → 120.55.44.25），
 git push origin dev-test-opt
 ```
 
-流程：语法检查 → 单元测试 → 本机冒烟 → SSH 到服务器 `git reset --hard origin/dev-test-opt` → 重启 `jiayouhui-test` → 校验 `3001/api/health`。
+GitHub 仓库 Secrets 需要：
+
+- `SSH_HOST`：`120.55.44.25`
+- `SSH_KEY`：服务器 `admin` 用户 `authorized_keys` 中对应私钥的完整内容
+
+流程：语法检查 → 单元测试 → 本机冒烟 → 打包 → SCP 上传 → 服务器解压 → 重启 `jiayouhui-test` → 执行完整冒烟。
 
 ## 四、验证通过后并入生产
 
