@@ -32,7 +32,7 @@ jobs:
         run: npm run check
 
       - name: 单元测试
-        run: node --test "test/*.test.js"
+        run: npm test
 
       - name: 启动服务并做接口冒烟
         run: |
