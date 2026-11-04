@@ -6,8 +6,8 @@
   <meta name="robots" content="noindex,nofollow" />
   <title>家游汇 · 个人旅行档案</title>
   <link rel="icon" href="/images/beian-icon.png" />
-  <link rel="stylesheet" href="/css/style.css?v=20261104cleanup1" />
-  <link rel="stylesheet" href="/css/profile.css?v=20261104cleanup1" />
+  <link rel="stylesheet" href="/css/style.css?v=20261104pricing1" />
+  <link rel="stylesheet" href="/css/profile.css?v=20261104pricing1" />
 </head>
 <body class="profile-page">
   <header class="nav" id="topnav">
@@ -159,20 +159,20 @@
 
       <aside class="profile-panel member-panel" aria-labelledby="memberTitle">
         <div class="member-topline">
-          <h2 id="memberTitle">家庭会员</h2>
-          <span>商业价值预览</span>
+          <h2 id="memberTitle">家庭 AI 年卡</h2>
+          <span>按真实用量定价</span>
         </div>
-        <p class="member-lead">把一次性的行程生成，变成会积累、可复用、能分享的家庭旅行资产。</p>
+        <p class="member-lead">一次完整行程 3 点，修改、问答和清单各 1 点；新用户先获得 15 点体验额度。</p>
         <div class="member-price"><strong>68</strong><span>元 / 年</span></div>
-        <p class="member-footnote" id="aiCreditStatus">登录解锁后可查看 AI 额度。</p>
+        <p class="member-footnote" id="aiCreditStatus">登录解锁后可查看当前 AI 额度。</p>
         <ul class="member-benefits">
-          <li>家庭档案与跨设备同步</li>
-          <li>不限历史行程，导出年度旅行报告</li>
-          <li>每月 30 点 AI 服务额度</li>
-          <li>多家庭方案对比与预算复盘</li>
+          <li>600 点 AI 额度，约 200 次完整规划</li>
+          <li>完整行程 3 点，轻量操作 1 点</li>
+          <li>额度一次到账，不按月清零</li>
+          <li>本机旅行档案与清单进度继续免费保留</li>
         </ul>
-        <button class="profile-btn profile-btn-primary member-cta" type="button" data-open-billing>查看会员与 AI 充值</button>
-        <button class="text-action" type="button" data-open-billing data-open-tab="credits">只想购买 AI 次数</button>
+        <button class="profile-btn profile-btn-primary member-cta" type="button" data-open-billing>查看年卡与额度包</button>
+        <button class="text-action" type="button" data-open-billing data-open-tab="credits">按次购买 AI 额度</button>
         <p class="member-footnote">当前仅记录额度购买意向，不发起真实支付。</p>
       </aside>
     </div>
@@ -198,67 +198,59 @@
   <dialog class="billing-dialog" id="billingDialog" aria-labelledby="billingTitle">
     <div class="billing-head">
       <div>
-        <h2 id="billingTitle">会员与 AI 次数</h2>
-        <p>选择适合家庭的方案。当前为界面原型，不会跳转支付。</p>
+        <h2 id="billingTitle">AI 套餐与额度</h2>
+        <p>按真实 API 成本定价。当前为界面原型，不会跳转支付。</p>
       </div>
       <button class="dialog-close" id="billingClose" type="button" aria-label="关闭">关闭</button>
     </div>
     <div class="billing-tabs" role="tablist" aria-label="购买类型">
-      <button type="button" role="tab" aria-selected="true" data-billing-tab="membership">家庭会员</button>
+      <button type="button" role="tab" aria-selected="true" data-billing-tab="membership">家庭 AI 年卡</button>
       <button type="button" role="tab" aria-selected="false" data-billing-tab="credits">AI 额度包</button>
     </div>
 
     <div class="billing-panel" id="membershipPanel" role="tabpanel">
       <label class="plan-option">
-        <input type="radio" name="membershipPlan" value="家庭年卡 ¥68/年" data-plan-meta="推荐 · 平均每天不到 0.19 元" checked />
+        <input type="radio" name="membershipPlan" value="家庭 AI 年卡 600点 ¥68/年" data-plan-meta="约 200 次完整行程 · 单次约 0.34 元" checked />
         <span class="plan-copy">
-          <strong>家庭年卡</strong>
-          <small>全年使用，包含 30 次 AI 修改/月</small>
+          <strong>家庭 AI 年卡</strong>
+          <small>600 点一次到账，约 200 次完整规划 · 单次约 0.34 元</small>
         </span>
         <span class="plan-price"><strong>68</strong>元 / 年</span>
       </label>
-      <label class="plan-option">
-        <input type="radio" name="membershipPlan" value="家庭月卡 ¥6.9/月" data-plan-meta="体验一个月" />
-        <span class="plan-copy">
-          <strong>家庭月卡</strong>
-          <small>适合短期出行，包含 10 次 AI 修改</small>
-        </span>
-        <span class="plan-price"><strong>6.9</strong>元 / 月</span>
-      </label>
       <div class="billing-proof">
-        <strong>会员价值来自复用，不来自限制</strong>
-        <p>免费用户仍可完成基础规划；付费部分面向长期保存、家庭协作、更多修改和年度复盘。</p>
+        <strong>新用户免费获得 15 点</strong>
+        <p>可生成 5 次完整行程，或完成 15 次修改、问答与清单操作。功能失败或规则降级不会扣点。</p>
       </div>
     </div>
 
     <div class="billing-panel" id="creditsPanel" role="tabpanel" hidden>
       <label class="plan-option">
-        <input type="radio" name="creditPlan" value="AI 额度包 10 点 ¥9.9" data-plan-meta="适合一次短途旅行" checked />
+        <input type="radio" name="creditPlan" value="AI 体验包 45 点 ¥9.9" data-plan-meta="约 15 次完整行程 · 单次约 0.66 元" checked />
         <span class="plan-copy">
-          <strong>10 点 AI 额度</strong>
-          <small>可生成 3 次完整行程</small>
+          <strong>45 点 AI 体验包</strong>
+          <small>约 15 次完整规划 · 单次约 0.66 元，适合一到两次出行</small>
         </span>
         <span class="plan-price"><strong>9.9</strong>元</span>
       </label>
       <label class="plan-option">
-        <input type="radio" name="creditPlan" value="AI 额度包 30 点 ¥24.9" data-plan-meta="适合两到三次出行" />
+        <input type="radio" name="creditPlan" value="AI 常用包 150 点 ¥24.9" data-plan-meta="约 50 次完整行程 · 单次约 0.50 元" />
         <span class="plan-copy">
-          <strong>30 点 AI 额度</strong>
-          <small>适合反复调整路线、餐饮和同行人安排</small>
+          <strong>150 点 AI 常用包</strong>
+          <small>约 50 次完整规划 · 单次约 0.50 元，适合多次修改与比价</small>
         </span>
         <span class="plan-price"><strong>24.9</strong>元</span>
       </label>
       <label class="plan-option">
-        <input type="radio" name="creditPlan" value="AI 额度包 80 点 ¥49.9" data-plan-meta="适合全年使用" />
+        <input type="radio" name="creditPlan" value="AI 高频包 450 点 ¥59.9" data-plan-meta="约 150 次完整行程 · 单次约 0.40 元" />
         <span class="plan-copy">
-          <strong>80 点 AI 额度</strong>
-          <small>适合多个家庭或频繁出行场景</small>
+          <strong>450 点 AI 高频包</strong>
+          <small>约 150 次完整规划 · 单次约 0.40 元，适合全年和多家庭使用</small>
         </span>
-        <span class="plan-price"><strong>49.9</strong>元</span>
+        <span class="plan-price"><strong>59.9</strong>元</span>
       </label>
       <div class="billing-proof">
-        <strong>额度按服务端 AI 操作扣减</strong>
-        <p>行程生成、局部修改、问答和截图识别使用不同点数；调用失败或规则降级会自动退回额度。</p>
+        <strong>价格与用量都在页面公开</strong>
+        <p>1 点用于一次轻量 AI 操作，完整行程 3 点；失败、超时或规则降级会自动退回额度。</p>
       </div>
     </div>
 
@@ -269,8 +261,8 @@
   </dialog>
 
   <div class="profile-toast" id="profileToast" role="status" aria-live="polite" hidden></div>
-  <script src="/js/i18n.js?v=20261104cleanup1"></script>
-  <script src="/js/common.js?v=20261104cleanup1"></script>
-  <script src="/js/profile.js?v=20261104cleanup1"></script>
+  <script src="/js/i18n.js?v=20261104pricing1"></script>
+  <script src="/js/common.js?v=20261104pricing1"></script>
+  <script src="/js/profile.js?v=20261104pricing1"></script>
 </body>
 </html>

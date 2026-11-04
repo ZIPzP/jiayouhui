@@ -287,3 +287,14 @@ test('静态页面与安全响应头', async () => {
   const html = await r.text();
   assert.ok(html.includes('家游汇'));
 });
+
+test('定价页展示与单次成本一致的额度和套餐', async () => {
+  const r = await fetch(BASE + '/profile.html');
+  assert.equal(r.status, 200);
+  const html = await r.text();
+  assert.match(html, /新用户先获得 15 点体验额度/);
+  assert.match(html, /完整行程 3 点/);
+  assert.match(html, /45 点 AI 体验包/);
+  assert.match(html, /600 点一次到账/);
+  assert.doesNotMatch(html, /10 点 AI 额度[\s\S]*30 点 AI 额度[\s\S]*80 点 AI 额度/);
+});

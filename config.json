@@ -18,8 +18,8 @@
     "billing":  {
         "credits":  {
             "enabled":  true,
-            "initialCredits":  12,
-            "lowBalanceThreshold":  3,
+            "initialCredits":  15,
+            "lowBalanceThreshold":  5,
             "costs":  {
                 "plan":  3,
                 "revision":  1,

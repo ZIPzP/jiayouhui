@@ -82,9 +82,9 @@ test('服务端额度状态与耗尽拦截', async () => {
   });
   const status = await statusResponse.json();
   assert.equal(status.unlocked, true);
-  assert.equal(status.usage.credits, 12);
+  assert.equal(status.usage.credits, 15);
 
-  for (let i = 0; i < 4; i++) assert.equal(credits.consume(clientId, 'plan').ok, true);
+  for (let i = 0; i < 5; i++) assert.equal(credits.consume(clientId, 'plan').ok, true);
   const blocked = await fetch(base + '/api/chat/stream', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
