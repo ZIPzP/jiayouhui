@@ -50,13 +50,13 @@ jobs:
           kill $SERVER_PID
 
       - name: 打包部署文件
-        run: git archive --format=tar.gz --output=/tmp/jiayouhui-${{ github.sha }}.tar.gz HEAD
+        run: git archive --format=tar.gz --output=jiayouhui-release.tar.gz HEAD
 
       - name: 上传部署产物
         uses: actions/upload-artifact@v4
         with:
           name: test-release
-          path: /tmp/jiayouhui-${{ github.sha }}.tar.gz
+          path: jiayouhui-release.tar.gz
           retention-days: 3
 
   deploy-test:
@@ -69,7 +69,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: test-release
-          path: /tmp
+          path: release
 
       - name: 上传部署包
         uses: appleboy/scp-action@v0.1.7
@@ -77,8 +77,8 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: admin
           key: ${{ secrets.SSH_KEY }}
-          source: /tmp/jiayouhui-${{ github.sha }}.tar.gz
-          target: /tmp
+          source: release/jiayouhui-release.tar.gz
+          target: /tmp/jiayouhui-upload
 
       - name: SSH 部署测试环境
         uses: appleboy/ssh-action@v1.0.3
@@ -91,7 +91,8 @@ jobs:
             set -euo pipefail
             export PATH=$PATH:/usr/local/bin:/usr/bin
             TEST_DIR=/opt/jiayouhui-test
-            ARCHIVE=/tmp/jiayouhui-${{ github.sha }}.tar.gz
+            ARCHIVE=$(find /tmp/jiayouhui-upload -name jiayouhui-release.tar.gz -type f | head -n1)
+            test -n "$ARCHIVE"
             sudo mkdir -p "$TEST_DIR"
             sudo chown "$USER":"$USER" "$TEST_DIR"
             tar -xf "$ARCHIVE" -C "$TEST_DIR"
