@@ -98,6 +98,11 @@ jobs:
             test -n "$ARCHIVE"
             sudo mkdir -p "$TEST_DIR"
             sudo chown "$USER":"$USER" "$TEST_DIR"
+            # 增量 tar 不会删除历史文件，精确清除已退役的实验页与测试路由资源。
+            sudo rm -f \
+              "$TEST_DIR/public/profile-test.html" "$TEST_DIR/public/profile-test.css" "$TEST_DIR/public/js/profile-test.js" \
+              "$TEST_DIR/public/plan-map-lab.html" "$TEST_DIR/public/js/plan-map-lab.js" \
+              "$TEST_DIR/public/route-lab.html" "$TEST_DIR/public/js/route-lab.js"
             tar -xf "$ARCHIVE" -C "$TEST_DIR"
             cd "$TEST_DIR"
             printf "%s\n" "${{ github.sha }}" > .deploy-revision
