@@ -439,6 +439,14 @@ body.profile-test-page {
   background: var(--profile-panel-strong);
 }
 
+.trip-thumb-text {
+  display: grid;
+  place-items: center;
+  color: var(--primary-dark);
+  font-size: 20px;
+  font-weight: 800;
+}
+
 .trip-copy {
   min-width: 0;
 }
@@ -518,6 +526,10 @@ body.profile-test-page {
   color: var(--profile-muted);
   font-size: 13px;
   text-align: center;
+}
+
+.trip-empty p {
+  margin-bottom: 14px;
 }
 
 .member-panel {

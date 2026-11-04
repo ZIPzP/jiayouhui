@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node --test test/agent-server.test.js test/ai-client.test.js test/server.test.js test/unit.test.js",
+    "test": "node --test test/agent-server.test.js test/ai-client.test.js test/credits.test.js test/credits-server.test.js test/server.test.js test/unit.test.js",
     "check": "node scripts/check-syntax.js"
   },
   "engines": { "node": ">=18" },

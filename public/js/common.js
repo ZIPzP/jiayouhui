@@ -173,10 +173,27 @@
     }, { passive: true });
   }
 
+  const CLIENT_ID_KEY = 'jyh_client_id';
+  function loadClientId() {
+    try {
+      const saved = String(localStorage.getItem(CLIENT_ID_KEY) || '').trim();
+      if (/^[A-Za-z0-9_-]{16,80}$/.test(saved)) return saved;
+      const id = (window.crypto && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+      localStorage.setItem(CLIENT_ID_KEY, id);
+      return id;
+    } catch {
+      return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+    }
+  }
+
   const state = {
     destinations: [],
     elderly: localStorage.getItem('jyh_elderly') === '1',
     ai: JSON.parse(localStorage.getItem('jyh_ai') || '{}'),
+    clientId: loadClientId(),
+    aiUsage: null,
     serverKey: false,
     accessEnabled: false,
     aiUnlocked: false
@@ -203,8 +220,82 @@
     const r = await fetch(path, Object.assign({}, opts, { headers }));
     const data = await r.json().catch(() => ({}));
     if (r.status === 401 && data.needAuth) showAuthGate();
-    if (!r.ok) throw new Error(data.error || `请求失败（${r.status}）`);
+    const creditHeader = r.headers.get('X-AI-Credits');
+    if (creditHeader != null && Number.isFinite(Number(creditHeader))) {
+      state.aiUsage = Object.assign({}, state.aiUsage || {}, {
+        credits: Number(creditHeader),
+        lowBalance: Number(creditHeader) <= Number(state.aiUsage?.lowBalanceThreshold || 3),
+        exhausted: Number(creditHeader) <= 0
+      });
+      updateAiHints();
+      if (state.aiUsage.lowBalance && !state.aiUsage.exhausted && !state.lowCreditWarned) {
+        state.lowCreditWarned = true;
+        toast(`⚠️ AI 额度仅剩 ${state.aiUsage.credits} 点，请及时充值`, 5000);
+      } else if (!state.aiUsage.lowBalance) {
+        state.lowCreditWarned = false;
+      }
+    }
+    if (!r.ok) {
+      const error = new Error(data.error || `请求失败（${r.status}）`);
+      error.code = data.code || '';
+      error.usage = data.usage || null;
+      if (data.usage) {
+        state.aiUsage = data.usage;
+        updateAiHints();
+      }
+      throw error;
+    }
     return data;
+  }
+  const TRIP_HISTORY_KEY = 'jyh_trip_history_v1';
+  function loadTripHistory() {
+    try {
+      const rows = JSON.parse(localStorage.getItem(TRIP_HISTORY_KEY) || '[]');
+      return Array.isArray(rows) ? rows.filter((row) => row && row.id && row.title).slice(0, 50) : [];
+    } catch {
+      return [];
+    }
+  }
+  function saveTripHistory(rows) {
+    try { localStorage.setItem(TRIP_HISTORY_KEY, JSON.stringify(rows.slice(0, 50))); } catch { /* ignore */ }
+  }
+  function recordTrip(vals, result) {
+    if (!vals || !result || !Array.isArray(result.days) || !result.days.length) return null;
+    const rows = loadTripHistory();
+    const destination = String(vals.destinationName || (vals.customDest && vals.customDest.name) || result.title || '').trim();
+    const signature = [destination, vals.startDate || '', vals.endDate || '', vals.origin || ''].join('|');
+    const existing = rows.find((row) => row.signature === signature);
+    const end = /^\d{4}-\d{2}-\d{2}$/.test(String(vals.endDate || ''))
+      ? new Date(String(vals.endDate) + 'T23:59:59')
+      : null;
+    const record = {
+      id: existing?.id || (Date.now().toString(36) + Math.random().toString(36).slice(2, 8)),
+      signature,
+      title: String(result.title || destination + ' 家庭行程').slice(0, 120),
+      destination,
+      origin: String(vals.origin || ''),
+      startDate: String(vals.startDate || ''),
+      endDate: String(vals.endDate || ''),
+      days: result.days.length,
+      travelers: Number(vals.elderly || 0) + Number(vals.adults || 0) + Number(vals.children || 0),
+      dietary: Array.isArray(vals.dietary) ? vals.dietary.slice(0, 8) : [],
+      status: end && end.getTime() < Date.now() ? 'completed' : 'upcoming',
+      provider: String(result.provider || 'rule'),
+      citations: Array.isArray(result.citations) ? result.citations.length : 0,
+      toolCalls: Array.isArray(result.toolTrace) ? result.toolTrace.length : 0,
+      budget: String(result.budget && result.budget.totalPerPerson || ''),
+      lang: (window.i18n && window.i18n.lang) || 'zh',
+      createdAt: existing?.createdAt || Date.now(),
+      updatedAt: Date.now()
+    };
+    const next = existing
+      ? rows.map((row) => row.id === existing.id ? record : row)
+      : [record, ...rows];
+    saveTripHistory(next);
+    return record;
+  }
+  function clearTripHistory() {
+    try { localStorage.removeItem(TRIP_HISTORY_KEY); } catch { /* ignore */ }
   }
   function imgFallback(img, emoji = '🏡', name = '', accent = '#0f766e') {
     if (!img) return;
@@ -333,33 +424,54 @@
     }
   }
   function updateAiHints() {
+    const usageText = state.aiUsage && Number.isFinite(state.aiUsage.credits)
+      ? ' · 剩余 ' + state.aiUsage.credits + ' 点'
+      : '';
     const m = $('#aiModeHint');
-    if (m) m.textContent = state.aiUnlocked ? '🔒 已解锁服务端 AI（使用我的 Key）· ' + (state.ai.model || '默认模型')
+    if (m) m.textContent = state.aiUnlocked ? '🔒 已解锁服务端 AI（使用我的 Key）· ' + (state.ai.model || '默认模型') + usageText
       : (state.serverKey ? '🔑 服务端 AI 需邀请码解锁；也可用下方自带 Key'
       : (state.ai.apiKey ? '🐱 当前使用浏览器本地 Key：' + (state.ai.model || '默认')
       : '📋 演示模式（内置规则引擎）。配置 DeepSeek Key 后启用大模型。'));
     const ph = $('#planAiHint');
-    if (ph) ph.textContent = state.aiUnlocked ? '🔒 AI 主理人已接入（服务端 Key，仅服务器持有）'
+    if (ph) ph.textContent = state.aiUnlocked ? '🔒 AI 主理人已接入（服务端 Key，仅服务器持有）' + usageText
       : (state.serverKey ? '🔑 输入邀请码解锁服务端 AI，或填自带 Key'
       : (state.ai.apiKey ? '🐱 AI 主理人已接入（浏览器本地 Key：' + (state.ai.model || '已配置') + '）'
       : '📋 演示模式：未配置 AI Key，将使用内置规划引擎（点右上角 ⚙️ AI 设置 接入 DeepSeek）'));
     const ct = $('#chatModeTag');
     if (ct) ct.textContent = state.aiUnlocked ? '🔒 AI 模式' : (state.ai.apiKey ? 'AI 模式 · ' + (state.ai.model || '') : '演示模式');
+    const usage = $('#aiUsageStatus');
+    const recharge = $('#aiRechargeLink');
+    if (usage) {
+      if (state.aiUnlocked && state.aiUsage) {
+        const u = state.aiUsage;
+        usage.hidden = false;
+        usage.textContent = u.lowBalance
+          ? `⚠️ AI 额度仅剩 ${u.credits} 点，请及时充值`
+          : `可用 AI 额度：${u.credits} 点 · 生成行程 ${u.costs.plan} 点 / 修改与问答 ${u.costs.revision} 点`;
+      } else {
+        usage.hidden = true;
+        usage.textContent = '';
+      }
+    }
+    if (recharge) recharge.hidden = !state.aiUnlocked;
+    if (state.aiUnlocked && state.aiUsage?.lowBalance && !state.lowCreditWarned) {
+      state.lowCreditWarned = true;
+      toast(`⚠️ AI 额度仅剩 ${state.aiUsage.credits} 点，请及时充值`, 5000);
+    } else if (!state.aiUsage?.lowBalance) {
+      state.lowCreditWarned = false;
+    }
   }
 
   async function refreshAiStatus() {
     try {
       const h = await api('/api/health');
-      state.serverKey = !!h.hasServerKey;
       const st = await api('/api/auth/status');
       state.accessEnabled = !!st.enabled;
-      if (h.hasServerKey) {
-        // 页面刷新后自动校验已保存的长期令牌，有效则直接显示已解锁，不用再输邀请码
-        const r = await api('/api/ai/status', { headers: { 'x-ai-token': state.ai.aiToken || '' } });
-        state.aiUnlocked = !!r.unlocked;
-      } else {
-        state.aiUnlocked = false;
-      }
+      // 公网健康检查不会暴露 Key 状态；邀请码状态仍可公开查询，供用户主动解锁。
+      const r = await api('/api/ai/status', { headers: { 'x-ai-token': state.ai.aiToken || '', 'x-client-id': state.clientId } });
+      state.serverKey = !!h.hasServerKey || !!r.hasInvite;
+      state.aiUnlocked = !!r.unlocked;
+      state.aiUsage = r.usage || null;
     } catch (e) { /* 忽略 */ }
     updateAiHints();
     updateAiModal();
@@ -381,8 +493,9 @@
     // 检查当前解锁状态（服务端是否配了邀请码、本地令牌是否仍有效）
     if (state.serverKey) {
       try {
-        const r = await api('/api/ai/status', { headers: { 'x-ai-token': state.ai.aiToken || '' } });
+        const r = await api('/api/ai/status', { headers: { 'x-ai-token': state.ai.aiToken || '', 'x-client-id': state.clientId } });
         state.aiUnlocked = !!r.unlocked;
+        state.aiUsage = r.usage || null;
       } catch (e) { state.aiUnlocked = false; }
     } else { state.aiUnlocked = false; }
     $('#aiModal').hidden = false;
@@ -427,8 +540,9 @@
       if (!code) { app.toast('请输入邀请码'); return; }
       ib.disabled = true;
       try {
-        const r = await api('/api/ai/invite', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) });
+        const r = await api('/api/ai/invite', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code, clientId: state.clientId }) });
         state.ai.aiToken = r.aiToken;
+        state.aiUsage = r.usage || null;
         localStorage.setItem('jyh_ai', JSON.stringify(state.ai));
         state.aiUnlocked = true;
         if (st) { st.hidden = true; st.textContent = ''; }
@@ -441,6 +555,7 @@
     const uo = $('#ai-unlock-off');
     if (uo) uo.addEventListener('click', () => {
       state.ai.aiToken = '';
+      state.aiUsage = null;
       localStorage.setItem('jyh_ai', JSON.stringify(state.ai));
       state.aiUnlocked = false;
       updateAiModal(); updateAiHints();
@@ -506,6 +621,8 @@
             <button id="ai-invite-btn" class="btn btn-primary" type="button" style="margin-top:8px;width:100%">🔓 解锁服务端 AI</button>
           </div>
           <div id="aiInviteStatus" class="ai-server-status form-hint" hidden></div>
+          <div id="aiUsageStatus" class="ai-server-status form-hint" hidden></div>
+          <a id="aiRechargeLink" class="btn btn-ghost" href="/profile-test.html#billing" hidden style="margin:4px 0 10px;width:100%">查看额度与充值</a>
           <button id="ai-unlock-off" class="btn btn-ghost" type="button" hidden style="margin:4px 0 10px;width:100%">退出解锁（改用自带 Key）</button>
           <div class="form-group" id="aiKeyGroup">
             <label class="form-label" for="ai-key">API Key</label>
@@ -913,7 +1030,10 @@
   }
   /** AI 请求负载：附带当前界面语言，服务端据此决定生成内容的语言 */
   function aiPayload(extra) {
-    return Object.assign({}, state.ai, { lang: (window.i18n && window.i18n.lang) || 'zh' }, extra || {});
+    return Object.assign({}, state.ai, {
+      clientId: state.clientId,
+      lang: (window.i18n && window.i18n.lang) || 'zh'
+    }, extra || {});
   }
   /* ---------- 结果区导出：保存图片 / 三等分导出 / 导出 Word ---------- */
   // 关键修复：html2canvas 会先克隆 DOM 再渲染，克隆体里的入场动画会重放
@@ -1129,7 +1249,7 @@
   }
 
   window.__jyhImgFallback = imgFallback;
-  window.app = { state, api, esc, toast, speak, $, $$, imgFallback, setBg, updateAiHints, pollJob, normCity, findCityInList, cityAutocomplete, saveAsImage, saveAsImageParts, saveAsWord, aiPayload, resolveCity, cityKey };
+  window.app = { state, api, esc, toast, speak, $, $$, imgFallback, setBg, updateAiHints, pollJob, normCity, findCityInList, cityAutocomplete, saveAsImage, saveAsImageParts, saveAsWord, aiPayload, resolveCity, cityKey, loadTripHistory, recordTrip, clearTripHistory };
   if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = () => {};
 
   document.addEventListener('DOMContentLoaded', init);

@@ -778,7 +778,20 @@
   "Agent 工具轨迹": "Agent tool trace",
   "AI 工具轨迹": "AI tool trace",
   "攻略截图识别需要配置 AI Key": "Screenshot recognition needs an AI key",
-  "截图信息已预填，请核对后生成": "Screenshot fields added — review before generating"
+  "截图信息已预填，请核对后生成": "Screenshot fields added — review before generating",
+  "本机旅行档案": "Local travel archive",
+  "只显示这台设备成功生成并保存的行程；首次打开没有历史记录，不会预置他人的旅行。": "Only itineraries successfully generated and saved on this device appear here. New visitors start with an empty archive.",
+  "AI 工具调用": "AI tool calls",
+  "真实规划记录": "Real trip history",
+  "这里只统计用户实际完成并保存的行程，不预置虚构的旅行历史。": "Only itineraries actually completed and saved by the user are counted here.",
+  "次成功规划": "successful plans",
+  "完成第一次行程后，这里会根据真实记录显示规划天数、工具调用和来源数量。": "After your first completed itinerary, this area will show real planning days, tool calls and source counts.",
+  "来自最近一次成功规划；没有记录时显示默认值。": "Based on the latest saved itinerary; defaults are shown when no record exists.",
+  "查看额度与充值": "View balance and top up",
+  "旅行节奏": "Travel pace",
+  "规划来源": "Plan source",
+  "最近目的地": "Latest destination",
+  "尚无记录": "No records yet"
 };
   // 英文 -> 中文反查（地图搜索需要中文 POI 名，界面仍显示英文）
   const EN2ZH = {};

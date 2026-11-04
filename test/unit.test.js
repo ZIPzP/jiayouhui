@@ -49,6 +49,21 @@ test('extractJson 容忍 Markdown 围栏与前后废话', () => {
   assert.equal(ai.extractJson(''), null);
 });
 
+test('AI 邀请令牌绑定客户端且拒绝错误客户端', () => {
+  const oldInvite = process.env.AI_INVITE_CODE;
+  process.env.AI_INVITE_CODE = 'unit-test-invite';
+  try {
+    const clientId = 'client_1234567890abcd';
+    const token = ai.signAiToken(clientId);
+    assert.equal(ai.verifyAiToken(token, clientId), true);
+    assert.equal(ai.verifyAiToken(token, 'client_abcdefghijkl'), false);
+    assert.equal(ai.readAiToken(token).sub, clientId);
+  } finally {
+    if (oldInvite === undefined) delete process.env.AI_INVITE_CODE;
+    else process.env.AI_INVITE_CODE = oldInvite;
+  }
+});
+
 /* ---------- 规则引擎边界 ---------- */
 test('rulePlan 天数钳制在 1-14 天', () => {
   const base = { destination: DEST, dietary: [], interests: [], month: 5, pace: '标准', budget: '舒适型' };

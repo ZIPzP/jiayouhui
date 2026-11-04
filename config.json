@@ -15,6 +15,21 @@
         "amapJsKey":  "",
         "amapSecurityCode":  ""
     },
+    "billing":  {
+        "credits":  {
+            "enabled":  true,
+            "initialCredits":  12,
+            "lowBalanceThreshold":  3,
+            "costs":  {
+                "plan":  3,
+                "revision":  1,
+                "chat":  1,
+                "vision":  1,
+                "packing":  1,
+                "guide":  1
+            }
+        }
+    },
     "access":  {
                    "enabled":  false,
                    "passcode":  "",

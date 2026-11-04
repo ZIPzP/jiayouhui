@@ -12,7 +12,7 @@ npm test
 npm run check
 ```
 
-当前基线为 36 项测试全部通过、58 个 JavaScript 文件语法通过。
+当前基线为 40 项测试全部通过、61 个 JavaScript 文件语法通过。
 
 不要上传：
 

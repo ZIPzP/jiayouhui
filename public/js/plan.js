@@ -23,6 +23,7 @@
     restoreDraft();
     initDateFields();
     refreshPlanWeather();
+    migrateLastPlan();
     renderHistory();
     bindHistory();
     restorePlan();
@@ -428,13 +429,15 @@
     try { const d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); if (d) restoreFormData(d); } catch (e) { /* 忽略 */ }
   }
   /* ---------- 历史生成记录（小内存，仅存问题概要） ---------- */
-  const HIST_KEY = 'jyh_plan_history';
+  const HIST_KEY = 'jyh_plan_history_v2';
   const HIST_MAX = 20;
   function loadHistory() { try { const a = JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
   function saveHistory(arr) { try { localStorage.setItem(HIST_KEY, JSON.stringify(arr.slice(0, HIST_MAX))); } catch (e) {} }
   function saveHistoryEntry(d) {
-    const arr = loadHistory();
-    arr.unshift({ ts: Date.now(), ...d });
+    const entry = { ts: Date.now(), ...d };
+    const signature = [d.dest || '', d.origin || '', d.start || '', d.end || ''].join('|');
+    const arr = loadHistory().filter((item) => [item.dest || '', item.origin || '', item.start || '', item.end || ''].join('|') !== signature);
+    arr.unshift(entry);
     saveHistory(arr);
   }
   function histLabel(d) {
@@ -452,9 +455,8 @@
   /* 把历史功能上线前的最后一条生成补进历史（一次性迁移） */
   function migrateLastPlan() {
     try {
-      if (loadHistory().length) return;
       const p = loadLast();
-      if (!p || !p.vals) return;
+      if (!p || !p.result || !p.vals) return;
       const v = p.vals;
       const dest = v.destinationId === 'custom' ? (v.customDest && v.customDest.name) || '' : ((app.state.destinations.find((x) => x.id === v.destinationId) || {}).name || '');
       const d = {
@@ -526,6 +528,10 @@
     try { localStorage.setItem(LAST_KEY, payload); } catch (e) { /* 忽略 */ }
     try { sessionStorage.setItem(LAST_KEY, payload); } catch (e) { /* 忽略 */ }
   }
+  function clearLast() {
+    try { localStorage.removeItem(LAST_KEY); } catch (e) { /* 忽略 */ }
+    try { sessionStorage.removeItem(LAST_KEY); } catch (e) { /* 忽略 */ }
+  }
   /* 读取「上次生成」：两个存储都看，取时间较新的那条
      （修复：以前写入用 sessionStorage、读取用 localStorage，导致刷新后显示很久以前的旧方案） */
   function loadLast() {
@@ -537,6 +543,7 @@
   }
   function savePlan(vals, result) {
     saveLast({ vals, result, lang: (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh' });
+    app.recordTrip(vals, result);
   }
   /* ---------- 增量修改：检测用户改了哪里 ---------- */
   const CHANGE_LABELS = {
@@ -561,7 +568,7 @@
   const uiEnNow = () => !!(window.i18n && window.i18n.lang === 'en');
   const fmtVal = (v) => (Array.isArray(v) ? (v.length ? v.join('、') : '—') : (v === '' || v == null ? '—' : String(v)));
   function lastPlanRecord() {
-    try { return JSON.parse(sessionStorage.getItem(LAST_KEY) || localStorage.getItem(LAST_KEY) || 'null'); } catch (e) { return null; }
+    return loadLast();
   }
   function diffVals(prev, next) {
     if (!prev || !next) return [];
@@ -628,8 +635,6 @@
     planUndoStack.length = 0;
     document.querySelectorAll('.chat-revision-preview').forEach((el) => el.remove());
     const vals = planFormValues();
-    saveHistoryEntry(collectDraft()); // 记录这次的问题概要（最多 20 条）
-    renderHistory(); // 立即刷新历史列表（否则要刷新页面才看得到）
     document.body.classList.add('plan-has-result');
     empty.hidden = true; bodyEl.hidden = false;
     bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>AI 主理人正在后台生成行程…<br/>你可以放心切到别的页面/标签页，回来会自动恢复显示结果</p>';
@@ -638,6 +643,7 @@
       const dec = patchDecision(vals, changes);
       const enNow = uiEnNow();
       const patch = dec ? { enabled: dec.enabled, changes: dec.changes.map((x) => Object.assign({}, x, { label: (CHANGE_LABELS[x.field] || {})[enNow ? 'en' : 'zh'] || x.field })), previous: dec.enabled ? { vals: dec.prevVals, result: dec.prevResult } : null } : null;
+      clearLast();
       const st = await app.api('/api/plan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(app.aiPayload(Object.assign({}, vals, { patch }))) });
       saveLast({ jobId: st.jobId, vals, result: null, lang: (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh' });
       app.pollJob(st.jobId, {
@@ -647,8 +653,17 @@
           const name = progress.name ? ({ search_travel_knowledge: '检索本地知识', get_transport_options: '查询 12306', get_weather_forecast: '查询天气' }[progress.name] || progress.name) : '';
           bodyEl.innerHTML = `<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>${uiEn ? 'AI planner is working…' : 'AI 主理人正在工作…'}<br/><span class="agent-progress">${app.esc(name || message || '正在生成行程')}${name && message ? ' · ' + app.esc(message) : ''}</span></p>`;
         },
-        onDone: (result) => { renderPlan(bodyEl, result, vals); savePlan(vals, result); revealPlanResult(); },
-        onError: (msg) => { bodyEl.innerHTML = `<div class="ai-feedback">${uiEn ? '🐱 AI planner: ' : '🐱 AI 主理人：'}${app.esc(msg)}</div>`; }
+        onDone: (result) => {
+          renderPlan(bodyEl, result, vals);
+          savePlan(vals, result);
+          saveHistoryEntry(collectDraft());
+          renderHistory();
+          revealPlanResult();
+        },
+        onError: (msg) => {
+          clearLast();
+          bodyEl.innerHTML = `<div class="ai-feedback">${uiEn ? '🐱 AI planner: ' : '🐱 AI 主理人：'}${app.esc(msg)}</div>`;
+        }
       });
     } catch (e) {
       // 校验类错误（400）直接显示在输出框（含 AI 猜城市）
@@ -664,6 +679,7 @@
       const p = loadLast();
       if (!p) return;
       if (p.result) {
+        app.recordTrip(p.vals, p.result);
         empty.hidden = true; bodyEl.hidden = false;
         document.body.classList.remove('plan-workspace-mode');
         const workspace = document.getElementById('desktopPlanWorkspace');
@@ -673,11 +689,26 @@
         return;
       }
       if (p.jobId) {
+        const age = Date.now() - Number(p.ts || 0);
+        if (!p.ts || age > 5 * 60 * 1000) {
+          clearLast();
+          app.toast(uiEnNow() ? 'Expired unfinished task cleared' : '上次未完成的生成已过期，已清理');
+          return;
+        }
         empty.hidden = true; bodyEl.hidden = false;
         bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>上次的生成任务还在后台跑，正在恢复…</p>';
         app.pollJob(p.jobId, {
-          onDone: (result) => { renderPlan(bodyEl, result, p.vals); savePlan(p.vals, result); revealPlanResult(); },
-          onError: () => { bodyEl.innerHTML = '<p style="padding:40px;text-align:center;color:var(--ink-soft)">上次任务已结束或过期，请重新生成</p>'; }
+          onDone: (result) => {
+            renderPlan(bodyEl, result, p.vals);
+            savePlan(p.vals, result);
+            saveHistoryEntry(collectDraft());
+            renderHistory();
+            revealPlanResult();
+          },
+          onError: () => {
+            clearLast();
+            bodyEl.innerHTML = '<p style="padding:40px;text-align:center;color:var(--ink-soft)">上次任务已结束或过期，已清理，请重新生成</p>';
+          }
         });
       }
     } catch (e) { /* 忽略 */ }
@@ -1279,6 +1310,11 @@
         let detail = '';
         try { detail = (await response.json()).error || ''; } catch (e) { /* ignore */ }
         throw new Error(detail || ('HTTP ' + response.status));
+      }
+      const creditHeader = response.headers.get('X-AI-Credits');
+      if (creditHeader != null && Number.isFinite(Number(creditHeader))) {
+        app.state.aiUsage = Object.assign({}, app.state.aiUsage || {}, { credits: Number(creditHeader) });
+        app.updateAiHints();
       }
       const reader = response.body.getReader();
       const decoder = new TextDecoder();

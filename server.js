@@ -19,6 +19,7 @@ const collector = require('./lib/collector');
 const train = require('./lib/train');
 const travelSearch = require('./lib/travel-search');
 const rag = require('./lib/rag');
+const credits = require('./lib/credits');
 
 const ROOT = __dirname;
 const PUBLIC = path.join(ROOT, 'public');
@@ -414,6 +415,55 @@ const API_MSG = {
 const MSG = (lang) => API_MSG[lang === 'en' ? 'en' : 'zh'];
 /* 请求语言：优先 body.lang，其次 x-lang 头（解析请求体前也能用） */
 const reqLang = (req) => { const h = String((req.headers && req.headers['x-lang']) || '').toLowerCase(); return h === 'en' ? 'en' : 'zh'; };
+
+const CLIENT_ID_RE = /^[A-Za-z0-9_-]{16,80}$/;
+function aiAccountId(body, req) {
+  const token = String((body && body.aiToken) || (req && req.headers && req.headers['x-ai-token']) || '');
+  const data = ai.readAiToken(token);
+  if (!data) return '';
+  if (CLIENT_ID_RE.test(String(data.sub || ''))) return String(data.sub);
+  return 'legacy-' + crypto.createHash('sha256').update(token).digest('hex').slice(0, 40);
+}
+
+function chargeAiAction(res, body, action) {
+  const overrides = {
+    apiKey: body && body.apiKey,
+    baseUrl: body && body.baseUrl,
+    model: body && body.model,
+    aiToken: (body && body.aiToken) || '',
+    clientId: (body && body.clientId) || '',
+    lang: body && body.lang === 'en' ? 'en' : 'zh'
+  };
+  const settings = ai.getSettings(overrides);
+  if (settings.keySource !== 'server') return { ok: true, charged: false, settings };
+  const tokenData = ai.readAiToken(overrides.aiToken);
+  const claimedClient = String((body && body.clientId) || '');
+  if (!tokenData || (tokenData.sub && tokenData.sub !== claimedClient)) {
+    return { ok: false, status: 401, error: 'AI token is invalid for this client.' };
+  }
+  const accountId = aiAccountId(body);
+  if (!accountId) return { ok: false, status: 401, error: 'AI token is invalid.' };
+  const result = credits.consume(accountId, action);
+  if (!result.ok) {
+    return {
+      ok: false,
+      status: 402,
+      error: body.lang === 'en'
+        ? `Not enough AI credits. This action needs ${result.required}; ${result.status.credits} remaining. Please top up.`
+        : `AI 额度不足。本次操作需要 ${result.required} 点，当前剩余 ${result.status.credits} 点，请先充值。`,
+      usage: result.status,
+      code: 'AI_CREDITS_EXHAUSTED'
+    };
+  }
+  if (Number.isFinite(result.status.credits)) res.setHeader('X-AI-Credits', String(result.status.credits));
+  return { ok: true, charged: true, accountId, action, cost: result.cost, usage: result.status, settings };
+}
+
+function refundAiAction(charge) {
+  if (charge && charge.charged && charge.accountId) {
+    credits.refund(charge.accountId, charge.action);
+  }
+}
 // 城市拼音别名（供英文/拼音输入匹配，构建时生成，无需运行时依赖）
 const cityPinyin = readJson(path.join(ROOT, 'data', 'city-pinyin.json')) || {};
 // 目的地数据英文映射（亮点/适老说明等）
@@ -569,9 +619,15 @@ async function handleApi(req, res, pathname) {
     try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: L.badJson }); }
     const code = typeof (body && body.code) === 'string' ? body.code.trim() : '';
     if (!code || code.length > 64) return sendJson(res, 400, { error: L.inviteWrong });
+    const clientId = typeof (body && body.clientId) === 'string' ? body.clientId.trim() : '';
+    if (clientId && !CLIENT_ID_RE.test(clientId)) return sendJson(res, 400, { error: 'Invalid client id' });
     if (ai.verifyInvite(code)) {
       g.n = 0; g.lockedUntil = 0; inviteFails.set(ip, g);
-      return sendJson(res, 200, { ok: true, aiToken: ai.signAiToken() });
+      return sendJson(res, 200, {
+        ok: true,
+        aiToken: ai.signAiToken(clientId),
+        usage: clientId ? credits.getStatus(clientId) : null
+      });
     }
     g.n++;
     if (g.n >= INVITE.max) { g.lockedUntil = Date.now() + INVITE.lockMs; g.n = 0; }
@@ -580,7 +636,44 @@ async function handleApi(req, res, pathname) {
   }
   // GET /api/ai/status —— 查询是否配置了邀请码、当前令牌是否有效
   if (pathname === '/api/ai/status' && req.method === 'GET') {
-    return sendJson(res, 200, { hasInvite: ai.hasInvite(), unlocked: ai.verifyAiToken(String(req.headers['x-ai-token'] || '')) });
+    const token = String(req.headers['x-ai-token'] || '');
+    const clientId = String(req.headers['x-client-id'] || '');
+    const unlocked = ai.verifyAiToken(token, clientId);
+    const accountId = unlocked ? aiAccountId({ aiToken: token }, req) : '';
+    return sendJson(res, 200, {
+      hasInvite: ai.hasInvite(),
+      unlocked,
+      usage: accountId ? credits.getStatus(accountId) : null
+    });
+  }
+  // GET /api/ai/usage —— 查询当前令牌对应的 AI 额度
+  if (pathname === '/api/ai/usage' && req.method === 'GET') {
+    const token = String(req.headers['x-ai-token'] || '');
+    const clientId = String(req.headers['x-client-id'] || '');
+    if (!ai.verifyAiToken(token, clientId)) return sendJson(res, 401, { error: 'AI token is invalid.' });
+    const accountId = aiAccountId({ aiToken: token }, req);
+    return sendJson(res, 200, credits.getStatus(accountId));
+  }
+  // POST /api/billing/webhook —— 由支付服务在支付成功后调用；签名防止伪造加额度
+  if (pathname === '/api/billing/webhook' && req.method === 'POST') {
+    const secret = String(process.env.BILLING_WEBHOOK_SECRET || '');
+    if (!secret) return sendJson(res, 503, { error: 'Billing webhook is not configured' });
+    let raw;
+    try { raw = await readBody(req, 16 * 1024); } catch { return sendJson(res, 400, { error: 'Invalid webhook body' }); }
+    const supplied = String(req.headers['x-billing-signature'] || '');
+    const expected = crypto.createHmac('sha256', secret).update(raw).digest('hex');
+    const a = Buffer.from(supplied);
+    const b = Buffer.from(expected);
+    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return sendJson(res, 401, { error: 'Invalid webhook signature' });
+    let body;
+    try { body = JSON.parse(raw); } catch { return sendJson(res, 400, { error: 'Invalid JSON' }); }
+    if (!CLIENT_ID_RE.test(String(body.accountId || ''))) return sendJson(res, 400, { error: 'Invalid account id' });
+    try {
+      const result = credits.topUp(body.accountId, body.credits, body.orderId);
+      return sendJson(res, 200, result);
+    } catch (error) {
+      return sendJson(res, 400, { error: String(error.message || error) });
+    }
   }
   // GET /api/map/config —— 前端地图配置（高德 JS API Key / 安全密钥）
   if (pathname === '/api/map/config' && req.method === 'GET') {
@@ -697,7 +790,22 @@ async function handleApi(req, res, pathname) {
       notes: String(body.notes || '').trim(),
     };
     const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '', lang: body.lang === 'en' ? 'en' : 'zh' };
-    return startJob(res, body.lang, () => rec.recommend(params, overrides), req);
+    const charge = chargeAiAction(res, body, 'packing');
+    if (!charge.ok) return sendJson(res, charge.status, { error: charge.error, code: charge.code, usage: charge.usage });
+    if (runningJobs() >= MAX_JOBS) {
+      refundAiAction(charge);
+      return sendJson(res, 503, { error: MSG(body.lang).busy });
+    }
+    return startJob(res, body.lang, async () => {
+      try {
+        const result = await rec.recommend(params, overrides);
+        if (result && result.provider !== 'ai') refundAiAction(charge);
+        return result;
+      } catch (error) {
+        refundAiAction(charge);
+        throw error;
+      }
+    }, req);
   }
 
   // POST /api/ai-guide —— AI 生成目的地攻略
@@ -708,8 +816,16 @@ async function handleApi(req, res, pathname) {
     const dest = destinations.find((d) => d.id === body.destinationId);
     if (!dest) return sendJson(res, 400, { error: MSG(body.lang).needDestId });
     const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '', lang: body.lang === 'en' ? 'en' : 'zh' };
-    const result = await rec.aiGuide(dest, overrides);
-    return sendJson(res, 200, result);
+    const charge = chargeAiAction(res, body, 'guide');
+    if (!charge.ok) return sendJson(res, charge.status, { error: charge.error, code: charge.code, usage: charge.usage });
+    try {
+      const result = await rec.aiGuide(dest, overrides);
+      if (result && result.provider !== 'ai') refundAiAction(charge);
+      return sendJson(res, 200, result);
+    } catch (error) {
+      refundAiAction(charge);
+      throw error;
+    }
   }
 
   // POST /api/plan —— AI 主理人：生成逐日详细行程规划
@@ -788,11 +904,18 @@ async function handleApi(req, res, pathname) {
     if (body.patch && JSON.stringify(body.patch).length > MAX_PATCH_CHARS) {
       return sendJson(res, 413, { error: L.tooLarge });
     }
+    const charge = chargeAiAction(res, body, 'plan');
+    if (!charge.ok) return sendJson(res, charge.status, { error: charge.error, code: charge.code, usage: charge.usage });
+    if (runningJobs() >= MAX_JOBS) {
+      refundAiAction(charge);
+      return sendJson(res, 503, { error: L.busy });
+    }
     return startJob(res, body.lang, async (updateJob) => {
-      const settings = ai.getSettings(overrides);
-      let trainPromise = null;
-      let weatherPromise = null;
-      const executeTool = async (name, args) => {
+      try {
+        const settings = ai.getSettings(overrides);
+        let trainPromise = null;
+        let weatherPromise = null;
+        const executeTool = async (name, args) => {
         if (name === 'search_travel_knowledge') {
           const query = String(args.query || '').trim().slice(0, 300);
           if (!query) throw new Error('检索词为空');
@@ -832,30 +955,35 @@ async function handleApi(req, res, pathname) {
           };
         }
         throw new Error('未知工具：' + name);
-      };
+        };
 
-      // 无模型 Key 时仍让规则引擎获得真实车次；有 Key 时由模型自主选择工具。
-      if (!settings.apiKey) await fetchPlanTrainData(params, overrides);
-      updateJob({ stage: 'planning', message: settings.apiKey ? 'AI 正在规划并选择工具' : '规则引擎正在生成行程' });
-      const result = await planner.buildPlan(params, overrides, body.patch || null, {
-        executeTool: settings.apiKey ? executeTool : null,
-        onEvent: (event) => updateJob({ stage: 'agent', ...event })
-      });
-      if (!params.realTrains && ['高铁', '火车', '未定', ''].includes(String(params.transport || ''))) {
-        const started = Date.now();
-        await fetchPlanTrainData(params, overrides);
-        result.toolTrace = Array.isArray(result.toolTrace) ? result.toolTrace : [];
-        result.toolTrace.push({
-          name: 'get_transport_options',
-          ok: !!params.realTrains,
-          durationMs: Date.now() - started,
-          args: {},
-          summary: '模型未选择铁路工具，系统执行可靠性兜底',
-          source: 'system-fallback'
+        // 无模型 Key 时仍让规则引擎获得真实车次；有 Key 时由模型自主选择工具。
+        if (!settings.apiKey) await fetchPlanTrainData(params, overrides);
+        updateJob({ stage: 'planning', message: settings.apiKey ? 'AI 正在规划并选择工具' : '规则引擎正在生成行程' });
+        const result = await planner.buildPlan(params, overrides, body.patch || null, {
+          executeTool: settings.apiKey ? executeTool : null,
+          onEvent: (event) => updateJob({ stage: 'agent', ...event })
         });
+        if (!params.realTrains && ['高铁', '火车', '未定', ''].includes(String(params.transport || ''))) {
+          const started = Date.now();
+          await fetchPlanTrainData(params, overrides);
+          result.toolTrace = Array.isArray(result.toolTrace) ? result.toolTrace : [];
+          result.toolTrace.push({
+            name: 'get_transport_options',
+            ok: !!params.realTrains,
+            durationMs: Date.now() - started,
+            args: {},
+            summary: '模型未选择铁路工具，系统执行可靠性兜底',
+            source: 'system-fallback'
+          });
+        }
+        if (result.provider !== 'ai') refundAiAction(charge);
+        result.realTrains = params.realTrains;
+        return result;
+      } catch (error) {
+        refundAiAction(charge);
+        throw error;
       }
-      result.realTrains = params.realTrains;
-      return result;
     }, req);
   }
 
@@ -875,7 +1003,22 @@ async function handleApi(req, res, pathname) {
       return sendJson(res, 413, { error: MSG(body.lang).tooLarge });
     }
     const overrides = { apiKey: body.apiKey, baseUrl: body.baseUrl, model: body.model, aiToken: body.aiToken || '', lang: body.lang === 'en' ? 'en' : 'zh' };
-    return startJob(res, body.lang, () => planner.revisePlan(message, body.currentPlan, overrides, body.tripContext || null), req);
+    const charge = chargeAiAction(res, body, 'revision');
+    if (!charge.ok) return sendJson(res, charge.status, { error: charge.error, code: charge.code, usage: charge.usage });
+    if (runningJobs() >= MAX_JOBS) {
+      refundAiAction(charge);
+      return sendJson(res, 503, { error: MSG(body.lang).busy });
+    }
+    return startJob(res, body.lang, async () => {
+      try {
+        const result = await planner.revisePlan(message, body.currentPlan, overrides, body.tripContext || null);
+        if (result.provider !== 'ai') refundAiAction(charge);
+        return result;
+      } catch (error) {
+        refundAiAction(charge);
+        throw error;
+      }
+    }, req);
   }
 
   // POST /api/chat —— AI 主理人问答
@@ -889,8 +1032,16 @@ async function handleApi(req, res, pathname) {
     if (message.length > MAX_CHAT_CHARS) return sendJson(res, 400, { error: MSG(body.lang).tooLarge });
     // 历史只接受 user/assistant 文本，防止客户端伪造 system 指令或撑大提示词。
     const history = sanitizeChatHistory(body.history);
-    const result = await planner.chatReply(message, history, overrides, body.tripContext || null);
-    return sendJson(res, 200, result);
+    const charge = chargeAiAction(res, body, 'chat');
+    if (!charge.ok) return sendJson(res, charge.status, { error: charge.error, code: charge.code, usage: charge.usage });
+    try {
+      const result = await planner.chatReply(message, history, overrides, body.tripContext || null);
+      if (result.provider !== 'ai') refundAiAction(charge);
+      return sendJson(res, 200, result);
+    } catch (error) {
+      refundAiAction(charge);
+      throw error;
+    }
   }
 
   // POST /api/chat/stream —— AI 主理人 SSE：阶段状态 + 逐字输出 + 引用
@@ -905,6 +1056,8 @@ async function handleApi(req, res, pathname) {
     const history = sanitizeChatHistory(body.history);
     const prepared = planner.prepareChat(message, history, overrides, body.tripContext || null);
     const settings = ai.getSettings(overrides);
+    const charge = chargeAiAction(res, body, 'chat');
+    if (!charge.ok) return sendJson(res, charge.status, { error: charge.error, code: charge.code, usage: charge.usage });
     const citations = rag.publicCitations(prepared.citations);
     const controller = new AbortController();
     let heartbeat = null;
@@ -987,6 +1140,7 @@ async function handleApi(req, res, pathname) {
           });
           res.end();
         } else {
+          refundAiAction(charge);
           await streamFallback();
         }
       }
@@ -1023,6 +1177,8 @@ async function handleApi(req, res, pathname) {
       return sendJson(res, 503, { error: lang === 'en' ? 'Screenshot recognition needs an AI key' : '攻略截图识别需要配置 AI Key' });
     }
     if (/deepseek\.com/i.test(settings.baseUrl || '')) settings.model = process.env.AI_VISION_MODEL || 'deepseek-flash';
+    const charge = chargeAiAction(res, body, 'vision');
+    if (!charge.ok) return sendJson(res, charge.status, { error: charge.error, code: charge.code, usage: charge.usage });
     const prompt = lang === 'en'
       ? 'Read this travel guide screenshot and extract only what is visibly supported. Return JSON with keys destination, origin, startDate, endDate, adults, elderly, children, dietary, interests, notes, confidence, warnings. Dates use YYYY-MM-DD only if explicit; otherwise empty. Dietary/interests are short arrays. Do not invent details.'
       : '读取这张旅行攻略截图，只提取图片明确显示的信息。输出 JSON，键为 destination、origin、startDate、endDate、adults、elderly、children、dietary、interests、notes、confidence、warnings。日期只有明确出现时才用 YYYY-MM-DD，否则留空。dietary 和 interests 为简短数组。不得补造信息。';
@@ -1035,7 +1191,10 @@ async function handleApi(req, res, pathname) {
         ]
       }], { jsonMode: true, thinking: 'disabled', temperature: 0.1, maxTokens: 1600 });
       const parsed = ai.extractJson(content);
-      if (!parsed || typeof parsed !== 'object') return sendJson(res, 502, { error: lang === 'en' ? 'The image result was not valid JSON' : '图片识别结果不是有效 JSON' });
+      if (!parsed || typeof parsed !== 'object') {
+        refundAiAction(charge);
+        return sendJson(res, 502, { error: lang === 'en' ? 'The image result was not valid JSON' : '图片识别结果不是有效 JSON' });
+      }
       const clampPeople = (value) => {
         const number = Math.trunc(Number(value));
         return Number.isFinite(number) ? Math.min(9, Math.max(0, number)) : null;
@@ -1061,6 +1220,7 @@ async function handleApi(req, res, pathname) {
         }
       });
     } catch (error) {
+      refundAiAction(charge);
       console.error('[Vision Error]', error && error.message);
       return sendJson(res, 502, { error: lang === 'en' ? 'Image recognition is temporarily unavailable' : '图片识别暂时不可用，请稍后再试' });
     }

@@ -258,6 +258,28 @@ node tools/set-invite.js 你的邀请码
 
 邀请码只用于换取签名设备令牌，**服务端 API Key 不会下发到浏览器**。
 
+### AI 额度与充值回调
+
+服务端 AI 默认给每个设备账户 12 点初始额度，并在 `config.json` 的 `billing.credits` 中配置操作成本：
+
+- 生成行程：3 点
+- 局部修改、问答、截图识别：1 点
+- 打包清单、目的地攻略：1 点
+
+额度记录保存在运行目录的 `tmp/ai-credits.json`。余额不足时接口返回 HTTP 402，前端提示充值；调用失败或规则降级会自动退回额度。
+
+支付平台成功收款后调用 `POST /api/billing/webhook`，使用 `BILLING_WEBHOOK_SECRET` 对原始请求体计算 HMAC-SHA256，并通过 `x-billing-signature` 传递签名。请求体为：
+
+```json
+{
+  "accountId": "浏览器设备账户 ID",
+  "credits": 30,
+  "orderId": "支付平台唯一订单号"
+}
+```
+
+同一个 `orderId` 只会入账一次。没有支付回调时，前端“充值”按钮只记录购买意向，不会直接增加额度。
+
 ## 高德地图配置
 
 在[高德开放平台](https://lbs.amap.com/)创建 Web 端 JS API Key 和安全密钥，然后执行：
@@ -281,6 +303,7 @@ node tools/set-map.js --clear
 - 浏览器自定义模型地址只允许 HTTPS 公网域名，降低 SSRF 风险。
 - AI 接口按 IP 限流，并设置请求超时。
 - 邀请码换取可失效的签名令牌。
+- 邀请令牌绑定本机账户 ID，服务端 AI 调用按操作扣减额度。
 - 服务端提供 CSP、安全响应头和静态文件路径保护。
 - AI、天气和地图均设计失败提示或降级路径。
 - `config.local.json`、日志和本地调试文件不应进入 Git。
