@@ -311,9 +311,13 @@
     const u = new SpeechSynthesisUtterance(text);
     u.lang = 'zh-CN';
     u.rate = 0.92;
+    u.pitch = 1.02;
     const voices = window.speechSynthesis.getVoices();
-    const zh = voices.find((v) => v.lang && v.lang.toLowerCase().startsWith('zh'));
-    if (zh) u.voice = zh;
+    const zhVoices = voices.filter((v) => v.lang && v.lang.toLowerCase().startsWith('zh'));
+    const femaleHints = ['xiaoxiao', 'huihui', 'yaoyao', 'ting-ting', 'mei-jia', 'sin-ji', 'female', '女'];
+    const female = zhVoices.find((v) => femaleHints.some((hint) => v.name.toLowerCase().includes(hint)));
+    if (female) u.voice = female;
+    else if (zhVoices[0]) u.voice = zhVoices[0];
     window.speechSynthesis.speak(u);
   }
 
@@ -534,6 +538,24 @@
   function bindSettings() {
     const et = $('#elderlyToggle');
     if (et) et.addEventListener('click', toggleElderly);
+    const elderRead = $('#elderReadPage');
+    if (elderRead) elderRead.addEventListener('click', () => {
+      const root = document.querySelector('main') || document.body;
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const parts = [];
+      while (walker.nextNode()) {
+        const node = walker.currentNode;
+        const parent = node.parentElement;
+        if (!parent || parent.closest('script, style, noscript, .nav, .nav-drawer, .nav-backdrop, .footer, .settings-menu, .modal-backdrop, [hidden]')) continue;
+        const style = getComputedStyle(parent);
+        const rect = parent.getBoundingClientRect();
+        if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0 || !rect.width || !rect.height) continue;
+        const value = String(node.nodeValue || '').replace(/\s+/g, ' ').trim();
+        if (value) parts.push(value);
+      }
+      const text = parts.join(' ');
+      if (text) speak(text.slice(0, 4000));
+    });
     const ab = $('#aiSettingsBtn');
     if (ab) ab.addEventListener('click', openAiModal);
     const ac = $('#aiModalClose');
@@ -598,6 +620,9 @@
   /* ---------------- 共享外壳注入 ---------------- */
   function ensureShell() {
     let html = '';
+    if (!document.getElementById('elderReadPage')) {
+      html += '<button id="elderReadPage" class="elder-read-page" type="button" aria-label="朗读本页内容">🔊 朗读本页</button>';
+    }
     if (!document.getElementById('authGate')) {
       html += `<div id="authGate" class="auth-gate" hidden>
         <div class="auth-card card">

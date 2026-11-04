@@ -230,13 +230,13 @@ body.packing-linked-plan .packing-trip-rail {
 }
 
 .packing-trip-copy strong {
-  font-size: 14px;
+  font-size: calc(14px * var(--elder-text-scale, 1));
   font-weight: 600;
 }
 
 .packing-trip-copy small {
   color: rgba(255, 255, 255, .84);
-  font-size: 11px;
+  font-size: calc(11px * var(--elder-text-scale, 1));
 }
 
 .packing-trip-facts {
@@ -262,7 +262,7 @@ body.packing-linked-plan .packing-trip-rail {
   padding: 8px 10px;
   border-radius: 9px;
   color: var(--pack-muted);
-  font-size: 13px;
+  font-size: calc(13px * var(--elder-text-scale, 1));
   font-weight: 500;
   text-decoration: none;
   transition: background-color .15s ease, color .15s ease;
@@ -294,7 +294,7 @@ body.packing-linked-plan .packing-trip-rail {
   border-radius: 999px;
   background: #fff;
   color: var(--pack-accent-dark);
-  font-size: 11px;
+  font-size: calc(11px * var(--elder-text-scale, 1));
   font-variant-numeric: tabular-nums;
   text-align: center;
 }
@@ -308,13 +308,13 @@ body.packing-linked-plan .packing-trip-rail {
 
 .packing-trip-facts dt {
   color: var(--pack-muted);
-  font-size: 12px;
+  font-size: calc(12px * var(--elder-text-scale, 1));
 }
 
 .packing-trip-facts dd {
   margin: 0;
   color: var(--pack-ink);
-  font-size: 12px;
+  font-size: calc(12px * var(--elder-text-scale, 1));
   font-weight: 500;
   text-align: right;
 }
@@ -331,13 +331,13 @@ body.packing-linked-plan .packing-trip-rail {
 
 .packing-rail-tip strong {
   color: var(--pack-accent-dark);
-  font-size: 12px;
+  font-size: calc(12px * var(--elder-text-scale, 1));
   font-weight: 600;
 }
 
 .packing-rail-tip span {
   color: var(--pack-muted);
-  font-size: 11px;
+  font-size: calc(11px * var(--elder-text-scale, 1));
   line-height: 1.55;
 }
 
@@ -353,14 +353,14 @@ body.packing-page .packing-result-head {
 body.packing-page .packing-result-head h3 {
   margin: 0;
   color: var(--pack-ink);
-  font-size: clamp(1.45rem, 2.3vw, 1.85rem);
+  font-size: clamp(1.45rem, calc(2.3vw * var(--elder-text-scale, 1)), 1.85rem);
   line-height: 1.3;
 }
 
 body.packing-page .packing-result-meta {
   margin: 8px 0 0;
   color: var(--pack-muted);
-  font-size: 13px;
+  font-size: calc(13px * var(--elder-text-scale, 1));
   line-height: 1.65;
 }
 
@@ -402,13 +402,13 @@ body.packing-page .packing-section-head {
 body.packing-page .packing-section-head h4 {
   margin: 0;
   color: var(--pack-ink);
-  font-size: 14px;
+  font-size: calc(14px * var(--elder-text-scale, 1));
   font-weight: 600;
 }
 
 body.packing-page .packing-section-head span {
   color: var(--pack-muted);
-  font-size: 12px;
+  font-size: calc(12px * var(--elder-text-scale, 1));
   font-variant-numeric: tabular-nums;
 }
 
@@ -418,13 +418,13 @@ body.packing-page .packing-progress-score {
   gap: 5px;
   margin-top: 18px;
   color: var(--pack-muted);
-  font-size: 14px;
+  font-size: calc(14px * var(--elder-text-scale, 1));
   font-variant-numeric: tabular-nums;
 }
 
 body.packing-page .packing-progress-score strong {
   color: var(--pack-ink);
-  font-size: 32px;
+  font-size: calc(32px * var(--elder-text-scale, 1));
   font-weight: 500;
   line-height: 1;
 }
@@ -449,7 +449,7 @@ body.packing-page .packing-progress-track span {
 body.packing-page .packing-progress-copy {
   margin: 9px 0 0;
   color: var(--pack-muted);
-  font-size: 12px;
+  font-size: calc(12px * var(--elder-text-scale, 1));
 }
 
 body.packing-page .packing-category-progress {
@@ -471,7 +471,7 @@ body.packing-page .packing-category-copy {
   justify-content: space-between;
   gap: 7px;
   margin-bottom: 6px;
-  font-size: 12px;
+  font-size: calc(12px * var(--elder-text-scale, 1));
 }
 
 body.packing-page .packing-category-copy b {
@@ -504,7 +504,7 @@ body.packing-page .packing-category-track span {
 body.packing-page .packing-priority-note {
   margin: 12px 0 5px;
   color: var(--pack-muted);
-  font-size: 12px;
+  font-size: calc(12px * var(--elder-text-scale, 1));
   line-height: 1.5;
 }
 
@@ -538,7 +538,7 @@ body.packing-page .packing-priority-copy {
 
 body.packing-page .packing-priority-copy strong {
   overflow: hidden;
-  font-size: 13px;
+  font-size: calc(13px * var(--elder-text-scale, 1));
   font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -547,7 +547,7 @@ body.packing-page .packing-priority-copy strong {
 body.packing-page .packing-priority-copy span {
   overflow: hidden;
   color: var(--pack-muted);
-  font-size: 11px;
+  font-size: calc(11px * var(--elder-text-scale, 1));
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -555,7 +555,7 @@ body.packing-page .packing-priority-copy span {
 body.packing-page .packing-priority-action {
   align-self: center;
   color: var(--pack-accent);
-  font-size: 12px;
+  font-size: calc(12px * var(--elder-text-scale, 1));
   font-weight: 600;
   white-space: nowrap;
 }
@@ -585,13 +585,13 @@ body.packing-page .packing-list-head {
 body.packing-page .packing-list-head h4 {
   margin: 0;
   color: var(--pack-ink);
-  font-size: 15px;
+  font-size: calc(15px * var(--elder-text-scale, 1));
   font-weight: 600;
 }
 
 body.packing-page .packing-list-head span {
   color: var(--pack-muted);
-  font-size: 12px;
+  font-size: calc(12px * var(--elder-text-scale, 1));
 }
 
 body.packing-page .check-group {
@@ -609,13 +609,13 @@ body.packing-page .check-group h4 {
   padding: 0;
   border: 0;
   color: var(--pack-ink);
-  font-size: 13px;
+  font-size: calc(13px * var(--elder-text-scale, 1));
   font-weight: 600;
 }
 
 body.packing-page .group-progress {
   color: var(--pack-muted);
-  font-size: 11px;
+  font-size: calc(11px * var(--elder-text-scale, 1));
   font-variant-numeric: tabular-nums;
   font-weight: 400;
 }
@@ -657,13 +657,13 @@ body.packing-page .check-item > span:nth-child(2) {
 }
 
 body.packing-page .check-item .item-name {
-  font-size: 13px;
+  font-size: calc(13px * var(--elder-text-scale, 1));
   font-weight: 500;
 }
 
 body.packing-page .check-item .item-reason {
   color: var(--pack-muted);
-  font-size: 12px;
+  font-size: calc(12px * var(--elder-text-scale, 1));
   line-height: 1.45;
 }
 
@@ -673,7 +673,7 @@ body.packing-page .check-item.done .item-name {
 }
 
 body.packing-page .prio {
-  font-size: 11px;
+  font-size: calc(11px * var(--elder-text-scale, 1));
   white-space: nowrap;
 }
 
@@ -764,7 +764,7 @@ html.elderly body.packing-page {
   body.packing-linked-plan .packing-rail-nav a {
     min-height: 40px;
     padding: 8px 10px;
-    font-size: 12px;
+    font-size: calc(12px * var(--elder-text-scale, 1));
   }
 
   body.packing-linked-plan .packing-rail-nav a span:nth-child(2) {
