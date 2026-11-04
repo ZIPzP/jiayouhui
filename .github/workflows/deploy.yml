@@ -16,7 +16,7 @@ on:
 # 同一分支同时只跑一个部署，避免两次 push 并发 SSH 到同一目录做 git pull
 concurrency:
   group: deploy-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   verify:
