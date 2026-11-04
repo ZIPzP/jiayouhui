@@ -33,6 +33,8 @@
 | 长辈模式 | 通过 |
 | 全站页面 | 11 个页面 × 桌面/手机，22/22 通过 |
 | 站内链接 | 41/41 可访问 |
+| 正式域名 | `https://familytravelhublz.top` 冒烟、RAG、SSE 与六个主页面通过 |
+| 高德地图 | 正式域名加载无控制台错误，桌面与手机无横向溢出 |
 
 证据截图：[`08-ai-evidence.png`](screenshots/08-ai-evidence.png)。
 
@@ -53,12 +55,12 @@
 - ZIP 内无 `config.local.json`、`.env`、私钥或 API Key。
 - 从 ZIP 重新解压后的源码再次通过 36 项测试、58 个 JS 文件语法检查和启动冒烟。
 
-## 仍需真实环境完成
+## 真实 DeepSeek 验证（2026-11-04）
 
-1. 使用正式 DeepSeek Key 验证模型实际工具选择。
-2. 验证真实 `reasoning_content` 流式输出。
-3. 验证 `deepseek-flash` 对真实攻略截图的识别和表单预填。
-4. 在正式域名复测高德地图 Key 白名单。
-5. 在 Nginx 后确认 SSE 不被缓冲。
+1. `deepseek-flash` 实际选择天气工具，工具名与参数均通过校验。
+2. 真实 SSE 返回逐字内容与 `reasoning_content`，首字约 1.2 秒。
+3. 真实截图请求成功返回结构化 JSON，来源图片未持久化。
+4. 测试环境生成上海 → 杭州 3 天行程，返回 7 条 RAG 依据和实际 12306 车次。
+5. 正式域名 Nginx 已完成 SSE 关闭缓冲配置，冒烟通过。
 
 上线步骤见 [`Ubuntu上线前检查.md`](Ubuntu上线前检查.md)。
