@@ -2,7 +2,6 @@
 #
 # 使用前请在 GitHub 仓库 Settings -> Secrets and variables -> Actions 添加：
 #   SSH_HOST    服务器公网 IP
-#   SSH_USER    服务器用户名（如 root）
 #   SSH_KEY     部署用账号的私钥内容（~/.ssh/id_ed25519）
 #
 # 只有 verify 通过才会部署；部署脚本任何一步失败都会中止，不会用旧代码重启服务。
@@ -57,6 +56,16 @@ jobs:
           curl -fsS http://127.0.0.1:3100/api/health
           kill $SERVER_PID
 
+      - name: 打包部署文件
+        run: git archive --format=tar.gz --output=/tmp/jiayouhui-${{ github.sha }}.tar.gz HEAD
+
+      - name: 上传部署产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-release
+          path: /tmp/jiayouhui-${{ github.sha }}.tar.gz
+          retention-days: 3
+
   deploy:
     name: 部署到阿里云
     needs: verify
@@ -64,29 +73,45 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
+      - name: 下载部署产物
+        uses: actions/download-artifact@v4
+        with:
+          name: production-release
+          path: /tmp
+
+      - name: 上传部署包
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: admin
+          key: ${{ secrets.SSH_KEY }}
+          source: /tmp/jiayouhui-${{ github.sha }}.tar.gz
+          target: /tmp
+
       - name: SSH 部署
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
+          username: admin
           key: ${{ secrets.SSH_KEY }}
           script_stop: true
           script: |
             set -euo pipefail
             export PATH=$PATH:/usr/local/bin:/usr/bin
+            ARCHIVE=/tmp/jiayouhui-${{ github.sha }}.tar.gz
             cd /opt/jiayouhui
             PREV=$(git rev-parse HEAD)
             echo "回滚点：$PREV"
-            git fetch origin main
-            git reset --hard origin/main
-            pm2 start ecosystem.config.js >/dev/null 2>&1 || true
-            pm2 restart jiayouhui
+            sudo tar -xf "$ARCHIVE" -C /opt/jiayouhui
+            printf "%s\n" "${{ github.sha }}" | sudo tee /opt/jiayouhui/.deploy-revision >/dev/null
+            sudo sed -i "s/\r$//" /opt/jiayouhui/deploy/smoke-test.sh /opt/jiayouhui/deploy/server-setup.sh /opt/jiayouhui/启动.sh
+            sudo pm2 restart jiayouhui --update-env
             sleep 3
-            if curl -fsS http://127.0.0.1:3000/api/health; then
-              echo "部署成功"
+            if BASE_URL=http://127.0.0.1:3000 /bin/bash deploy/smoke-test.sh; then
+              echo "部署与冒烟成功"
             else
               echo "健康检查失败，回滚到 $PREV"
               git reset --hard "$PREV"
-              pm2 restart jiayouhui
+              sudo pm2 restart jiayouhui --update-env
               exit 1
             fi

@@ -49,35 +49,60 @@ jobs:
           if ! kill -0 $SERVER_PID 2>/dev/null; then echo "服务在畸形请求后退出"; exit 1; fi
           kill $SERVER_PID
 
+      - name: 打包部署文件
+        run: git archive --format=tar.gz --output=/tmp/jiayouhui-${{ github.sha }}.tar.gz HEAD
+
+      - name: 上传部署产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-release
+          path: /tmp/jiayouhui-${{ github.sha }}.tar.gz
+          retention-days: 3
+
   deploy-test:
     name: 部署到测试实例（3001）
     needs: verify
     runs-on: ubuntu-latest
     environment: test
     steps:
+      - name: 下载部署产物
+        uses: actions/download-artifact@v4
+        with:
+          name: test-release
+          path: /tmp
+
+      - name: 上传部署包
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: admin
+          key: ${{ secrets.SSH_KEY }}
+          source: /tmp/jiayouhui-${{ github.sha }}.tar.gz
+          target: /tmp
+
       - name: SSH 部署测试环境
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
+          username: admin
           key: ${{ secrets.SSH_KEY }}
           script_stop: true
           script: |
             set -euo pipefail
             export PATH=$PATH:/usr/local/bin:/usr/bin
             TEST_DIR=/opt/jiayouhui-test
-            if [ ! -d "$TEST_DIR/.git" ]; then
-              sudo mkdir -p "$TEST_DIR"
-              sudo chown "$USER":"$USER" "$TEST_DIR"
-              git clone --branch dev-test-opt https://github.com/ZIPzP/jiayouhui.git "$TEST_DIR"
-            fi
+            ARCHIVE=/tmp/jiayouhui-${{ github.sha }}.tar.gz
+            sudo mkdir -p "$TEST_DIR"
+            sudo chown "$USER":"$USER" "$TEST_DIR"
+            tar -xf "$ARCHIVE" -C "$TEST_DIR"
             cd "$TEST_DIR"
-            git fetch origin dev-test-opt
-            git reset --hard origin/dev-test-opt
+            printf "%s\n" "${{ github.sha }}" > .deploy-revision
             if [ -f /opt/jiayouhui/config.local.json ] && [ ! -f config.local.json ]; then
-              cp /opt/jiayouhui/config.local.json config.local.json
+              sudo cp /opt/jiayouhui/config.local.json config.local.json
+              sudo chown "$USER":"$USER" config.local.json
               chmod 600 config.local.json
             fi
+            sed -i "s/\r$//" deploy/smoke-test.sh deploy/server-setup.sh 启动.sh
             mkdir -p logs
             pm2 delete jiayouhui-test >/dev/null 2>&1 || true
             pm2 start ecosystem.test.config.js
