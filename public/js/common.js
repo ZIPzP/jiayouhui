@@ -554,7 +554,10 @@
         if (value) parts.push(value);
       }
       const text = parts.join(' ');
-      if (text) speak(text.slice(0, 4000));
+      if (text) {
+        speak(text.slice(0, 4000));
+        toast('🔊 正在朗读本页，可在浏览器中调节音量');
+      }
     });
     const ab = $('#aiSettingsBtn');
     if (ab) ab.addEventListener('click', openAiModal);
@@ -620,9 +623,6 @@
   /* ---------------- 共享外壳注入 ---------------- */
   function ensureShell() {
     let html = '';
-    if (!document.getElementById('elderReadPage')) {
-      html += '<button id="elderReadPage" class="elder-read-page" type="button" aria-label="朗读本页内容">🔊 朗读本页</button>';
-    }
     if (!document.getElementById('authGate')) {
       html += `<div id="authGate" class="auth-gate" hidden>
         <div class="auth-card card">
@@ -678,6 +678,10 @@
       html += '<div id="toast" class="toast" hidden></div>';
     }
     if (html) document.body.insertAdjacentHTML('beforeend', html);
+    const settingsMenu = document.getElementById('settingsMenu');
+    if (settingsMenu && !document.getElementById('elderReadPage')) {
+      settingsMenu.insertAdjacentHTML('afterbegin', '<button id="elderReadPage" class="elder-read-page" type="button" aria-label="朗读本页内容">🔊 朗读本页</button>');
+    }
     // 导航栏：把长辈模式 / AI 设置 / 关于收进「⚙️ 设置」菜单
     const actions = document.querySelector('.nav-actions');
     if (actions && !document.getElementById('settingsBtn')) {
