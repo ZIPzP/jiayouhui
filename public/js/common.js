@@ -237,6 +237,7 @@
     }
     if (!r.ok) {
       const error = new Error(data.error || `请求失败（${r.status}）`);
+      error.status = r.status;
       error.code = data.code || '';
       error.usage = data.usage || null;
       if (data.usage) {
@@ -325,7 +326,13 @@
         if (onProgress) onProgress(j.progress || null);
         if (j.status === 'done') { onDone(j.result); return; }
         if (j.status === 'error') { onError(j.error || '生成失败'); return; }
-      } catch (e) { /* 继续轮询 */ }
+      } catch (e) {
+        // 任务已经不存在或无权读取时立即结束，不能把 404 当成网络抖动反复等待。
+        if (e && [403, 404].includes(Number(e.status))) {
+          onError(e.message || '任务已结束或过期');
+          return;
+        }
+      }
       await new Promise((r) => setTimeout(r, interval));
     }
     onError('生成超时，请重试');

@@ -291,6 +291,9 @@
   function savePack(vals, result) {
     localStorage.setItem(packStorageKey, JSON.stringify({ vals, result, lang: (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh', ts: Date.now() }));
   }
+  function clearPack() {
+    try { localStorage.removeItem(packStorageKey); } catch { /* ignore */ }
+  }
   let packingStickyFrame = 0;
   function schedulePackingStickyBounds() {
     if (packingStickyFrame) return;
@@ -345,6 +348,7 @@
       app.pollJob(st.jobId, {
         onDone: (result) => { renderResult(bodyEl, result, vals); savePack(vals, result); },
         onError: (msg) => {
+          clearPack();
           bodyEl.innerHTML = `<p style="padding:40px;text-align:center;color:var(--danger)">${(window.i18n && window.i18n.lang === 'en') ? 'Generation failed: ' : '生成失败：'}${app.esc(msg)}</p>`;
         }
       });
@@ -366,11 +370,18 @@
         return true;
       }
       if (p.jobId) {
+        const age = Date.now() - Number(p.ts || 0);
+        if (!p.ts || age > 5 * 60 * 1000) {
+          clearPack();
+          app.toast((window.i18n && window.i18n.lang === 'en') ? 'Expired unfinished task cleared' : '上次未完成的生成已过期，已清理');
+          return false;
+        }
         empty.hidden = true; bodyEl.hidden = false;
         bodyEl.innerHTML = '<p style="padding:60px;text-align:center;color:var(--ink-soft)"><span class="spinner"></span>上次的生成任务还在后台跑，正在恢复…</p>';
         app.pollJob(p.jobId, {
           onDone: (result) => { renderResult(bodyEl, result, p.vals); savePack(p.vals, result); },
           onError: () => {
+            clearPack();
             bodyEl.innerHTML = '<p style="padding:40px;text-align:center;color:var(--ink-soft)">上次任务已结束或过期，请重新生成</p>';
           }
         });
