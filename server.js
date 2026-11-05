@@ -890,6 +890,7 @@ async function handleApi(req, res, pathname) {
         const settings = ai.getSettings(overrides);
         let trainPromise = null;
         let weatherPromise = null;
+        const weatherCities = new Map(); // 城市名 → Promise，本次规划最多 3 个
         const executeTool = async (name, args) => {
           // 工具一：只检索本次目的地范围内的本地家庭旅行知识，避免跨城市污染。
           if (name === 'search_travel_knowledge') {
@@ -919,11 +920,27 @@ async function handleApi(req, res, pathname) {
               } : null
             };
           }
-          // 工具三：只允许查询当前行程目的地，并限制返回天数，降低无关出网与提示词体积。
+          // 工具三：默认只查当前行程目的地，也允许模型按城市名查（定制目的地没有经纬度时靠它）。
+          // 同一次行程最多 3 个不同城市，避免被提示词牵着反复出网。
           if (name === 'get_weather_forecast') {
+            const wantCity = String(args.city || '').trim();
+            if (wantCity) {
+              if (!weather.isCityName(wantCity)) throw new Error('城市名不合法');
+              if (weatherCities.size >= 3 && !weatherCities.has(wantCity)) {
+                throw new Error('本次规划最多查询 3 个城市的天气');
+              }
+              if (!weatherCities.has(wantCity)) weatherCities.set(wantCity, weather.getForecastByCity(wantCity));
+              const cityData = await weatherCities.get(wantCity);
+              const cityDays = (cityData.days || []).slice(0, 8);
+              return {
+                summary: `已获取 ${cityData.name || wantCity} 未来 ${cityDays.length} 天天气`,
+                days: cityDays,
+                source: cityData.source || '天气预报数据源'
+              };
+            }
             const requestedId = String(args.destinationId || params.destination.id);
             if (requestedId !== params.destination.id) throw new Error('只能查询当前行程目的地天气');
-            if (!weatherPromise) weatherPromise = weather.getForecast(params.destination);
+            if (!weatherPromise) weatherPromise = weather.getForecastFor(params.destination);
             const data = await weatherPromise;
             const days = (data.days || []).slice(0, 8);
             return {
@@ -1195,6 +1212,26 @@ async function handleApi(req, res, pathname) {
   if (pathname === '/api/weather' && req.method === 'GET') {
     if (!allowOutbound(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
     const q = new URL(req.url, 'http://localhost').searchParams;
+    // 支持两种查法：?id=<内置目的地 id>（带经纬度，走中国天气网优先）
+    //              ?city=<任意城市名>（地理编码后取预报，覆盖定制目的地）
+    const cityParam = String(q.get('city') || '').trim();
+    if (cityParam) {
+      if (!weather.isCityName(cityParam)) return sendJson(res, 400, { error: MSG(reqLang(req)).noCoord });
+      try {
+        const data = await weather.getForecastByCity(cityParam);
+        return sendJson(res, 200, data);
+      } catch (e) {
+        if (e && e.code === 'CITY_NOT_FOUND') {
+          return sendJson(res, 404, {
+            error: reqLang(req) === 'en'
+              ? `City "${cityParam}" was not found. Check the spelling.`
+              : `没有找到城市「${cityParam}」，请检查城市名。`
+          });
+        }
+        console.error('[Weather Error] city', cityParam, e);
+        return sendJson(res, 502, { error: MSG(reqLang(req)).weatherFailed(reqLang(req) === 'en' ? 'please try again later' : '请稍后再试') });
+      }
+    }
     const dest = destinations.find((d) => d.id === String(q.get('id') || ''));
     if (!dest || !dest.lat) return sendJson(res, 400, { error: MSG(reqLang(req)).noCoord });
     try {
