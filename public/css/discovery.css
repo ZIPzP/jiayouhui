@@ -10,20 +10,6 @@
   background: var(--primary-light);
 }
 
-.lab-badge {
-  display: inline-flex;
-  align-items: center;
-  height: 26px;
-  padding: 0 9px;
-  border-radius: 999px;
-  background: #ecfdf5;
-  color: #047857;
-  border: 1px solid #a7f3d0;
-  font-size: calc(10px * var(--elder-text-scale, 1));
-  font-weight: 900;
-  letter-spacing: .12em;
-}
-
 .disc-lab {
   width: min(1200px, calc(100% - 40px));
   margin: 0 auto;

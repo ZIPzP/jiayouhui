@@ -133,7 +133,12 @@
       // 只有当天没有任何具体活动时，才用标题兜底，避免把「山城夜景」这类文案当地点
       if (!stops.length && looksLikePlace(day.title)) add(day.title, '', '主题');
       // 每天都保留，哪怕当天只有自由活动，避免 5–6 天行程地图只显示 2–3 天
-      out.push({ day: Number(day.day) || out.length + 1, title: day.title || '', stops: stops.slice(0, 5) });
+      out.push({
+        day: Number(day.day) || out.length + 1,
+        title: day.title || '',
+        isReturn: isReturnDay,
+        stops: stops.slice(0, 5)
+      });
     });
     return out.slice(0, 14);
   }
@@ -372,6 +377,48 @@
       });
     });
   }
+  function prepareMapDays(data, vals, destination) {
+    const days = itineraryDays(data);
+    const dest = destination || destinationFor(vals, data);
+    if (!dest || !clean(dest.name)) return days;
+    const city = clean(dest.name);
+    const addAnchor = (day, stop, prepend = false) => {
+      const key = clean(stop.keyword || stop.name).toLowerCase();
+      if (!key || day.stops.some((item) => clean(item.keyword || item.name).toLowerCase() === key)) return;
+      if (prepend) day.stops.unshift(stop);
+      else day.stops.push(stop);
+    };
+    const cityAnchor = (name, offsetLng = 0, offsetLat = 0) => ({
+      keyword: name,
+      name,
+      time: '',
+      type: '自由活动',
+      free: true,
+      lng: Number(dest.lon) + offsetLng,
+      lat: Number(dest.lat) + offsetLat
+    });
+    const isFlight = /飞机|航班|flight|air/i.test(String((vals || {}).transport || ''));
+    const returnHub = city + (isFlight ? '机场' : '站');
+    days.forEach((day) => {
+      const isReturn = !!day.isReturn || /返程|返家|travel home|heading home/i.test(day.title || '');
+      const drawableCount = () => day.stops.filter((stop) => stop.type !== '餐饮' || stop.foodSpecific).length;
+      if (isReturn) {
+        if (!day.stops.some((stop) => stop.type === '交通')) {
+          addAnchor(day, { keyword: returnHub, name: returnHub, time: '返程', type: '交通' });
+        }
+        if (drawableCount() < 2) addAnchor(day, cityAnchor(`${city}市区`), true);
+        return;
+      }
+      if (drawableCount() === 0) {
+        addAnchor(day, cityAnchor(`${city}市区`));
+        addAnchor(day, cityAnchor(`${city}周边`, 0.012, 0.008));
+      } else if (drawableCount() < 2) {
+        addAnchor(day, cityAnchor(`${city}市区`));
+      }
+    });
+    return days;
+  }
+
   async function build(data, vals) {
     const shell = document.getElementById('planMapShell');
     const canvas = document.getElementById('planMap');
@@ -398,14 +445,7 @@
       infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -28) });
       await new Promise((resolve) => requestAnimationFrame(resolve));
       if (token !== buildToken) return;
-      const days = itineraryDays(data);
-      // 没有具体景点的天，在城市中心给一个「自由活动」点，保证 5–6 天都出现在地图上
-      days.forEach((day) => {
-        const isReturn = /返程|返家|travel home|heading home/i.test(day.title || '');
-        if (!day.stops.length && dest && !isReturn) {
-          day.stops.push({ keyword: dest.name, name: dest.name, time: '', type: '自由活动', free: true });
-        }
-      });
+      const days = prepareMapDays(data, vals, dest);
       const items = [];
       days.forEach((day, dayIndex) => day.stops.forEach((stop) => items.push({ ...stop, day: day.day, dayIndex, color: DAY_COLORS[dayIndex % DAY_COLORS.length] })));
       if (!items.length) {
@@ -420,7 +460,15 @@
       };
       const located = await mapLimit(items, 2, async (item) => {
         if (item.free && dest && Number.isFinite(Number(dest.lon)) && Number.isFinite(Number(dest.lat))) {
-          return { ...item, poi: { name: dest.name, address: '', lng: Number(dest.lon), lat: Number(dest.lat) } };
+          return {
+            ...item,
+            poi: {
+              name: item.name || dest.name,
+              address: '',
+              lng: Number.isFinite(Number(item.lng)) ? Number(item.lng) : Number(dest.lon),
+              lat: Number.isFinite(Number(item.lat)) ? Number(item.lat) : Number(dest.lat)
+            }
+          };
         }
         return { ...item, poi: await searchPlaceCached(AMap, city, searchKeyword(item), item.type) };
       });
@@ -564,5 +612,7 @@
     }
   }
 
-  window.planMap = { build, focusHotel, focusStop };
+  const api = { build, focusHotel, focusStop, itineraryDays, prepareMapDays };
+  if (typeof window !== 'undefined') window.planMap = api;
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })();

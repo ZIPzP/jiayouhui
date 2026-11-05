@@ -8,7 +8,9 @@
 const fs = require('fs');
 const path = require('path');
 const CFG_LOCAL = path.join(__dirname, '..', 'config.local.json');
+/** 读取本地配置（config.local.json，不入 git） */
 function readLocal() { try { return JSON.parse(fs.readFileSync(CFG_LOCAL, 'utf8')); } catch { return {}; } }
+/** 写入本地配置并收紧文件权限 */
 function writeLocal(obj) {
   if (!Object.keys(obj).length) { try { fs.unlinkSync(CFG_LOCAL); } catch {} return; }
   fs.writeFileSync(CFG_LOCAL, JSON.stringify(obj, null, 2), 'utf8');

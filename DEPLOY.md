@@ -86,6 +86,6 @@ certbot --nginx -d 你的域名 -d www.你的域名
 
 ## 六、安全建议
 
-- 服务端 AI 邀请码：用 `node tools/set-invite.js 你的邀请码` 保护服务器 AI 配额；入口口令门禁已按产品需求关闭
+- 服务端 AI 邀请码：用 `node tools/set-invite.js 你的邀请码` 保护服务器 AI 配额；入口口令门禁已按产品需求关闭并移除代码
 - DeepSeek Key 只写在服务器 `config.local.json`，不要提交、不要发给别人
 - 阿里云安全组只开 80/443；服务器本地 3000 端口不必对外开放

@@ -65,8 +65,6 @@ code { background: #f1f5f9; padding: 2px 6px; border-radius: 6px; font-size: .9e
 .btn-primary:hover { background: var(--primary-dark); }
 .btn-ghost { background: #fff; color: var(--ink); border: 1px solid var(--line); }
 .btn-ghost:hover { background: #f8fafc; }
-.btn-elderly { background: var(--accent-light); color: #92400e; border: 1.5px solid var(--accent); }
-.btn-elderly .elderly-on { display: none; }
 .btn-lg { padding: 14px 26px; font-size: 1.05rem; }
 .btn-block { width: 100%; }
 .btn:disabled { opacity: .6; cursor: not-allowed; }
@@ -137,8 +135,6 @@ code { background: #f1f5f9; padding: 2px 6px; border-radius: 6px; font-size: .9e
 .hero-sub { margin-top: 16px; font-size: 1.1rem; opacity: .92; max-width: 640px; margin-left: auto; margin-right: auto; }
 .quick-planner { margin-top: 36px; text-align: left; color: var(--ink); background: rgba(255,255,255,.96); border-radius: var(--radius); box-shadow: var(--shadow-lg); padding: 24px; }
 .quick-title { font-weight: 800; font-size: 1.15rem; margin-bottom: 14px; color: var(--primary-dark); }
-.hero-scroll { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,.85); font-size: .9rem; z-index: 2; animation: bob 2s infinite; }
-@keyframes bob { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 8px); } }
 
 /* ---------- 通用 Section ---------- */
 .section { padding: 72px 20px; max-width: 1200px; margin: 0 auto; }
@@ -245,7 +241,6 @@ body.packing-page:not(.packing-linked-plan) #packing { padding-bottom: 0; }
 .result-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
 .result-head h3 { font-size: 1.3rem; color: var(--primary-dark); }
 .provider-tag { font-size: .8rem; background: var(--primary-light); color: var(--primary-dark); padding: 4px 12px; border-radius: 999px; font-weight: 700; }
-.weather-box { background: var(--accent-light); border: 1px solid #fcd34d; color: #92400e; border-radius: 12px; padding: 12px 16px; margin-bottom: 18px; font-size: .95rem; }
 .check-group { margin-bottom: 22px; }
 .check-group h4 { font-size: 1.05rem; margin-bottom: 10px; color: var(--primary-dark); border-left: 4px solid var(--accent); padding-left: 10px; }
 .check-item { display: flex; align-items: flex-start; gap: 12px; padding: 9px 12px; border-radius: 10px; margin-bottom: 6px; background: #fff; border: 1px solid var(--line); }
@@ -496,12 +491,6 @@ html.elderly .nav-links, html.elderly .quick-planner, html.elderly .packing-layo
 /* 服务端内置 Key 状态 */
 .ai-server-status { background: #ecfdf5; border: 1px solid #6ee7b7; color: #065f46; border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; font-size: .9rem; font-weight: 600; }
 
-/* ---------- 访问口令门禁 ---------- */
-.auth-gate { position: fixed; inset: 0; z-index: 300; background: rgba(15,23,42,.72); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 20px; }
-.auth-card { max-width: 360px; width: 100%; padding: 34px 28px; text-align: center; }
-.auth-logo { font-size: 3rem; font-weight: 900; color: var(--primary); }
-.auth-sub { color: var(--ink-soft); margin: 10px 0 18px; }
-html.elderly .auth-card { padding: 40px 32px; }
 
 /* ---------- 移动端优化（手机/小屏） ---------- */
 @media (max-width: 900px) {
@@ -558,12 +547,10 @@ html.elderly .auth-card { padding: 40px 32px; }
   .transport-box, .budget-box, .dietary-box, .elderly-note { padding: 10px 12px; }
   .result-head { align-items: flex-start; }
   .provider-presets { gap: 6px; }
-  .auth-card { padding: 26px 20px; }
 }
 @media (max-width: 400px) {
   .hero-title { font-size: 1.7rem; }
   .meal-pill { font-size: .75rem; }
-  .btn-elderly { padding: 8px 10px; }
 }
 
 /* ---------- 多页面布局补充 ---------- */
@@ -593,7 +580,6 @@ a.dest-card { display: block; text-decoration: none; color: inherit; }
 .settings-menu { position: absolute; top: calc(100% + 10px); right: 0; background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow-lg); padding: 8px; min-width: 190px; z-index: 80; display: flex; flex-direction: column; gap: 4px; }
 .settings-menu button, .settings-menu a { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 12px 14px; border: 0; background: none; border-radius: 10px; font-size: 1rem; cursor: pointer; font-family: inherit; color: var(--ink); text-decoration: none; }
 .settings-menu button:hover, .settings-menu a:hover { background: var(--primary-light); color: var(--primary-dark); }
-.settings-menu .menu-on::after { content: " ✓"; color: var(--primary); font-weight: 800; margin-left: auto; }
 html.elderly .settings-menu button, html.elderly .settings-menu a { font-size: 1.1rem; padding: 14px 16px; }
 
 /* ---------- 更多按钮 ---------- */
@@ -665,7 +651,6 @@ html.elderly .food-desc { font-size: .95rem; }
 
 /* ---------- 城市输入提示 / 表单校验 ---------- */
 .req { color: var(--danger); font-style: normal; }
-.ac-wrap { position: relative; }
 .ac-list { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-lg); z-index: 60; max-height: 260px; overflow-y: auto; }
 .ac-item { padding: 10px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: .95rem; }
 .ac-item small { color: var(--ink-soft); font-size: .8rem; }
@@ -840,14 +825,11 @@ html.elderly .nav-drawer .nav-links a { padding: 18px 22px; font-size: 1.15rem; 
 /* ================= 抽取热门家庭目的地（仅电脑端） ================= */
 .draw-wrap { max-width: 720px; margin: 0 auto; padding: 48px 20px 60px; }
 .draw-box { text-align: center; }
-.draw-title { font-size: clamp(1.6rem, calc(3vw * var(--elder-text-scale, 1)), 2.2rem); font-weight: 900; color: var(--primary-dark); }
-.draw-sub { color: var(--ink-soft); margin: 10px 0 26px; }
 .draw-machine { display: flex; justify-content: center; margin-bottom: 28px; }
 .draw-screen { width: 340px; min-height: 210px; background: linear-gradient(160deg, #f0fdfa, #ccfbf1); border: 2px dashed var(--primary); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 20px; box-shadow: var(--shadow-lg); }
 .draw-emoji { font-size: 3.4rem; line-height: 1; }
 .draw-name { font-size: 1.7rem; font-weight: 800; color: var(--primary-dark); }
 .draw-btn { font-size: 1.1rem; padding: 12px 34px; border-radius: 12px; }
-.draw-mobile-tip { text-align: center; color: var(--danger); padding: 48px 20px; font-size: 1rem; }
 .modal.draw-result { max-width: 540px; }
 .draw-card-cover { position: relative; height: 190px; border-radius: 14px 14px 0 0; background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: flex-end; padding: 14px 18px; color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,.35); }
 .draw-card-emoji { position: absolute; top: 12px; right: 14px; font-size: 2.4rem; text-shadow: none; }
@@ -939,7 +921,6 @@ html.js .reveal.reveal-in { animation: jyh-rise .36s cubic-bezier(.22, .61, .36,
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   html.js .anim, html.js .reveal { animation: none !important; opacity: 1 !important; }
-  .hero-scroll { animation: none !important; }
   .btn, .btn:hover, .btn:active,
   .ft-item:hover .ft-icon, .entry-card:hover, .dest-card:hover, .hot-item.clickable:hover { transform: none !important; }
   .nav { transition: none; }
@@ -1295,7 +1276,6 @@ html.js [data-reveal].in { opacity: 1; transform: none; }
 .dp-chip i { font-style: normal; opacity: .55; font-size: .74rem; margin-left: 2px; }
 .draw-recent { margin-top: 16px; }
 .draw-recent-title { width: 100%; color: var(--ink-soft); font-size: .85rem; margin: 4px 0 2px; }
-.draw-wave { display: block; width: 100%; height: 70px; margin-top: 26px; }
 .draw-screen { animation: screenBreath 3.4s ease-in-out infinite; }
 @keyframes screenBreath { 0%, 100% { box-shadow: 0 4px 16px rgba(15,118,110,.06); } 50% { box-shadow: 0 0 36px 3px rgba(13,148,136,.3); } }
 
@@ -1490,9 +1470,6 @@ html.elderly .day-card, html.elderly .hot-heat .bar i, html.elderly .check-group
 .draw-result .draw-card-body { padding: 16px 20px 20px; }
 .draw-pool, .draw-recent { max-width: 720px; }
 
-/* 4. 字号层级：抽取页标题与 .section-head h2 同一 clamp 缩放 */
-.draw-title { font-size: clamp(1.6rem, calc(3.5vw * var(--elder-text-scale, 1)), 2.3rem); }
-.draw-sub { margin: 12px 0 32px; }
 .draw-stats { margin: 16px 0 12px; font-size: .9rem; }
 
 /* 5. 按钮统一：抽取按钮回归标准 .btn；dp-chip 对齐标签尺度 */

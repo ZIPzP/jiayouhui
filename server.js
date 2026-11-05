@@ -37,14 +37,14 @@ const MIME = {
   '.woff2': 'font/woff2'
 };
 
+/** 同步读取并解析 JSON，失败返回 null（启动期加载数据用） */
 function readJson(file) {
   try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return null; }
 }
 
-/* ---------- 安全防护：AI 限流 / 登录锁定 / 任务表清理 ---------- */
+/* ---------- 安全防护：接口限流 / 邀请码锁定 / 任务表清理 ---------- */
 const RATE = { windowMs: 60000, max: 30 };                    // AI 接口：每 IP 每分钟 30 次
 const WEB_SEARCH = { windowMs: 10 * 60 * 1000, max: 20 };    // 免费全网搜索：每 IP 每 10 分钟 20 次
-const LOGIN = { windowMs: 60000, max: 5, lockMs: 60000 };     // 登录失败：每 IP 每分钟 5 次后锁 1 分钟
 const INVITE = { windowMs: 60000, max: 5, lockMs: 5 * 60000 }; // 邀请码失败：每 IP 每分钟 5 次后锁 5 分钟
 const CHEAP = { windowMs: 60000, max: 120 };                  // 只读接口：每 IP 每分钟 120 次
 const OUTBOUND = { windowMs: 60000, max: 12 };                // 需要出网的接口（天气）：每 IP 每分钟 12 次
@@ -59,13 +59,13 @@ const HOT_DATA_TTL = 5 * 60 * 1000;                           // 平台热度数
 let hotDataCache = null;
 const hits = new Map();                                       // ip -> { n, reset }
 const searchHits = new Map();                                 // ip -> { n, reset }
-const loginFails = new Map();                                 // ip -> { n, reset, lockedUntil }
 const cheapHits = new Map();                                  // ip -> { n, reset }（只读接口）
 const outHits = new Map();                                    // ip -> { n, reset }（出网接口）
 const inviteFails = new Map();                                // ip -> { n, reset, lockedUntil }（邀请码爆破防护）
 // 仅信任来自本机 nginx 的代理头（remoteAddress 不可伪造）；直连请求一律忽略伪造头，防绕过限流/锁定
 const TRUSTED_PROXY = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
 const IP_RE = /^[0-9a-fA-F:.]{2,45}$/;                          // 代理头格式校验：防止任意字符串撑爆 Map 键空间
+/** 解析真实客户端 IP：仅信任本机 nginx 的代理头，且校验格式 */
 function clientIp(req) {
   const socketIp = String(req.socket.remoteAddress || '');
   if (TRUSTED_PROXY.has(socketIp)) {
@@ -79,28 +79,26 @@ function clientIp(req) {
   }
   return socketIp.replace(/^::ffff:/, '');
 }
+/** 取（或新建）某个 IP 在时间窗内的限流计数桶 */
 function bucket(map, key, windowMs) {
   const now = Date.now();
   const rec = map.get(key) || { n: 0, reset: now + windowMs };
   if (now > rec.reset) { rec.n = 0; rec.reset = now + windowMs; }
   return rec;
 }
+/** AI 类接口限流：每 IP 每分钟上限 */
 function allowAi(req) {
   const rec = bucket(hits, clientIp(req), RATE.windowMs);
   rec.n++; hits.set(clientIp(req), rec);
   return rec.n <= RATE.max;
 }
+/** 免费全网搜索限流：额度更紧，避免刷第三方配额 */
 function allowTravelSearch(req) {
   const ip = clientIp(req);
   const rec = bucket(searchHits, ip, WEB_SEARCH.windowMs);
   rec.n++;
   searchHits.set(ip, rec);
   return rec.n <= WEB_SEARCH.max;
-}
-function loginAllowed(req) {
-  const rec = bucket(loginFails, clientIp(req), LOGIN.windowMs);
-  const allowed = !(rec.lockedUntil && Date.now() < rec.lockedUntil);
-  return { rec, allowed };
 }
 /** 通用限流：返回 true 表示放行 */
 function allowBy(map, req, { windowMs, max }) {
@@ -112,12 +110,11 @@ function allowBy(map, req, { windowMs, max }) {
 }
 const allowCheap = (req) => allowBy(cheapHits, req, CHEAP);
 const allowOutbound = (req) => allowBy(outHits, req, OUTBOUND);
-// 定期清理限流/登录记录，防止 Map 无限增长
+// 定期清理限流/锁定记录，防止 Map 无限增长
 setInterval(() => {
   const now = Date.now();
   for (const [k, v] of hits) if (now > v.reset) hits.delete(k);
   for (const [k, v] of searchHits) if (now > v.reset) searchHits.delete(k);
-  for (const [k, v] of loginFails) if (now > v.reset && now > (v.lockedUntil || 0)) loginFails.delete(k);
   for (const [k, v] of cheapHits) if (now > v.reset) cheapHits.delete(k);
   for (const [k, v] of outHits) if (now > v.reset) outHits.delete(k);
   for (const [k, v] of inviteFails) if (now > v.reset && now > (v.lockedUntil || 0)) inviteFails.delete(k);
@@ -135,6 +132,7 @@ const SEC_HEADERS = {
   'Content-Security-Policy': "default-src 'self'; img-src 'self' data: blob: https://*.amap.com https://*.autonavi.com; style-src 'self' 'unsafe-inline'; script-src 'self' https://webapi.amap.com https://*.amap.com; connect-src 'self' https://webapi.amap.com https://*.amap.com https://*.autonavi.com; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
 };
 const GZIP_MIN_BYTES = 512;                                   // 响应小于此值不压缩（压缩反而更大）
+/** 统一 JSON 响应：安全头、不缓存、二次写保护、较大响应 gzip */
 function sendJson(res, status, obj) {
   // 防二次写：连接已被 destroy 或响应已结束时再写会抛 error 事件并拖垮进程
   if (res.headersSent || res.writableEnded || res.destroyed) return;
@@ -150,12 +148,14 @@ function sendJson(res, status, obj) {
   res.end(body);
 }
 
+/** 写一条 SSE 事件（客户端断开时安全返回 false） */
 function writeSse(res, event, data) {
   if (res.writableEnded || res.destroyed) return false;
   res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
   return true;
 }
 
+/** 写一条 SSE 注释，用于心跳保活 */
 function writeSseComment(res, text) {
   if (res.writableEnded || res.destroyed) return false;
   res.write(': ' + text + '\n\n');
@@ -175,7 +175,9 @@ class CapacityError extends Error {}
  */
 const JOBS_DIR = path.join(ROOT, 'tmp', 'jobs');
 const JOB_ID_RE = /^j[0-9a-f]{32}$/;
+/** 任务结果落盘文件路径（id 已被严格校验，防路径穿越） */
 function jobFile(id) { return path.join(JOBS_DIR, id + '.json'); }
+/** 把已完成/失败的任务结果写到磁盘，服务重启后仍可取回 */
 function persistJob(id, job) {
   try {
     fs.mkdirSync(JOBS_DIR, { recursive: true });
@@ -192,6 +194,7 @@ function persistJob(id, job) {
     console.error('[job persist]', e && e.message);
   }
 }
+/** 从磁盘读取未过期的任务结果（含 id 格式校验） */
 function loadJobFromDisk(id) {
   if (!JOB_ID_RE.test(String(id || ''))) return null;
   try {
@@ -222,6 +225,7 @@ function runningJobs() {
   for (const j of jobs.values()) if (j.status === 'running') n++;
   return n;
 }
+/** 提交一个后台任务并返回 jobId（限制并发，完成后落盘） */
 function runJob(fn, owner) {
   if (runningJobs() >= MAX_JOBS) throw new CapacityError('busy');
   // 任务 id 用密码学随机：避免被枚举后取走他人行程结果
@@ -266,6 +270,7 @@ function startJob(res, lang, fn, req) {
   return sendJson(res, 200, { jobId, status: 'running' });
 }
 
+/** 并发出网查询去程/返程 12306 车次与票价，并按出行时段筛选 */
 async function fetchPlanTrainData(params, overrides) {
   const transport = String(params.transport || '');
   if (!['高铁', '火车', '未定', ''].includes(transport)) return null;
@@ -338,6 +343,7 @@ function readBody(req, limit = MAX_BODY_BYTES) {
   });
 }
 
+/** 清洗前端传来的对话历史：限定角色、长度与条数 */
 function sanitizeChatHistory(value) {
   if (!Array.isArray(value)) return [];
   return value
@@ -373,7 +379,6 @@ const API_MSG = {
     badPath: '请求路径不合法',
     jobGone: '任务不存在或已过期',
     destGone: '未找到该目的地',
-    passcodeWrong: '口令错误',
     inviteWrong: '邀请码错误',
     tooManyTries: '尝试过于频繁，请 1 分钟后再试',
     noCoord: '目的地不存在或缺少坐标',
@@ -402,7 +407,6 @@ const API_MSG = {
     badPath: 'Invalid request path',
     jobGone: 'This task no longer exists or has expired',
     destGone: 'Destination not found',
-    passcodeWrong: 'Wrong passcode',
     inviteWrong: 'Wrong invite code',
     tooManyTries: 'Too many attempts — please try again in a minute',
     noCoord: 'Destination not found or missing coordinates',
@@ -416,6 +420,7 @@ const MSG = (lang) => API_MSG[lang === 'en' ? 'en' : 'zh'];
 const reqLang = (req) => { const h = String((req.headers && req.headers['x-lang']) || '').toLowerCase(); return h === 'en' ? 'en' : 'zh'; };
 
 const CLIENT_ID_RE = /^[A-Za-z0-9_-]{16,80}$/;
+/** 从邀请令牌里解析出账户标识（旧令牌回落为派生 id） */
 function aiAccountId(body, req) {
   const token = String((body && body.aiToken) || (req && req.headers && req.headers['x-ai-token']) || '');
   const data = ai.readAiToken(token);
@@ -424,6 +429,7 @@ function aiAccountId(body, req) {
   return 'legacy-' + crypto.createHash('sha256').update(token).digest('hex').slice(0, 40);
 }
 
+/** 服务端 Key 场景下按操作扣减额度，浏览器自带 Key 不计费 */
 function chargeAiAction(res, body, action) {
   const overrides = {
     apiKey: body && body.apiKey,
@@ -458,6 +464,7 @@ function chargeAiAction(res, body, action) {
   return { ok: true, charged: true, accountId, action, cost: result.cost, usage: result.status, settings };
 }
 
+/** AI 调用失败时退回额度（失败不扣次数） */
 function refundAiAction(charge) {
   if (charge && charge.charged && charge.accountId) {
     credits.refund(charge.accountId, charge.action);
@@ -467,6 +474,7 @@ function refundAiAction(charge) {
 const cityPinyin = readJson(path.join(ROOT, 'data', 'city-pinyin.json')) || {};
 // 目的地数据英文映射（亮点/适老说明等）
 const destI18n = readJson(path.join(ROOT, 'data', 'dest-i18n.json')) || {};
+/** 用户输入的城市名容错匹配：含拼音、前缀与编辑距离近似，用于「你是不是想输入」提示 */
 function guessCity(raw) {
   const n = String(raw || '').trim().replace(/[省市]$/, '');
   if (!n) return null;
@@ -516,6 +524,7 @@ function guessCity(raw) {
 }
 /* 城市键：忽略大小写与空格连字符，便于拼音/英文匹配 */
 const cityKeyOf = (s) => String(s || '').trim().toLowerCase().replace(/[\s\-_\.]+/g, '');
+/** 严格匹配城市库里的标准城市名（中文名、键或拼音） */
 function findCity(raw) {
   const n = String(raw || '').trim().replace(/[省市]$/, '');
   if (!n) return null;
@@ -527,6 +536,7 @@ function findCity(raw) {
 }
 // 对象存储(OSS/COS)支持：config.imageBase 为空时用本地 /images，设置后自动给所有图片路径加前缀（如 https://cdn.xxx.com）
 const IMAGE_BASE = String((config && config.imageBase) || '').replace(/\/+$/, '');
+/** 给所有 /images/ 路径加 CDN 前缀（支持 OSS/COS 部署） */
 function applyImageBase(node) {
   if (!IMAGE_BASE) return node;
   if (typeof node === 'string') return node.startsWith('/images/') ? IMAGE_BASE + node : node;
@@ -588,28 +598,8 @@ function sendPacked(res, entry) {
   res.end(entry.body);
 }
 
+/** REST 接口总入口：按路径分发并统一错误处理 */
 async function handleApi(req, res, pathname) {
-  // 访问口令：登录与状态
-  if (pathname === '/api/auth/status' && req.method === 'GET') {
-    const a = auth.accessConfig();
-    const authed = !a.enabled || auth.verifyToken(auth.extractBearer(req));
-    return sendJson(res, 200, { enabled: a.enabled, authed });
-  }
-  if (pathname === '/api/auth' && req.method === 'POST') {
-    let body;
-    try { body = JSON.parse(await readBody(req)); } catch { return sendJson(res, 400, { error: MSG(reqLang(req)).badJson }); }
-    const g = loginAllowed(req);
-    if (!g.allowed) return sendJson(res, 429, { error: MSG(reqLang(req)).tooManyTries });
-    if (auth.verifyPasscode(body.passcode)) {
-      g.rec.n = 0; g.rec.lockedUntil = 0; loginFails.set(clientIp(req), g.rec);
-      return sendJson(res, 200, { ok: true, token: auth.signToken() });
-    }
-    g.rec.n++;
-    if (g.rec.n >= LOGIN.max) { g.rec.lockedUntil = Date.now() + LOGIN.lockMs; g.rec.n = 0; }
-    loginFails.set(clientIp(req), g.rec);
-    return sendJson(res, 401, { error: MSG(reqLang(req)).passcodeWrong });
-  }
-
   // POST /api/ai/invite —— 邀请码解锁服务端 AI（换长期设备令牌；服务端 Key 永不下发）
   if (pathname === '/api/ai/invite' && req.method === 'POST') {
     if (!allowAi(req)) return sendJson(res, 429, { error: MSG(reqLang(req)).rateLimited });
@@ -1218,12 +1208,11 @@ async function handleApi(req, res, pathname) {
   }
 
   // GET /api/health —— 健康检查
-  // 匿名外网访问只返回 ok；hasServerKey 属部署信息，仅「本机直连（无代理头）」或持有效令牌时返回。
+  // 匿名外网访问只返回 ok；hasServerKey 属部署信息，仅「本机直连（无代理头）」时返回。
   // 注意：经 nginx 转发的请求 remoteAddress 也是 127.0.0.1，所以必须用代理头区分内外网。
   if (pathname === '/api/health') {
     const proxied = Boolean(req.headers['x-real-ip'] || req.headers['x-forwarded-for']);
-    const trusted = (!proxied && auth.isLoopback(req))
-      || (auth.accessConfig().enabled && auth.verifyToken(auth.extractBearer(req)));
+    const trusted = !proxied && auth.isLoopback(req);
     return sendJson(res, 200, Object.assign({ ok: true, time: new Date().toISOString() }, trusted ? { hasServerKey: ai.hasServerKey() && ai.hasInvite() } : {}));
   }
 
@@ -1232,10 +1221,12 @@ async function handleApi(req, res, pathname) {
 }
 
 const gzipCache = new Map(); // 静态文件 gzip 缓存（按 mtime 失效）
+/** 按文件返回安全响应头（地图页需放宽 CSP 以兼容高德） */
 function secHeaders(filePath) {
   return filePath && /plan\.html$/i.test(filePath) ? Object.assign({}, SEC_HEADERS, { 'Content-Security-Policy': MAP_CSP }) : SEC_HEADERS;
 }
 
+/** 静态文件服务：路径穿越防护、ETag/304、gzip 缓存 */
 function serveStatic(req, res, pathname) {
   // 二次防线：NUL 字节会让 path/fs 抛同步异常（进程级崩溃），必须在进入文件系统前拦住
   if (pathname.includes('\0')) {
@@ -1307,13 +1298,6 @@ const server = http.createServer(async (req, res) => {
     }
     if (pathname.startsWith('/api/')) {
       try {
-        // 访问口令门禁：启用时除登录/健康检查外，所有 /api/* 需带有效令牌
-        const gate = auth.accessConfig();
-        if (gate.enabled && !['/api/auth', '/api/auth/status', '/api/health'].includes(pathname)) {
-          if (!auth.verifyToken(auth.extractBearer(req))) {
-            return sendJson(res, 401, { error: 'unauthorized', needAuth: true });
-          }
-        }
         await handleApi(req, res, pathname);
       } catch (e) {
         console.error('[API Error]', e);
@@ -1338,6 +1322,7 @@ process.on('uncaughtException', (e) => { console.error('[uncaughtException]', e)
 process.on('unhandledRejection', (e) => { console.error('[unhandledRejection]', e); });
 
 let shuttingDown = false;
+/** 优雅关闭：停止接收新连接并给在跑请求收尾时间 */
 function shutdown(signal) {
   if (shuttingDown) return;
   shuttingDown = true;

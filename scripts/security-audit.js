@@ -13,6 +13,7 @@ const ignoredDirs = new Set(['.git', 'node_modules', 'tmp', 'logs']);
 const fontExt = new Set(['.woff', '.woff2', '.ttf', '.otf', '.eot']);
 const failures = [];
 
+/** 判断文件是否被 .gitignore 忽略，避免把本地敏感文件误报为泄漏 */
 function ignoredByGit(rel) {
   return spawnSync('git', ['check-ignore', '-q', rel], {
     cwd: ROOT,
@@ -20,6 +21,7 @@ function ignoredByGit(rel) {
   }).status === 0;
 }
 
+/** 递归遍历项目文件，供安全扫描逐项检查 */
 function walk(dir, out = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     if (entry.isDirectory() && ignoredDirs.has(entry.name)) continue;

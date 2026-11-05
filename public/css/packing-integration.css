@@ -90,8 +90,7 @@ body.packing-page .result-card {
 }
 
 body.packing-page .plan-context,
-body.packing-page .tips-box,
-body.packing-page .weather-box {
+body.packing-page .tips-box {
   border-color: #d6e6e0;
   background: #f1f7f4;
   color: var(--pack-accent-dark);

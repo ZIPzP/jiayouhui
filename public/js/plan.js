@@ -1296,10 +1296,6 @@
         'Content-Type': 'application/json',
         'x-lang': (window.i18n && window.i18n.lang) || 'zh'
       };
-      try {
-        const token = localStorage.getItem('jyh_token');
-        if (token) responseHeaders.Authorization = 'Bearer ' + token;
-      } catch (e) { /* ignore */ }
       const response = await fetch('/api/chat/stream', {
         method: 'POST',
         headers: responseHeaders,

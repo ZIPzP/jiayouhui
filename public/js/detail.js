@@ -65,7 +65,7 @@
           <div class="meta-cell"><div class="k">气候特点</div><div class="v">${app.esc(d.climate || '-')}</div></div>
         </div>
         <div class="weather-forecast">
-          <h3>🌤️ 未来 15 天天气（${d.name}）</h3>
+          <h3>🌤️ 未来 15 天天气（${app.esc(d.name)}）</h3>
           <div class="wf-body" id="weatherBody">加载中…</div>
         </div>
         <div class="elderly-note">

@@ -13,6 +13,7 @@ const ROOT = path.join(__dirname, '..');
 const SKIP_DIRS = new Set(['node_modules', '.git', 'tmp', '.taste-skill', 'logs']);
 const SKIP_FILE = /\.min\.js$/;
 
+/** 递归收集需要做语法检查的 JS 文件（跳过依赖、构建产物与压缩文件） */
 function walk(dir, out = []) {
   for (const name of fs.readdirSync(dir)) {
     const full = path.join(dir, name);

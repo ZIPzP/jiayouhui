@@ -195,7 +195,6 @@
     clientId: loadClientId(),
     aiUsage: null,
     serverKey: false,
-    accessEnabled: false,
     aiUnlocked: false
   };
 
@@ -213,13 +212,10 @@
   }
   async function api(path, opts = {}) {
     const headers = Object.assign({}, opts.headers || {});
-    const token = localStorage.getItem('jyh_token');
-    if (token) headers['Authorization'] = 'Bearer ' + token;
     // 让服务端错误信息也跟随界面语言（解析请求体之前就能拿到）
     headers['x-lang'] = (window.i18n && window.i18n.lang) || 'zh';
     const r = await fetch(path, Object.assign({}, opts, { headers }));
     const data = await r.json().catch(() => ({}));
-    if (r.status === 401 && data.needAuth) showAuthGate();
     const creditHeader = r.headers.get('X-AI-Credits');
     if (creditHeader != null && Number.isFinite(Number(creditHeader))) {
       state.aiUsage = Object.assign({}, state.aiUsage || {}, {
@@ -357,49 +353,6 @@
     toast(state.elderly ? '👴 长辈模式已开启：字体放大、对比增强、支持语音朗读' : '已退出长辈模式');
   }
 
-  /* ---------------- 访问口令门禁 ---------------- */
-  function showAuthGate() {
-    const g = $('#authGate');
-    if (!g) return;
-    g.hidden = false;
-    document.body.style.overflow = 'hidden';
-    const input = $('#authPasscode');
-    if (input) input.focus();
-  }
-  function hideAuthGate() {
-    const g = $('#authGate');
-    if (g) g.hidden = true;
-    document.body.style.overflow = '';
-    const err = $('#authError');
-    if (err) err.hidden = true;
-  }
-  function bindAuth() {
-    const submit = async () => {
-      const code = $('#authPasscode').value.trim();
-      if (!code) return;
-      try {
-        const r = await api('/api/auth', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ passcode: code })
-        });
-        localStorage.setItem('jyh_token', r.token);
-        hideAuthGate();
-        startPage();
-        toast('🔓 口令验证成功，欢迎回来');
-      } catch (e) {
-        const err = $('#authError');
-        if (err) err.hidden = false;
-        $('#authPasscode').value = '';
-        $('#authPasscode').focus();
-      }
-    };
-    const btn = $('#authSubmit');
-    if (btn) btn.addEventListener('click', submit);
-    const inp = $('#authPasscode');
-    if (inp) inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
-  }
-
   /* ---------------- AI 设置（共享） ---------------- */
   const PROVIDERS = {
     deepseek: { baseUrl: 'https://api.deepseek.com/v1', model: 'deepseek-flash' },
@@ -476,8 +429,6 @@
   async function refreshAiStatus() {
     try {
       const h = await api('/api/health');
-      const st = await api('/api/auth/status');
-      state.accessEnabled = !!st.enabled;
       // 公网健康检查不会暴露 Key 状态；邀请码状态仍可公开查询，供用户主动解锁。
       const r = await api('/api/ai/status', { headers: { 'x-ai-token': state.ai.aiToken || '', 'x-client-id': state.clientId } });
       state.serverKey = !!h.hasServerKey || !!r.hasInvite;
@@ -623,17 +574,6 @@
   /* ---------------- 共享外壳注入 ---------------- */
   function ensureShell() {
     let html = '';
-    if (!document.getElementById('authGate')) {
-      html += `<div id="authGate" class="auth-gate" hidden>
-        <div class="auth-card card">
-          <div class="auth-logo">🏡 家游汇</div>
-          <p class="auth-sub">家庭旅行推荐与攻略 · 请输入邀请码</p>
-          <input id="authPasscode" type="password" class="input" placeholder="邀请码" aria-label="邀请码" autocomplete="off" />
-          <button id="authSubmit" class="btn btn-primary btn-lg btn-block" type="button" style="margin-top:12px">进入</button>
-          <p class="form-hint" id="authError" style="color:var(--danger);text-align:center" hidden>口令错误，请重试</p>
-        </div>
-      </div>`;
-    }
     if (!document.getElementById('aiModal')) {
       html += `<div class="modal-backdrop" id="aiModal" hidden>
         <div class="modal modal-sm" role="dialog" aria-modal="true" aria-label="AI 设置">
@@ -978,11 +918,6 @@
     bindNavScroll();
     bindNavPrefetch();
     bindSettings();
-    bindAuth();
-    try {
-      const st = await api('/api/auth/status');
-      if (st.enabled && !st.authed) { showAuthGate(); return; }
-    } catch (e) { /* 状态接口异常则放行 */ }
     startPage();
   }
 

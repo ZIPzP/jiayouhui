@@ -19,6 +19,7 @@ const patternList = PATTERNS ? eval('[' + PATTERNS + ']').filter((it) => Array.i
 const hasCN = (s) => /[\u4e00-\u9fa5]/.test(s);
 const IGNORE = /赣ICP|^🌏 中文$/;
 
+/** 判断某段中文是否已被 i18n 词典覆盖 */
 function covered(raw) {
   const k = String(raw).trim();
   if (!k || !hasCN(k) || IGNORE.test(k)) return true;
