@@ -381,10 +381,21 @@
       : (state.ai.apiKey ? '🐱 当前使用浏览器本地 Key：' + (state.ai.model || '默认')
       : '📋 演示模式（内置规则引擎）。配置 DeepSeek Key 后启用大模型。'));
     const ph = $('#planAiHint');
-    if (ph) ph.textContent = state.aiUnlocked ? '🔒 AI 主理人已接入（服务端 Key，仅服务器持有）' + usageText
-      : (state.serverKey ? '🔑 输入邀请码解锁服务端 AI，或填自带 Key'
-      : (state.ai.apiKey ? '🐱 AI 主理人已接入（浏览器本地 Key：' + (state.ai.model || '已配置') + '）'
-      : '📋 演示模式：未配置 AI Key，将使用内置规划引擎（点右上角 ⚙️ AI 设置 接入 DeepSeek）'));
+    if (ph) {
+      if (state.aiUnlocked) {
+        ph.textContent = '🔒 AI 主理人已接入（服务端 Key，仅服务器持有）' + usageText;
+      } else if (state.serverKey) {
+        // 未解锁时不要把「演示模式」当成全部信息：评委需要知道解锁后能多看到什么，以及入口在哪
+        ph.innerHTML = '<span>📋 当前为规则引擎演示（未解锁 AI）。解锁后可看到 RAG 依据、工具调用轨迹与流式回答。</span>'
+          + '<button type="button" class="hint-link" id="planAiUnlockBtn">填入体验码</button>';
+        const unlockBtn = document.getElementById('planAiUnlockBtn');
+        if (unlockBtn) unlockBtn.addEventListener('click', openAiModal);
+      } else if (state.ai.apiKey) {
+        ph.textContent = '🐱 AI 主理人已接入（浏览器本地 Key：' + (state.ai.model || '已配置') + '）';
+      } else {
+        ph.textContent = '📋 演示模式：未配置 AI Key，将使用内置规划引擎（点右上角 ⚙️ AI 设置 接入 DeepSeek）';
+      }
+    }
     const ct = $('#chatModeTag');
     if (ct) ct.textContent = state.aiUnlocked ? '🔒 AI 模式' : (state.ai.apiKey ? 'AI 模式 · ' + (state.ai.model || '') : '演示模式');
     const usage = $('#aiUsageStatus');

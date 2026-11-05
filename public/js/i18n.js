@@ -784,7 +784,14 @@
   "旅行节奏": "Travel pace",
   "规划来源": "Plan source",
   "最近目的地": "Latest destination",
-  "尚无记录": "No records yet"
+  "尚无记录": "No records yet",
+  "📋 当前为规则引擎演示（未解锁 AI）。解锁后可看到 RAG 依据、工具调用轨迹与流式回答。": "📋 Rules engine demo (AI locked). Unlock to see RAG sources, tool-call trace and streaming answers.",
+  "填入体验码": "Enter access code",
+  "地图加载中…": "Loading map…",
+  "地图加载超时": "The map is taking too long",
+  "日程、天气与清单不受影响；刷新页面可重试，或到在线演示查看地图。": "Schedule, weather and packing list are unaffected. Refresh to retry, or view the map on the live demo.",
+  "地图加载失败": "The map failed to load",
+  "请检查网络后刷新重试；日程、天气与清单不受影响。": "Check your network and refresh to retry. Schedule, weather and packing list are unaffected."
 };
   // 英文 -> 中文反查（地图搜索需要中文 POI 名，界面仍显示英文）
   const EN2ZH = {};

@@ -342,6 +342,48 @@
     return amapPromise;
   }
 
+  /* ---------------- 地图加载骨架 / 失败兜底 ----------------
+     未配置 Key、脚本下载慢、瓦片首屏慢时，地图区会有一段空白。
+     这里先铺一层骨架，地图 complete 后移除；超过 8 秒仍未就绪则换成可读的兜底提示，
+     避免评委以为地图坏了。 */
+  let mapOverlay = null;
+  let mapOverlayTimer = null;
+
+  function clearMapOverlay() {
+    if (mapOverlayTimer) { clearTimeout(mapOverlayTimer); mapOverlayTimer = null; }
+    if (mapOverlay && mapOverlay.parentNode) mapOverlay.parentNode.removeChild(mapOverlay);
+    mapOverlay = null;
+  }
+
+  function mountMapOverlay(canvas, kind, title, desc) {
+    if (!canvas) return null;
+    if (!mapOverlay || mapOverlay.parentNode !== canvas) {
+      clearMapOverlay();
+      mapOverlay = document.createElement('div');
+      canvas.appendChild(mapOverlay);
+    }
+    if (kind === 'fail') {
+      mapOverlay.className = 'plan-map-skeleton is-fail';
+      mapOverlay.innerHTML = '<b>' + escapeHtml(title) + '</b><span>' + escapeHtml(desc) + '</span>';
+    } else {
+      mapOverlay.className = 'plan-map-skeleton';
+      mapOverlay.innerHTML = '<i></i><span>' + escapeHtml(title) + '</span>';
+    }
+    return mapOverlay;
+  }
+
+  function showLoadingOverlay(canvas) {
+    mountMapOverlay(canvas, 'loading', t('地图加载中…', 'Loading map…'), '');
+    if (mapOverlayTimer) clearTimeout(mapOverlayTimer);
+    mapOverlayTimer = setTimeout(() => {
+      mapOverlayTimer = null;
+      if (!mapOverlay || !mapOverlay.parentNode) return;
+      mountMapOverlay(canvas, 'fail', t('地图加载超时', 'The map is taking too long'),
+        t('日程、天气与清单不受影响；刷新页面可重试，或到在线演示查看地图。',
+          'Schedule, weather and packing list are unaffected. Refresh to retry, or view the map on the live demo.'));
+    }, 8000);
+  }
+
   function renderStopList(container, groups, markers) {
     const foodLegend = groups.some((group) => group.items.some((item) => item.type === '餐饮')) ? `<span>🍜 ${t('餐饮', 'Food')}</span>` : '';
     const transitLegend = groups.some((group) => group.items.some((item) => item.type === '交通')) ? `<span>🚄 ${t('交通', 'Transit')}</span>` : '';
@@ -428,6 +470,8 @@
     currentStops = [];
     shell.hidden = false;
     canvas.innerHTML = '';
+    clearMapOverlay();
+    showLoadingOverlay(canvas);
     stopList.innerHTML = '';
     status(t('正在解析行程地点并生成地图…', 'Resolving itinerary places and generating the map…'));
     if (map) { try { map.destroy(); } catch (e) { /* ignore */ } map = null; }
@@ -443,12 +487,15 @@
         : [116.397, 39.908];
       map = new AMap.Map(canvas, { zoom: 11, center: initialCenter, viewMode: '2D', resizeEnable: true, lang: (window.i18n && window.i18n.lang === 'en') ? 'en' : 'zh_cn' });
       infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -28) });
+      // 地图渲染完成（首屏瓦片可见）后再撤掉骨架
+      if (map && typeof map.on === 'function') map.on('complete', clearMapOverlay);
       await new Promise((resolve) => requestAnimationFrame(resolve));
       if (token !== buildToken) return;
       const days = prepareMapDays(data, vals, dest);
       const items = [];
       days.forEach((day, dayIndex) => day.stops.forEach((stop) => items.push({ ...stop, day: day.day, dayIndex, color: DAY_COLORS[dayIndex % DAY_COLORS.length] })));
       if (!items.length) {
+        clearMapOverlay();
         status(t('暂时无法从行程中识别可定位地点。', 'No locatable places were found in this itinerary.'), 'empty');
         return;
       }
@@ -569,11 +616,16 @@
       const approxText = approximate.length ? (t(' · ' + approximate.length + ' 个近似位置', ' · ' + approximate.length + ' approximate locations')) : '';
       const hiddenText = hiddenFood ? (t(' · ' + hiddenFood + ' 条餐饮推荐未定位', ' · ' + hiddenFood + ' food recommendations not located')) : '';
       const noRouteText = noRouteDays ? t('；其余 ' + noRouteDays + ' 天无可连线地点', '; ' + noRouteDays + ' days have no connectable stops') : '';
+      clearMapOverlay();
       status(t('已标记 ' + mapped.length + '/' + items.length + ' 个地点' + unlocatedText + approxText + hiddenText + '；已绘制 ' + routedDays + '/' + drawableDays.length + ' 条每日路线' + noRouteText + '。', 'Marked ' + mapped.length + '/' + items.length + ' places' + unlocatedText + approxText + hiddenText + '; drew ' + routedDays + '/' + drawableDays.length + ' daily routes' + noRouteText + '.'));
     } catch (error) {
+      clearMapOverlay();
       if (error && error.message === 'NO_KEY') {
         status(t('未配置高德地图 Key，暂时无法生成地图。请在 config.local.json 的 map 段填写 Web端 JS API Key 和安全密钥。', 'AMap key is not configured. Add a Web JS API key and security code to the map section of config.local.json.'));
       } else {
+        mountMapOverlay(canvas, 'fail', t('地图加载失败', 'The map failed to load'),
+          t('请检查网络后刷新重试；日程、天气与清单不受影响。',
+            'Check your network and refresh to retry. Schedule, weather and packing list are unaffected.'));
         status(t('高德地图加载失败，请检查地图 Key、安全密钥和网络。', 'AMap failed to load. Check the map key, security code and network.'));
       }
     }

@@ -1669,7 +1669,16 @@ html.lang-en .btn-lg { font-size: 1rem; }
 .plan-map-status { flex: 1 1 100%; font-size: .82rem; color: var(--ink-soft); }
 .plan-map-status.empty { color: #b45309; }
 .plan-map-body { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 12px; }
-.plan-map-canvas { height: 420px; min-height: 320px; border-radius: 12px; overflow: hidden; background: #e2e8f0; }
+.plan-map-canvas { height: 420px; min-height: 320px; border-radius: 12px; overflow: hidden; background: #e2e8f0; position: relative; }
+/* 地图骨架与失败兜底：地图就绪前不再是灰白空块 */
+.plan-map-skeleton { position: absolute; inset: 0; z-index: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 20px; text-align: center; font-size: .84rem; line-height: 1.6; color: var(--ink-soft); background: linear-gradient(90deg, #eef2f7 25%, #f8fafc 37%, #eef2f7 63%); background-size: 400% 100%; animation: pmsShimmer 1.6s ease infinite; }
+.plan-map-skeleton i { width: 24px; height: 24px; border-radius: 50%; border: 3px solid #cbd5e1; border-top-color: var(--primary); animation: pmsSpin .9s linear infinite; }
+.plan-map-skeleton.is-fail { animation: none; background: #fef3c7; color: #92400e; }
+.plan-map-skeleton.is-fail b { font-size: .92rem; }
+@keyframes pmsShimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+@keyframes pmsSpin { to { transform: rotate(360deg); } }
+.hint-link { margin-left: 6px; padding: 0; border: 0; background: none; color: var(--primary-dark); font: inherit; font-weight: 800; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.hint-link:hover { color: var(--primary); }
 .plan-map-stops { max-height: 420px; overflow-y: auto; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
 .plan-map-day { margin-bottom: 10px; }
 .plan-map-day-title { display: flex; align-items: center; gap: 6px; font-size: .82rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 4px; cursor: pointer; }
