@@ -301,22 +301,6 @@
     img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   }
   function setBg(el, url) { if (url) { el.style.backgroundImage = `url('${url}')`; el.classList.remove('bg-in'); void el.offsetWidth; el.classList.add('bg-in'); } }
-  function speak(text) {
-    if (!('speechSynthesis' in window)) { toast('当前浏览器不支持语音朗读'); return; }
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'zh-CN';
-    u.rate = 0.92;
-    u.pitch = 1.02;
-    const voices = window.speechSynthesis.getVoices();
-    const zhVoices = voices.filter((v) => v.lang && v.lang.toLowerCase().startsWith('zh'));
-    const femaleHints = ['xiaoxiao', 'huihui', 'yaoyao', 'ting-ting', 'mei-jia', 'sin-ji', 'female', '女'];
-    const female = zhVoices.find((v) => femaleHints.some((hint) => v.name.toLowerCase().includes(hint)));
-    if (female) u.voice = female;
-    else if (zhVoices[0]) u.voice = zhVoices[0];
-    window.speechSynthesis.speak(u);
-  }
-
   /** 轮询后台任务，直到完成（AI 生成期间可放心离开页面） */
   async function pollJob(jobId, { interval = 2000, timeout = 240000, onProgress, onDone, onError } = {}) {
     const started = Date.now();
@@ -350,7 +334,7 @@
     state.elderly = !state.elderly;
     localStorage.setItem('jyh_elderly', state.elderly ? '1' : '0');
     applyElderly();
-    toast(state.elderly ? '👴 长辈模式已开启：字体放大、对比增强、支持语音朗读' : '已退出长辈模式');
+    toast(state.elderly ? '👴 长辈模式已开启：字体放大、对比增强、按钮放大' : '已退出长辈模式');
   }
 
   /* ---------------- AI 设置（共享） ---------------- */
@@ -489,27 +473,6 @@
   function bindSettings() {
     const et = $('#elderlyToggle');
     if (et) et.addEventListener('click', toggleElderly);
-    const elderRead = $('#elderReadPage');
-    if (elderRead) elderRead.addEventListener('click', () => {
-      const root = document.querySelector('main') || document.body;
-      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-      const parts = [];
-      while (walker.nextNode()) {
-        const node = walker.currentNode;
-        const parent = node.parentElement;
-        if (!parent || parent.closest('script, style, noscript, .nav, .nav-drawer, .nav-backdrop, .footer, .settings-menu, .modal-backdrop, [hidden]')) continue;
-        const style = getComputedStyle(parent);
-        const rect = parent.getBoundingClientRect();
-        if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0 || !rect.width || !rect.height) continue;
-        const value = String(node.nodeValue || '').replace(/\s+/g, ' ').trim();
-        if (value) parts.push(value);
-      }
-      const text = parts.join(' ');
-      if (text) {
-        speak(text.slice(0, 4000));
-        toast('🔊 正在朗读本页，可在浏览器中调节音量');
-      }
-    });
     const ab = $('#aiSettingsBtn');
     if (ab) ab.addEventListener('click', openAiModal);
     const ac = $('#aiModalClose');
@@ -618,10 +581,6 @@
       html += '<div id="toast" class="toast" hidden></div>';
     }
     if (html) document.body.insertAdjacentHTML('beforeend', html);
-    const settingsMenu = document.getElementById('settingsMenu');
-    if (settingsMenu && !document.getElementById('elderReadPage')) {
-      settingsMenu.insertAdjacentHTML('afterbegin', '<button id="elderReadPage" class="elder-read-page" type="button" aria-label="朗读本页内容">🔊 朗读本页</button>');
-    }
     // 导航栏：把长辈模式 / AI 设置 / 关于收进「⚙️ 设置」菜单
     const actions = document.querySelector('.nav-actions');
     if (actions && !document.getElementById('settingsBtn')) {
@@ -852,14 +811,33 @@
       let idx = 0;
       nodes.forEach((node) => {
         const frag = document.createDocumentFragment();
+        // 中文按字拆分做逐字浮现；拉丁文按词拆分。
+        // .ch 是 inline-block，若把英文也按字母拆开，浏览器只能在字母之间断行，
+        // 会出现 "togeth / er" 这种单词被截断的排版（英文模式下首页标题实测过）。
+        const tokens = [];
+        let word = '';
+        const flush = () => { if (word) { tokens.push({ t: 'w', v: word }); word = ''; } };
         for (const ch of node.nodeValue) {
+          if (/[\u3400-\u9fff\u3000-\u303f\uff00-\uffef]/.test(ch)) {
+            flush();
+            tokens.push({ t: 'c', v: ch });
+          } else if (/\s/.test(ch)) {
+            flush();
+            tokens.push({ t: 's', v: ch });
+          } else {
+            word += ch;
+          }
+        }
+        flush();
+        tokens.forEach((tok) => {
+          if (tok.t === 's') { frag.appendChild(document.createTextNode(tok.v)); return; }
           const span = document.createElement('span');
           span.className = 'ch';
-          span.textContent = ch === ' ' ? '\u00A0' : ch;
+          span.textContent = tok.v;
           span.style.animationDelay = (idx * 0.028) + 's';
           frag.appendChild(span);
           idx++;
-        }
+        });
         node.parentNode.replaceChild(frag, node);
       });
     });
@@ -1220,8 +1198,7 @@
   }
 
   window.__jyhImgFallback = imgFallback;
-  window.app = { state, api, esc, toast, speak, $, $$, imgFallback, setBg, updateAiHints, pollJob, normCity, findCityInList, cityAutocomplete, saveAsImage, saveAsImageParts, saveAsWord, aiPayload, resolveCity, cityKey, loadTripHistory, recordTrip, clearTripHistory };
-  if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = () => {};
+  window.app = { state, api, esc, toast, $, $$, imgFallback, setBg, updateAiHints, pollJob, normCity, findCityInList, cityAutocomplete, saveAsImage, saveAsImageParts, saveAsWord, aiPayload, resolveCity, cityKey, loadTripHistory, recordTrip, clearTripHistory };
 
   document.addEventListener('DOMContentLoaded', init);
 })();

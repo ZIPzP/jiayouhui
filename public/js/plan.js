@@ -218,7 +218,7 @@
         if (file) recognizeGuideImage(file);
       });
     }
-    // 结果区 打印/朗读
+    // 结果区打印与导出
     document.getElementById('planBody').addEventListener('click', (e) => {
       if (e.target.closest('[data-open-workspace]')) {
         if (renderedPlan) renderPlan(document.getElementById('planBody'), renderedPlan.data, renderedPlan.vals);
@@ -230,8 +230,6 @@
       if (e.target.closest('[data-save-word]')) { app.saveAsWord('planBody', '家游汇-行程规划'); return; }
       if (e.target.closest('[data-build-map]')) { if (window.planMap && renderedPlan) window.planMap.build(renderedPlan.data, renderedPlan.vals); return; }
       if (e.target.closest('[data-close-map]')) { const shell = document.getElementById('planMapShell'); if (shell) shell.hidden = true; return; }
-      const r = e.target.closest('[data-read]');
-      if (r) { app.speak(r.dataset.read); return; }
     });
     // 问答
     document.getElementById('chatSend').addEventListener('click', sendChat);
@@ -1244,7 +1242,6 @@
         <button class="btn btn-ghost" type="button" data-save-img>📷 保存为图片</button>
         <button class="btn btn-ghost" type="button" data-save-parts>✂️ 三等分拼图</button>
         <button class="btn btn-ghost" type="button" data-save-word>📝 导出 Word</button>
-        <button class="btn btn-ghost read-aloud" type="button" data-read="${app.esc(data.title + '。' + (data.summary || '') + (data.days || []).map((d) => '第' + d.day + '天，' + (d.schedule || []).map((s) => s.time + s.activity).join('，')).join('。'))}">🔊 朗读行程</button>
       </div>`;
   }
 

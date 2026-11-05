@@ -10,10 +10,8 @@
   const lb = { urls: [], titles: [], index: 0 };
 
   function hideModal() {
-    // 先隐藏弹窗（保证关闭永远生效），再做副作用；speechSynthesis 部分手机浏览器不支持需保护
     const modal = document.getElementById('detailModal');
     if (modal) modal.hidden = true;
-    try { if (window.speechSynthesis && typeof window.speechSynthesis.cancel === 'function') window.speechSynthesis.cancel(); } catch (e) { /* 忽略 */ }
     if (typeof state.scrollY === 'number') {
       const y = state.scrollY;
       state.scrollY = null;
@@ -70,11 +68,8 @@
         </div>
         <div class="elderly-note">
           <strong>👴 适老提示：</strong>${app.esc(d.elderlyFriendly || '')}
-          <button class="read-aloud" data-read="${app.esc(d.elderlyFriendly || '')}" type="button">🔊 朗读</button>
         </div>
-        <p class="detail-desc">${app.esc(d.description || '')}
-          <button class="read-aloud" data-read="${app.esc(d.description || '')}" type="button">🔊 朗读介绍</button>
-        </p>
+        <p class="detail-desc">${app.esc(d.description || '')}</p>
         <h3>✨ 特色亮点</h3>
         ${(d.highlights || []).map((h) => `
           <div class="highlight-card">
@@ -203,7 +198,6 @@
         <p style="color:var(--ink-soft);margin-bottom:14px">${app.esc(data.summary || '')}</p>
         ${sections}
         <div class="tips-box"><strong>💡 实用提醒</strong><ul>${tips}</ul></div>
-        <button class="read-aloud" data-read="${app.esc(data.title + '。' + (data.summary || '') + (data.sections || []).map(s => s.heading + '，' + s.content).join('。'))}" type="button">🔊 朗读攻略</button>
       </div>`;
   }
 
@@ -216,8 +210,6 @@
   if (body) body.addEventListener('click', async (e) => {
     const guideBtn = e.target.closest('[data-guide]');
     if (guideBtn) { generateGuide(guideBtn.dataset.guide); return; }
-    const readBtn = e.target.closest('[data-read]');
-    if (readBtn) { app.speak(readBtn.dataset.read); return; }
     const planBtn = e.target.closest('[data-open-pack]');
     if (planBtn) {
       closeDetail();

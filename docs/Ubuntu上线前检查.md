@@ -12,7 +12,7 @@ npm test
 npm run check
 ```
 
-当前基线为 44 项测试全部通过，语法检查与安全扫描通过。
+当前基线为 45 项测试全部通过，语法检查与安全扫描通过。
 
 不要上传：
 
@@ -143,7 +143,7 @@ curl -fsS https://familytravelhublz.top/api/destinations
 - [ ] 截图预填无 Key 与有 Key 边界都正确
 - [ ] 中英文切换正常
 - [ ] 手机 390px 无横向溢出
-- [ ] 长辈模式字号和朗读正常
+- [ ] 长辈模式字号、对比度和按钮放大正常
 - [ ] 匿名访问不暴露服务端 Key
 - [ ] `/api/chat/stream` 断开后 Node 进程仍存活
 - [ ] PM2 重启后已完成任务仍可取回
