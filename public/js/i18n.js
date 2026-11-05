@@ -45,7 +45,7 @@
  "🏡 家游汇 · 家庭旅游推荐与攻略选择 — 仅供学习研究与技术交流，严禁商业用途；请遵守中国法律法规及 12306 官方相关规定，合理合规使用": "🏡 Family Trip Hub · Family travel recommendations and guides — for learning, research and technical exchange only; commercial use is strictly prohibited. Please comply with Chinese laws and 12306 official regulations.",
  "AI 驱动的家庭旅行助手": "AI-powered family travel assistant",
  "带上爸妈和孩子": "Bring your parents and kids",
- "一起去看世界": "to see the world together",
+ "一起去看世界": " to see the world together",
  "聚合平台热门数据 · AI 按出行时段生成打包清单与详细行程 · 长辈模式全程守护": "Popular-trip data · AI builds your packing list and detailed itinerary by travel time · Senior Mode included",
  "✈️ 快速生成我的出行清单": "✈️ Quick packing list",
  "出行月份": "Travel month",

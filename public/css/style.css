@@ -131,6 +131,9 @@ code { background: #f1f5f9; padding: 2px 6px; border-radius: 6px; font-size: .9e
 .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,23,42,.55) 0%, rgba(15,23,42,.35) 45%, rgba(15,23,42,.72) 100%); }
 .hero-content { position: relative; z-index: 2; max-width: 860px; width: 100%; text-align: center; }
 .hero-eyebrow { display: inline-block; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35); padding: 6px 16px; border-radius: 999px; font-size: .95rem; letter-spacing: 2px; margin-bottom: 18px; }
+/* 英文标题不要沿用中文的强制换行，否则会出现单独一行的 "kids" */
+html[lang="en"] .hero-title br,
+html[lang="en"] .hd-title br { display: none; }
 .hero-title { font-size: clamp(2.2rem, calc(6vw * var(--elder-text-scale, 1)), 4rem); font-weight: 900; text-shadow: 0 4px 24px rgba(0,0,0,.35); }
 .hero-sub { margin-top: 16px; font-size: 1.1rem; opacity: .92; max-width: 640px; margin-left: auto; margin-right: auto; }
 .quick-planner { margin-top: 36px; text-align: left; color: var(--ink); background: rgba(255,255,255,.96); border-radius: var(--radius); box-shadow: var(--shadow-lg); padding: 24px; }
